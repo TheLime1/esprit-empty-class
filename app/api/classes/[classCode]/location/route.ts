@@ -59,22 +59,26 @@ function findMatchingClassName(searchCode: string, schedules: ScheduleData): str
   
   // Try flexible matching for complex class names
   // Example: "4erp1", "4bi1", or "4erp/bi1" should match "4ERP-BI1"
+  // REQUIREMENT: Search must contain at least one digit (number)
   for (const className of Object.keys(schedules)) {
     // Remove all non-alphanumeric characters for comparison
     const normalizedClass = className.replaceAll(/[^A-Z0-9]/g, '');
     const normalizedSearch = upperSearch.replaceAll(/[^A-Z0-9]/g, '');
     
     // Check if search is a substring of the class name (for partial matches)
-    if (normalizedClass.includes(normalizedSearch)) {
+    // Only match if search contains at least one digit
+    if (/\d/.test(normalizedSearch) && normalizedClass.includes(normalizedSearch)) {
       return className;
     }
     
     // Special handling for "ERP/BI" pattern: "4erp/bi1" should match "4ERP-BI1"
     // Convert "/" or "-" separated patterns to match the combined form
+    // But REQUIRE numbers - "erp/bi" alone shouldn't match anything
     const searchWithSlashOrDash = upperSearch.replaceAll(/[/-]/g, '');
     if (searchWithSlashOrDash !== upperSearch.replaceAll(/[^A-Z0-9]/g, '')) {
       // User used / or - in search, try this alternate normalized form
-      if (normalizedClass.includes(searchWithSlashOrDash)) {
+      // Only match if the search contains at least one digit
+      if (/\d/.test(searchWithSlashOrDash) && normalizedClass.includes(searchWithSlashOrDash)) {
         return className;
       }
     }
