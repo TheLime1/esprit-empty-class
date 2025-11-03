@@ -52,66 +52,102 @@ function eventRangeToMinutes(range: string) {
 function findMatchingClassName(searchCode: string, schedules: ScheduleData): string | null {
   const upperSearch = searchCode.toUpperCase();
   
+  console.log(`\n[SEARCH DEBUG] Searching for: "${searchCode}" (uppercase: "${upperSearch}")`);
+  
   // Direct match first
   if (schedules[upperSearch]) {
+    console.log(`[SEARCH DEBUG] ✓ Direct match found: ${upperSearch}`);
     return upperSearch;
   }
   
+  // Normalize search (remove special chars)
+  const normalizedSearch = upperSearch.replaceAll(/[^A-Z0-9]/g, '');
+  
+  // Validate: search must contain at least one digit
+  if (!/\d/.test(normalizedSearch)) {
+    console.log(`[SEARCH DEBUG] ✗ Search contains no numbers, rejecting`);
+    return null;
+  }
+  
+  console.log(`[SEARCH DEBUG] Normalized search: "${normalizedSearch}"`);
+  
   // Try flexible matching for complex class names
-  // Example: "4erp1", "4bi1", or "4erp/bi1" should match "4ERP-BI1"
-  // REQUIREMENT: Search must contain at least one digit (number)
+  // Priority order:
+  // 1. Exact normalized match (e.g., "4ERPBI3" → "4ERP-BI3")
+  // 2. Flexible match for ERP-BI style (e.g., "4bi3" → "4ERP-BI3", "4erp3" → "4ERP-BI3")
+  
   for (const className of Object.keys(schedules)) {
-    // Remove all non-alphanumeric characters for comparison
     const normalizedClass = className.replaceAll(/[^A-Z0-9]/g, '');
-    const normalizedSearch = upperSearch.replaceAll(/[^A-Z0-9]/g, '');
     
-    // Check if search is a substring of the class name (for partial matches)
-    // Only match if search contains at least one digit
-    if (/\d/.test(normalizedSearch) && normalizedClass.includes(normalizedSearch)) {
+    console.log(`[SEARCH DEBUG] Checking class: "${className}" (normalized: "${normalizedClass}")`);
+    
+    // 1. EXACT normalized match (highest priority)
+    if (normalizedClass === normalizedSearch) {
+      console.log(`[SEARCH DEBUG]   ✓ EXACT normalized match!`);
       return className;
-    }
-    
-    // Special handling for "ERP/BI" pattern: "4erp/bi1" should match "4ERP-BI1"
-    // Convert "/" or "-" separated patterns to match the combined form
-    // But REQUIRE numbers - "erp/bi" alone shouldn't match anything
-    const searchWithSlashOrDash = upperSearch.replaceAll(/[/-]/g, '');
-    if (searchWithSlashOrDash !== upperSearch.replaceAll(/[^A-Z0-9]/g, '')) {
-      // User used / or - in search, try this alternate normalized form
-      // Only match if the search contains at least one digit
-      if (/\d/.test(searchWithSlashOrDash) && normalizedClass.includes(searchWithSlashOrDash)) {
-        return className;
-      }
-    }
-    
-    // Special case for complex names like "4ERP-BI1"
-    // Accept: "4ERP1", "4BI1", etc.
-    // Strategy: if the search starts with the same digit and contains any significant letters+numbers
-    if (normalizedSearch.length >= 3 && normalizedClass.startsWith(normalizedSearch.charAt(0))) {
-      // Extract all letter sequences from both
-      const classLetters = normalizedClass.match(/[A-Z]+/g) || [];
-      const searchLetters = normalizedSearch.match(/[A-Z]+/g) || [];
-      const searchNumbers = normalizedSearch.match(/\d+/g) || [];
-      
-      // Check if search letters match any part of the class letters
-      for (const searchLetter of searchLetters) {
-        for (const classLetter of classLetters) {
-          // If search letters are contained in any class letter group
-          if (classLetter.includes(searchLetter) && searchNumbers.length > 0) {
-            // And the numbers match somewhere in the class
-            const classNumbers = normalizedClass.match(/\d+/g) || [];
-            for (const searchNum of searchNumbers) {
-              for (const classNum of classNumbers) {
-                if (classNum.includes(searchNum) || searchNum.includes(classNum)) {
-                  return className;
-                }
-              }
-            }
-          }
-        }
-      }
     }
   }
   
+  // 2. Flexible matching for classes with dashes/complex names
+  // Example: "4bi3" should match "4ERP-BI3", "4erp3" should match "4ERP-BI3"
+  // Strategy: Match if search contains a substring of letters that appears in class
+  // AND the final numbers match exactly
+  
+  console.log(`[SEARCH DEBUG] No exact match, trying flexible matching for complex names...`);
+  
+  // Extract the trailing number from search (e.g., "4BI3" → "3", "4ERP1" → "1")
+  const searchTrailingNum = normalizedSearch.match(/\d+$/)?.[0];
+  
+  if (!searchTrailingNum) {
+    console.log(`[SEARCH DEBUG] ✗ No trailing number in search`);
+    return null;
+  }
+  
+  console.log(`[SEARCH DEBUG] Search trailing number: "${searchTrailingNum}"`);
+  
+  for (const className of Object.keys(schedules)) {
+    const normalizedClass = className.replaceAll(/[^A-Z0-9]/g, '');
+    
+    // Extract trailing number from class name
+    const classTrailingNum = normalizedClass.match(/\d+$/)?.[0];
+    
+    if (!classTrailingNum) {
+      continue;
+    }
+    
+    // Numbers must match EXACTLY (no substring matching)
+    if (classTrailingNum !== searchTrailingNum) {
+      continue;
+    }
+    
+    console.log(`[SEARCH DEBUG] Class "${className}" has matching trailing number "${classTrailingNum}"`);
+    
+    // Extract the leading digit(s) and middle letters
+    // e.g., "4ERPBI3" → leading: "4", letters: "ERPBI"
+    const searchLeading = normalizedSearch.match(/^(\d+)/)?.[0];
+    const classLeading = normalizedClass.match(/^(\d+)/)?.[0];
+    
+    // Leading numbers must match
+    if (searchLeading !== classLeading) {
+      console.log(`[SEARCH DEBUG]   Leading numbers don't match: "${searchLeading}" vs "${classLeading}"`);
+      continue;
+    }
+    
+    // Get the middle letters (between leading and trailing numbers)
+    const searchMiddle = normalizedSearch.slice(searchLeading?.length || 0, -(searchTrailingNum.length));
+    const classMiddle = normalizedClass.slice(classLeading?.length || 0, -(classTrailingNum.length));
+    
+    console.log(`[SEARCH DEBUG]   Comparing middle letters: search="${searchMiddle}" vs class="${classMiddle}"`);
+    
+    // For flexible matching: search letters should be a substring of class letters
+    // OR class letters should contain all search letters (for "4BI3" → "4ERP-BI3")
+    if (classMiddle.includes(searchMiddle)) {
+      console.log(`[SEARCH DEBUG]   ✓ FLEXIBLE MATCH: "${searchMiddle}" found in "${classMiddle}"`);
+      return className;
+    }
+  }
+  
+  console.log(`[SEARCH DEBUG] ✗ No match found`);
   return null;
 }
 
