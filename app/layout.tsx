@@ -15,9 +15,15 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "ESPRIT Classroom Finder",
-  description: "Make sure to join ESPRIT Discord server to get free drives and courses and get notified about events, PFEs and internships",
+  description:
+    "Find empty classrooms and locate your classes instantly at ESPRIT. Search for available rooms by day, time, and building, or look up your class schedule with ease.",
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.png", type: "image/png" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+    shortcut: "/favicon.png",
   },
 };
 

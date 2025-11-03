@@ -4,7 +4,8 @@ import { NextResponse } from "next/server";
 
 function parseTimeStr(s: string): number | null {
   if (!s) return null;
-  const normalized = s.replace(/H/g, ":").trim();
+  // Handle formats like "09H:00" or "09:00"
+  const normalized = s.replace(/(\d{1,2})H:?(\d{2})/i, "$1:$2").trim();
   const m = normalized.match(/(\d{1,2}):(\d{2})/);
   if (!m) return null;
   return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);

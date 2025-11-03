@@ -28,7 +28,7 @@ export function ClassSearchForm({
   return (
     <Card className="p-3 sm:p-4 md:p-6 mb-4 sm:mb-6">
       <form onSubmit={handleSubmit}>
-        <div className="space-y-2">
+        <div className="space-y-3">
           <Label
             htmlFor="class-input"
             className="flex items-center gap-2 text-base sm:text-lg"
@@ -53,6 +53,27 @@ export function ClassSearchForm({
             >
               <Search className="h-4 w-4 mr-2" />
               {loading ? "Finding..." : "Find"}
+            </Button>
+          </div>
+          
+          {/* Quick Access */}
+          <div className="pt-2 border-t">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="text-xs text-muted-foreground">Quick Access:</span>
+              <span className="text-[10px] text-muted-foreground/60 italic">(the developer is so lazy)</span>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setClassCode("4SAE11");
+                onSearch("4SAE11");
+              }}
+              disabled={loading}
+              className="text-xs"
+            >
+              4SAE11
             </Button>
           </div>
         </div>

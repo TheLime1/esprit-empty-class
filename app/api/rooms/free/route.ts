@@ -4,7 +4,8 @@ import path from "node:path";
 
 function parseTimeStr(s: string): number | null {
   if (!s) return null;
-  const normalized = s.replaceAll("H", ":").trim();
+  // Handle formats like "09H:00" or "09:00"
+  const normalized = s.replace(/(\d{1,2})H:?(\d{2})/i, "$1:$2").trim();
   const regex = /(\d{1,2}):(\d{2})/;
   const m = regex.exec(normalized);
   if (!m) return null;
