@@ -88,9 +88,9 @@ export async function GET(
     
     // If query parameters are provided, use them
     if (queryTime && queryDay) {
-      // Parse query time (format: "09:00-10:30")
-      const [startStr] = queryTime.split("-");
-      const parsedMinutes = parseTimeStr(startStr?.replaceAll(":", "H") || "");
+      // Parse query time (format: "09:00-10:30" or "09:00")
+      const timeStr = queryTime.includes("-") ? queryTime.split("-")[0] : queryTime;
+      const parsedMinutes = parseTimeStr(timeStr?.replaceAll(":", "H") || "");
       if (parsedMinutes !== null) {
         currentMinutes = parsedMinutes;
       }
@@ -111,8 +111,15 @@ export async function GET(
       
       if (dayMatches) {
         for (const session of sessions) {
+          // Skip FREE courses (no class at this time)
+          if (session.course.toUpperCase() === "FREE") {
+            continue;
+          }
+          
           const { start, end } = eventRangeToMinutes(session.time);
-          if (start !== null && end !== null && currentMinutes >= start && currentMinutes <= end) {
+          // Check if current time falls within this session
+          // Use < end instead of <= end to avoid overlapping time slots
+          if (start !== null && end !== null && currentMinutes >= start && currentMinutes < end) {
             currentSession = session;
             break;
           }
@@ -121,7 +128,7 @@ export async function GET(
       }
     }
 
-    // If in session
+    // If in session (or querying a time when there's a class)
     if (currentSession) {
       const { start, end } = eventRangeToMinutes(currentSession.time);
       return NextResponse.json({
@@ -139,15 +146,60 @@ export async function GET(
           course: currentSession.course,
         },
         fullSchedule,
+        nextSession: undefined, // Clear next session when in session
       });
     }
 
-    // Find next session
+    // Find next session (skip FREE, NOT-FREE, and En Ligne courses)
+    // Look for the next session starting from the current time/day
     let nextSession: { day: string; start: string; end: string; room: string; course: string } | null = null;
     
+    // If we're in lunch break (12:15-13:30 = 735-810 minutes), skip to after lunch
+    const isLunchBreak = currentMinutes >= 735 && currentMinutes < 810;
+    const searchFromMinutes = isLunchBreak ? 810 : currentMinutes; // Start search from 13:30 if in lunch break
+    
+    // First, try to find next session on the same day
     for (const [dayKey, sessions] of Object.entries(classSchedule.days)) {
-      for (const session of sessions) {
-        if (session.room !== "En Ligne") {
+      const dayMatches = targetDayName ? dayKey.startsWith(targetDayName) : false;
+      
+      if (dayMatches) {
+        for (const session of sessions) {
+          const courseUpper = session.course.toUpperCase();
+          
+          // Skip FREE, NOT-FREE courses
+          if (courseUpper === "FREE" || courseUpper === "NOT-FREE") {
+            continue;
+          }
+          
+          const { start } = eventRangeToMinutes(session.time);
+          
+          // Only consider sessions that start after current time (or after lunch if in lunch break)
+          if (start !== null && start >= searchFromMinutes) {
+            nextSession = {
+              day: dayKey,
+              start: session.time.split("-")[0]?.trim() || session.time,
+              end: session.time.split("-")[1]?.trim() || "",
+              room: session.room,
+              course: session.course,
+            };
+            break;
+          }
+        }
+        if (nextSession) break;
+      }
+    }
+    
+    // If no next session found today, find the first session on any upcoming day
+    if (!nextSession) {
+      for (const [dayKey, sessions] of Object.entries(classSchedule.days)) {
+        for (const session of sessions) {
+          const courseUpper = session.course.toUpperCase();
+          
+          // Skip FREE, NOT-FREE courses
+          if (courseUpper === "FREE" || courseUpper === "NOT-FREE") {
+            continue;
+          }
+          
           nextSession = {
             day: dayKey,
             start: session.time.split("-")[0]?.trim() || session.time,
@@ -157,8 +209,8 @@ export async function GET(
           };
           break;
         }
+        if (nextSession) break;
       }
-      if (nextSession) break;
     }
 
     return NextResponse.json({

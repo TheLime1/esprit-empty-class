@@ -4,17 +4,8 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  MapPin,
-  Clock,
-  Calendar,
-  Users,
-  Building2,
-  Navigation,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { MapPin, Clock, Calendar, List, CalendarDays } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface ClassSession {
   time: string;
@@ -52,19 +43,6 @@ interface ClassResultsProps {
   result: ClassLocation | null;
 }
 
-function formatTime(isoString: string): string {
-  try {
-    const date = new Date(isoString);
-    return date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-  } catch {
-    return isoString;
-  }
-}
-
 function calculateTimeLeft(endTime: string): string {
   try {
     const end = new Date(endTime);
@@ -83,80 +61,105 @@ function calculateTimeLeft(endTime: string): string {
   }
 }
 
+function isLunchBreak(): boolean {
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  // Lunch break is between 12:15 (735 minutes) and 13:30 (810 minutes)
+  return currentMinutes >= 735 && currentMinutes < 810;
+}
+
+function getStatusBadgeText(): string {
+  if (isLunchBreak()) {
+    return "🍽️ Lunch Break";
+  }
+  // Check if it's weekend or late evening
+  const now = new Date();
+  const day = now.getDay();
+  const hour = now.getHours();
+
+  if (day === 0 || day === 6) {
+    return "📅 No Classes Today";
+  }
+
+  if (hour < 9 || hour >= 17) {
+    return "⏰ Outside Class Hours";
+  }
+
+  return "📚 Free Period";
+}
+
 export function ClassResults({ result }: Readonly<ClassResultsProps>) {
   if (!result) return null;
 
   if (result.status === "no_schedule") {
     return (
-      <Card className="p-4 sm:p-6 md:p-8 text-center">
-        <div className="flex justify-center mb-3 sm:mb-4">
-          <Calendar className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground" />
-        </div>
-        <h3 className="text-base sm:text-lg font-semibold mb-2">
-          No Schedule Found
-        </h3>
-        <p className="text-sm sm:text-base text-muted-foreground">
-          We couldn&apos;t find any schedule for class{" "}
-          <span className="font-semibold">{result.classCode}</span>.
-        </p>
-      </Card>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Card className="p-8 md:p-12 text-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-2">
+          <div className="flex justify-center mb-6">
+            <div className="p-4 bg-slate-200 dark:bg-slate-700 rounded-full">
+              <Calendar className="h-16 w-16 text-slate-600 dark:text-slate-300" />
+            </div>
+          </div>
+          <h3 className="text-2xl font-bold mb-3">No Schedule Found</h3>
+          <p className="text-lg text-muted-foreground">
+            We couldn&apos;t find any schedule for class{" "}
+            <span className="font-bold text-foreground">
+              {result.classCode}
+            </span>
+            .
+          </p>
+        </Card>
+      </motion.div>
     );
   }
 
   if (result.status === "not_in_session") {
+    const badgeText = getStatusBadgeText();
+    const badgeColor = isLunchBreak()
+      ? "bg-amber-500 hover:bg-amber-600"
+      : "bg-orange-500 hover:bg-orange-600";
+
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <Card className="p-4 sm:p-5 md:p-6">
-          <div className="flex items-start justify-between mb-3 sm:mb-4">
-            <div>
-              <h3 className="text-xl sm:text-2xl font-bold">
-                {result.classCode}
-              </h3>
-              <Badge variant="secondary" className="mt-2 text-xs sm:text-sm">
-                Not in session
+        <Card className="p-6 md:p-8 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20 border-2 border-orange-200 dark:border-orange-900">
+          {/* Class name and status badges in one line */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+            <h3 className="text-3xl md:text-4xl font-bold">
+              {result.classCode}
+            </h3>
+            <div className="flex items-center gap-3 flex-wrap">
+              <Badge className={`text-sm px-4 py-1.5 ${badgeColor}`}>
+                {badgeText}
               </Badge>
+              {result.nextSession && (
+                <>
+                  <span className="text-2xl">→</span>
+                  <Badge className="text-sm px-4 py-1.5 bg-blue-600 hover:bg-blue-700">
+                    <Clock className="h-4 w-4 mr-1.5" />
+                    {result.nextSession.start} @{" "}
+                    {result.nextSession.room === "En Ligne"
+                      ? "Home"
+                      : result.nextSession.room}
+                  </Badge>
+                </>
+              )}
             </div>
-            <Users className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
           </div>
 
-          {result.nextSession && (
-            <div className="space-y-4">
-              <div className="p-4 bg-muted rounded-lg">
-                <h4 className="font-semibold mb-3 flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  Next Session
-                </h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span>{result.nextSession.day}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <span>
-                      {result.nextSession.start} – {result.nextSession.end}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-semibold">
-                      {result.nextSession.room}
-                    </span>
-                  </div>
-                  {result.nextSession.course && (
-                    <div className="mt-2 pt-2 border-t">
-                      <p className="text-muted-foreground">
-                        {result.nextSession.course}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+          {/* Full Weekly Timetable as main feature */}
+          {result.fullSchedule && (
+            <FullTimetable
+              schedule={result.fullSchedule}
+              classCode={result.classCode}
+            />
           )}
         </Card>
       </motion.div>
@@ -170,72 +173,28 @@ export function ClassResults({ result }: Readonly<ClassResultsProps>) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className="p-4 sm:p-5 md:p-6 border-green-200 dark:border-green-900">
-        <div className="flex items-start justify-between mb-3 sm:mb-4">
-          <div>
-            <h3 className="text-xl sm:text-2xl font-bold">
-              {result.classCode}
-            </h3>
-            <Badge className="mt-2 text-xs sm:text-sm bg-green-600 hover:bg-green-700">
-              In Session Now
+      <Card className="p-6 md:p-8 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-2 border-green-300 dark:border-green-800">
+        {/* Class name and status badges in one line */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+          <h3 className="text-3xl md:text-4xl font-bold">{result.classCode}</h3>
+          <div className="flex items-center gap-3 flex-wrap">
+            <Badge className="text-sm px-4 py-1.5 bg-green-600 hover:bg-green-700">
+              <Clock className="h-4 w-4 mr-1.5" />
+              {result.session?.course || "In Session"} @{" "}
+              {result.room?.name === "En Ligne" ? "Home" : result.room?.name}
             </Badge>
-          </div>
-          <Users className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
-        </div>{" "}
-        {result.room && (
-          <div className="space-y-4">
-            <div className="p-4 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-900">
-              <h4 className="font-semibold mb-3 flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-green-600" />
-                Current Location
-              </h4>
-              <div className="space-y-2">
-                <div className="flex items-baseline gap-2">
-                  <Building2 className="h-5 w-5 text-muted-foreground" />
-                  <span className="text-2xl font-bold">{result.room.name}</span>
-                  <span className="text-sm text-muted-foreground">
-                    Building {result.room.building}
-                  </span>
-                </div>
-                {result.session && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <span>
-                      {formatTime(result.session.start)} –{" "}
-                      {formatTime(result.session.end)}
-                    </span>
-                    <Badge variant="outline" className="ml-2">
-                      {calculateTimeLeft(result.session.end)}
-                    </Badge>
-                  </div>
-                )}
-                {result.session?.course && (
-                  <p className="text-sm text-muted-foreground mt-2">
-                    {result.session.course}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {result.room.coords && (
-              <Button
-                className="w-full"
-                onClick={() => {
-                  if (result.room?.coords) {
-                    window.open(
-                      `https://www.google.com/maps/search/?api=1&query=${result.room.coords.lat},${result.room.coords.lng}`,
-                      "_blank"
-                    );
-                  }
-                }}
+            {result.session && (
+              <Badge
+                variant="outline"
+                className="text-sm px-3 py-1 border-green-600"
               >
-                <Navigation className="h-4 w-4 mr-2" />
-                Navigate to Room
-              </Button>
+                {calculateTimeLeft(result.session.end)}
+              </Badge>
             )}
           </div>
-        )}
-        {/* Full Weekly Timetable */}
+        </div>
+
+        {/* Full Weekly Timetable as main feature */}
         {result.fullSchedule && (
           <FullTimetable
             schedule={result.fullSchedule}
@@ -254,7 +213,7 @@ function FullTimetable({
   schedule: { [day: string]: ClassSession[] };
   classCode: string;
 }>) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
 
   const dayOrder = [
     "Lundi",
@@ -264,74 +223,183 @@ function FullTimetable({
     "Vendredi",
     "Samedi",
   ];
-  const orderedDays = dayOrder.filter(
-    (day) => schedule[day] && schedule[day].length > 0
+  const orderedDays = dayOrder.filter((day) =>
+    schedule[day]?.some(
+      (s) =>
+        s.course.toUpperCase() !== "FREE" &&
+        s.course.toUpperCase() !== "NOT-FREE"
+    )
   );
 
   if (orderedDays.length === 0) return null;
 
-  return (
-    <div className="mt-6 border-t pt-6">
-      <Button
-        variant="ghost"
-        className="w-full flex items-center justify-between mb-4"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <span className="font-semibold text-base">
-          Full Weekly Timetable for {classCode}
-        </span>
-        {isExpanded ? (
-          <ChevronUp className="h-5 w-5" />
-        ) : (
-          <ChevronDown className="h-5 w-5" />
-        )}
-      </Button>
+  // Check if there are any online classes this week
+  const hasOnlineClasses = orderedDays.some((day) =>
+    schedule[day]?.some(
+      (s) =>
+        s.room === "En Ligne" &&
+        s.course.toUpperCase() !== "FREE" &&
+        s.course.toUpperCase() !== "NOT-FREE"
+    )
+  );
 
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-4"
+  return (
+    <div className="border-t-2 pt-6">
+      <div className="flex items-center justify-between mb-4">
+        <span className="font-bold text-lg">
+          📅 Weekly Schedule for {classCode}
+        </span>
+        <div className="flex gap-2">
+          <Button
+            variant={viewMode === "list" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setViewMode("list")}
           >
-            {orderedDays.map((day) => (
-              <Card key={day} className="p-4">
-                <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  {day}
-                </h4>
-                <div className="space-y-2">
-                  {schedule[day].map((session) => (
-                    <div
-                      key={`${day}-${session.time}-${session.room}`}
-                      className="flex flex-col sm:flex-row sm:items-center gap-2 p-3 bg-muted/50 rounded-lg"
-                    >
-                      <div className="flex items-center gap-2 text-sm font-medium min-w-[120px]">
-                        <Clock className="h-4 w-4" />
-                        {session.time}
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">{session.course}</p>
-                      </div>
-                      <Badge
-                        variant={
-                          session.course === "FREE" ? "secondary" : "default"
-                        }
-                        className="w-fit"
+            <List className="h-4 w-4 mr-2" />
+            List
+          </Button>
+          <Button
+            variant={viewMode === "calendar" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setViewMode("calendar")}
+          >
+            <CalendarDays className="h-4 w-4 mr-2" />
+            Calendar
+          </Button>
+        </div>
+      </div>
+
+      {!hasOnlineClasses && (
+        <div className="mb-4 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800">
+          <p className="text-sm text-purple-700 dark:text-purple-300 text-center font-medium">
+            Aww no online this week 🤭
+          </p>
+        </div>
+      )}
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="space-y-3"
+      >
+        {viewMode === "list" ? (
+          <>
+            {orderedDays.map((day) => {
+              const sessions = schedule[day].filter(
+                (session) =>
+                  session.course.toUpperCase() !== "FREE" &&
+                  session.course.toUpperCase() !== "NOT-FREE"
+              );
+
+              if (sessions.length === 0) return null;
+
+              return (
+                <Card
+                  key={day}
+                  className="p-5 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border-2"
+                >
+                  <h4 className="font-bold text-lg mb-4 flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                    <Calendar className="h-5 w-5" />
+                    {day}
+                  </h4>
+                  <div className="space-y-3">
+                    {sessions.map((session, idx) => (
+                      <motion.div
+                        key={`${day}-${session.time}-${session.room}`}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                        className="flex flex-col gap-3 p-4 bg-white dark:bg-slate-950 rounded-lg border-l-4 border-blue-500 shadow-sm hover:shadow-md transition-shadow"
                       >
-                        <MapPin className="h-3 w-3 mr-1" />
-                        {session.room}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            ))}
-          </motion.div>
+                        <div className="flex flex-wrap items-center gap-3">
+                          <Badge
+                            variant="outline"
+                            className="text-sm font-semibold px-3 py-1"
+                          >
+                            <Clock className="h-4 w-4 mr-1.5" />
+                            {session.time}
+                          </Badge>
+                          <Badge
+                            className={`text-sm font-semibold px-3 py-1 ${
+                              session.room === "En Ligne"
+                                ? "bg-purple-600 hover:bg-purple-700"
+                                : "bg-blue-600"
+                            }`}
+                          >
+                            <MapPin className="h-4 w-4 mr-1.5" />
+                            {session.room === "En Ligne"
+                              ? "Home"
+                              : session.room}
+                          </Badge>
+                        </div>
+                        <p className="text-base font-medium text-foreground leading-relaxed">
+                          {session.course} @{" "}
+                          {session.room === "En Ligne" ? "Home" : session.room}
+                        </p>
+                      </motion.div>
+                    ))}
+                  </div>
+                </Card>
+              );
+            })}
+          </>
+        ) : (
+          <CalendarView schedule={schedule} orderedDays={orderedDays} />
         )}
-      </AnimatePresence>
+      </motion.div>
+    </div>
+  );
+}
+
+function CalendarView({
+  schedule,
+  orderedDays,
+}: Readonly<{
+  schedule: { [day: string]: ClassSession[] };
+  orderedDays: string[];
+}>) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {orderedDays.map((day) => {
+        const sessions = schedule[day].filter(
+          (session) =>
+            session.course.toUpperCase() !== "FREE" &&
+            session.course.toUpperCase() !== "NOT-FREE"
+        );
+
+        if (sessions.length === 0) return null;
+
+        return (
+          <Card
+            key={day}
+            className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border-2"
+          >
+            <h4 className="font-bold text-base mb-3 flex items-center gap-2 text-blue-600 dark:text-blue-400">
+              <Calendar className="h-4 w-4" />
+              {day.split(" ")[0]}
+            </h4>
+            <div className="space-y-2">
+              {sessions.map((session) => (
+                <div
+                  key={`${day}-${session.time}-${session.room}`}
+                  className="p-3 bg-white dark:bg-slate-950 rounded-lg border-l-4 border-blue-500 text-sm"
+                >
+                  <div className="font-semibold text-blue-600 dark:text-blue-400 mb-1">
+                    {session.time}
+                  </div>
+                  <div className="text-xs text-muted-foreground mb-1">
+                    {session.room === "En Ligne"
+                      ? "🏠 Home"
+                      : `📍 ${session.room}`}
+                  </div>
+                  <div className="text-xs font-medium">{session.course}</div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        );
+      })}
     </div>
   );
 }

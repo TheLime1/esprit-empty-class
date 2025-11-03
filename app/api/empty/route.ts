@@ -70,11 +70,20 @@ export async function GET(req: Request) {
         const group = schedules[groupKey];
         const events = group?.days?.[selectedDay] || [];
         for (const ev of events) {
+          const course = (ev?.course || "").trim();
           const room = (ev?.room || "").trim();
+          
+          // Skip FREE courses (room is available)
+          if (course.toUpperCase() === "FREE") continue;
+          
+          // Skip online courses
           if (!room || room.toLowerCase() === "en ligne") continue;
+          
           const { start, end } = eventRangeToMinutes(ev.time || "");
           if (start === null || end === null) continue;
-          if (qMinutes >= start && qMinutes <= end) {
+          // Check if query time falls within this time slot
+          // Use < end instead of <= end to avoid counting room as occupied at exact end time
+          if (qMinutes >= start && qMinutes < end) {
             occupied.add(room);
           }
         }

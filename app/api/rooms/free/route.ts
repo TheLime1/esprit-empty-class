@@ -75,7 +75,9 @@ export async function GET(req: NextRequest) {
         for (const ev of events) {
           const { start, end } = eventRangeToMinutes(ev.time || "");
           if (start === null || end === null) continue;
-          if (qMinutes < start || qMinutes > end) continue;
+          // Check if query time falls within this time slot
+          // Use < end instead of <= end to avoid counting room as occupied at exact end time
+          if (qMinutes < start || qMinutes >= end) continue;
           
           const course = (ev?.course || "").trim();
           const room = (ev?.room || "").trim();

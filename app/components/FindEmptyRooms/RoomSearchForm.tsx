@@ -118,7 +118,6 @@ export function RoomSearchForm({
                 <SelectItem value="I">Bloc I</SelectItem>
                 <SelectItem value="J">Bloc J</SelectItem>
                 <SelectItem value="K">Bloc K</SelectItem>
-                <SelectItem value="L">Bloc L</SelectItem>
                 <SelectItem value="M">Bloc M</SelectItem>
               </SelectContent>
             </Select>

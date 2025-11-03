@@ -42,26 +42,14 @@ export function WhereIsMyClass() {
   const [result, setResult] = useState<ClassLocation | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string>("current");
-  const [selectedDay, setSelectedDay] = useState<string>("today");
 
-  const handleSearch = async (
-    classCode: string,
-    time?: string,
-    day?: string
-  ) => {
+  const handleSearch = async (classCode: string) => {
     setLoading(true);
     setError(null);
     setResult(null);
 
     try {
-      let url = `/api/classes/${encodeURIComponent(classCode)}/location`;
-      const params = new URLSearchParams();
-      // Only add params if they're not the default "current" or "today"
-      if (time && time !== "current") params.append("time", time);
-      if (day && day !== "today") params.append("day", day);
-      if (params.toString()) url += `?${params.toString()}`;
-
+      const url = `/api/classes/${encodeURIComponent(classCode)}/location`;
       const res = await fetch(url);
       const data = await res.json();
 
@@ -77,30 +65,9 @@ export function WhereIsMyClass() {
     }
   };
 
-  const handleTimeChange = (time: string) => {
-    setSelectedTime(time);
-    if (result?.classCode) {
-      handleSearch(result.classCode, time, selectedDay);
-    }
-  };
-
-  const handleDayChange = (day: string) => {
-    setSelectedDay(day);
-    if (result?.classCode) {
-      handleSearch(result.classCode, selectedTime, day);
-    }
-  };
-
   return (
     <div>
-      <ClassSearchForm
-        onSearch={handleSearch}
-        loading={loading}
-        onTimeChange={handleTimeChange}
-        onDayChange={handleDayChange}
-        selectedTime={selectedTime}
-        selectedDay={selectedDay}
-      />
+      <ClassSearchForm onSearch={handleSearch} loading={loading} />
 
       {loading && <ClassResultSkeleton />}
 

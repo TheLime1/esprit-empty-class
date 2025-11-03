@@ -40,8 +40,19 @@ export default function Home() {
         </Card>
 
         {/* Footer */}
-        <footer className="text-center mt-4 sm:mt-6 md:mt-8 text-xs sm:text-sm text-muted-foreground px-2">
+        <footer className="text-center mt-4 sm:mt-6 md:mt-8 text-xs sm:text-sm text-muted-foreground px-2 space-y-2">
           <p>Data updates weekly • Academic Year 2025/2026</p>
+          <p className="flex items-center justify-center gap-2">
+            Made with 🍋 by{" "}
+            <a
+              href="https://github.com/TheLime1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold hover:text-foreground transition-colors underline"
+            >
+              Aymen Hmani (TheLime1)
+            </a>
+          </p>
         </footer>
       </main>
     </div>
