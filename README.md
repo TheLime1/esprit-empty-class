@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏫 ESPRIT Empty Class Finder
 
-## Getting Started
+A modern Next.js web application to help ESPRIT students find empty classrooms and locate their classes easily.
 
-First, run the development server:
+## ✨ Features
+
+- 🔍 **Where Is My Class**: Search for your class location and view weekly schedules
+- 🏠 **Find Empty Rooms**: Discover available classrooms by day, time, and building
+- 📅 **Weekly Timetable**: View your class schedule in list or calendar format
+- 🌙 **Dark Mode**: Full dark mode support
+- 📱 **Responsive Design**: Works seamlessly on all devices
+- 🎨 **Modern UI**: Beautiful gradients and smooth animations
+
+## 🚀 Quick Start
+
+### Development
+
+First, install dependencies:
+
+```bash
+npm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Production Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## 📦 Deploy to Vercel
 
-To learn more about Next.js, take a look at the following resources:
+The easiest way to deploy this app is using [Vercel](https://vercel.com):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/TheLime1/esprit-empty-class)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Manual Deployment Steps
 
-## Deploy on Vercel
+1. Push your code to GitHub (already done ✅)
+2. Go to [vercel.com](https://vercel.com) and sign in with GitHub
+3. Click "Add New Project"
+4. Import your `esprit-empty-class` repository
+5. Vercel will auto-detect Next.js settings
+6. Click "Deploy"
+7. Your app will be live in ~2 minutes! 🎉
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+That's it! Vercel will automatically:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Build your app
+- Deploy it to a global CDN
+- Provide a free `.vercel.app` domain
+- Set up automatic deployments on every push to main
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 16 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui + Radix UI
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
+
+## 👨‍💻 Made with 🍋 by Aymen Hmani (TheLime1)
+
+[GitHub](https://github.com/TheLime1)
