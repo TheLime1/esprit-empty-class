@@ -45,6 +45,112 @@ function eventRangeToMinutes(range: string) {
   return { start: null, end: null };
 }
 
+/**
+ * Normalize class code for flexible searching.
+ * Handles aliases like "4erp1" or "4bi1" matching "4ERP-BI1"
+ */
+function findMatchingClassName(searchCode: string, schedules: ScheduleData): string | null {
+  const upperSearch = searchCode.toUpperCase();
+  
+  console.log(`\n[SEARCH DEBUG] Searching for: "${searchCode}" (uppercase: "${upperSearch}")`);
+  
+  // Direct match first
+  if (schedules[upperSearch]) {
+    console.log(`[SEARCH DEBUG] ✓ Direct match found: ${upperSearch}`);
+    return upperSearch;
+  }
+  
+  // Normalize search (remove special chars)
+  const normalizedSearch = upperSearch.replaceAll(/[^A-Z0-9]/g, '');
+  
+  // Validate: search must contain at least one digit
+  if (!/\d/.test(normalizedSearch)) {
+    console.log(`[SEARCH DEBUG] ✗ Search contains no numbers, rejecting`);
+    return null;
+  }
+  
+  console.log(`[SEARCH DEBUG] Normalized search: "${normalizedSearch}"`);
+  
+  // Try flexible matching for complex class names
+  // Priority order:
+  // 1. Exact normalized match (e.g., "4ERPBI3" → "4ERP-BI3")
+  // 2. Flexible match for ERP-BI style (e.g., "4bi3" → "4ERP-BI3", "4erp3" → "4ERP-BI3")
+  
+  for (const className of Object.keys(schedules)) {
+    const normalizedClass = className.replaceAll(/[^A-Z0-9]/g, '');
+    
+    console.log(`[SEARCH DEBUG] Checking class: "${className}" (normalized: "${normalizedClass}")`);
+    
+    // 1. EXACT normalized match (highest priority)
+    if (normalizedClass === normalizedSearch) {
+      console.log(`[SEARCH DEBUG]   ✓ EXACT normalized match!`);
+      return className;
+    }
+  }
+  
+  // 2. Flexible matching for classes with dashes/complex names
+  // Example: "4bi3" should match "4ERP-BI3", "4erp3" should match "4ERP-BI3"
+  // Strategy: Match if search contains a substring of letters that appears in class
+  // AND the final numbers match exactly
+  
+  console.log(`[SEARCH DEBUG] No exact match, trying flexible matching for complex names...`);
+  
+  // Extract the trailing number from search (e.g., "4BI3" → "3", "4ERP1" → "1")
+  const searchTrailingNum = normalizedSearch.match(/\d+$/)?.[0];
+  
+  if (!searchTrailingNum) {
+    console.log(`[SEARCH DEBUG] ✗ No trailing number in search`);
+    return null;
+  }
+  
+  console.log(`[SEARCH DEBUG] Search trailing number: "${searchTrailingNum}"`);
+  
+  for (const className of Object.keys(schedules)) {
+    const normalizedClass = className.replaceAll(/[^A-Z0-9]/g, '');
+    
+    // Extract trailing number from class name
+    const classTrailingNum = normalizedClass.match(/\d+$/)?.[0];
+    
+    if (!classTrailingNum) {
+      continue;
+    }
+    
+    // Numbers must match EXACTLY (no substring matching)
+    if (classTrailingNum !== searchTrailingNum) {
+      continue;
+    }
+    
+    console.log(`[SEARCH DEBUG] Class "${className}" has matching trailing number "${classTrailingNum}"`);
+    
+    // Extract the leading digit(s) and middle letters
+    // e.g., "4ERPBI3" → leading: "4", letters: "ERPBI"
+    const searchLeading = normalizedSearch.match(/^(\d+)/)?.[0];
+    const classLeading = normalizedClass.match(/^(\d+)/)?.[0];
+    
+    // Leading numbers must match
+    if (searchLeading !== classLeading) {
+      console.log(`[SEARCH DEBUG]   Leading numbers don't match: "${searchLeading}" vs "${classLeading}"`);
+      continue;
+    }
+    
+    // Get the middle letters (between leading and trailing numbers)
+    const searchMiddle = normalizedSearch.slice(searchLeading?.length || 0, -(searchTrailingNum.length));
+    const classMiddle = normalizedClass.slice(classLeading?.length || 0, -(classTrailingNum.length));
+    
+    console.log(`[SEARCH DEBUG]   Comparing middle letters: search="${searchMiddle}" vs class="${classMiddle}"`);
+    
+    // For flexible matching: search letters should be a substring of class letters
+    // OR class letters should contain all search letters (for "4BI3" → "4ERP-BI3")
+    if (classMiddle.includes(searchMiddle)) {
+      console.log(`[SEARCH DEBUG]   ✓ FLEXIBLE MATCH: "${searchMiddle}" found in "${classMiddle}"`);
+      return className;
+    }
+  }
+  
+  console.log(`[SEARCH DEBUG] ✗ No match found`);
+  return null;
+}
+
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ classCode: string }> }
@@ -61,15 +167,19 @@ export async function GET(
     const raw = await fs.promises.readFile(dataPath, "utf-8");
     const schedules: ScheduleData = JSON.parse(raw);
 
-    // Find the class in the schedules
-    const classSchedule = schedules[classCode.toUpperCase()];
+    // Find the class in the schedules using flexible matching
+    const matchedClassName = findMatchingClassName(classCode, schedules);
+    const classSchedule = matchedClassName ? schedules[matchedClassName] : null;
 
-    if (!classSchedule) {
+    if (!classSchedule || !matchedClassName) {
       return NextResponse.json({
         classCode,
         status: "no_schedule",
       });
     }
+    
+    // Use the matched class name for the response
+    const resolvedClassCode = matchedClassName;
 
     // Build full schedule for the response (organized by day)
     const fullSchedule: { [day: string]: TimeSlot[] } = {};
@@ -133,7 +243,7 @@ export async function GET(
     if (currentSession) {
       const { start, end } = eventRangeToMinutes(currentSession.time);
       return NextResponse.json({
-        classCode,
+        classCode: resolvedClassCode,
         status: "in_session",
         room: {
           roomId: currentSession.room,
@@ -235,7 +345,7 @@ export async function GET(
     }
 
     return NextResponse.json({
-      classCode,
+      classCode: resolvedClassCode,
       status: "not_in_session",
       nextSession,
       fullSchedule,
