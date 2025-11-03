@@ -97,7 +97,12 @@ class ScheduleToJSON:
                     # Add FREE slots for gaps in schedule
                     courses_with_free = self._add_free_slots(
                         courses, class_name)
-                    self.schedules[class_name]['days'][day_key] = courses_with_free
+
+                    # Fill in missing morning/afternoon slots as FREE
+                    courses_complete = self._fill_empty_time_slots(
+                        courses_with_free, class_name)
+
+                    self.schedules[class_name]['days'][day_key] = courses_complete
 
         print(f"Analysis completed! {len(self.schedules)} classes found.")
         return self.schedules
@@ -116,8 +121,13 @@ class ScheduleToJSON:
 
             # Clean course name: remove dates and years
             course_name = re.sub(r'\d{2}/\d{2}/\d{4}', '', course_name)
+            # Remove year at the beginning (e.g., "2025 Course Name" -> "Course Name")
             course_name = re.sub(r'^\d{4}\s+', '', course_name)
+            # Remove year in the middle (e.g., "Course 2025 Name" -> "Course Name")
             course_name = re.sub(r'\s+\d{4}\s+', ' ', course_name)
+            # Remove year at the end (e.g., "Course Name 2025" -> "Course Name")
+            course_name = re.sub(r'\s+\d{4}$', '', course_name)
+            # Normalize whitespace
             course_name = re.sub(r'\s+', ' ', course_name).strip()
 
             if course_name.upper() == 'PAUSE' or not course_name:
@@ -130,43 +140,30 @@ class ScheduleToJSON:
                 self.class_rooms[class_name][location] = 0
             self.class_rooms[class_name][location] += 1
 
-            # Determine time - look for the closest time BEFORE the course
+            # Determine time for this course
+            # In the PDF:
+            # - Morning courses (09H:00-12H:15) don't have explicit times in cells (times are in header)
+            # - Afternoon courses have explicit times above the course name (e.g., "13H:30 - 16H:45")
             text_before = day_section[:match.start()]
 
-            # Find the last (closest) time occurrence before the course
-            # Try format with dash first: "09H:00 - 10H:30"
-            time_matches = list(re.finditer(
-                r'(\d{2}H:\d{2}\s*-\s*\d{2}H:\d{2})', text_before))
+            # Look for explicit time range with dash (afternoon/special courses have this)
+            # Search in reasonable context before the course
+            context = text_before[-200:] if len(
+                text_before) > 200 else text_before
+            time_range_pattern = r'(\d{2}H:\d{2})\s*-\s*(\d{2}H:\d{2})'
+            time_match = re.search(time_range_pattern, context)
 
-            # Also try format without dash: "09H:00 10H:30"
-            if not time_matches:
-                time_matches = list(re.finditer(
-                    r'(\d{2}H:\d{2}\s+\d{2}H:\d{2})', text_before))
-
-            if time_matches:
-                # Use the last match (closest to the course)
-                matched_time = time_matches[-1].group(1)
-                # Normalize: ensure dash format and no extra spaces
-                matched_time = re.sub(
-                    r'(\d{2}H:\d{2})\s+(\d{2}H:\d{2})', r'\1-\2', matched_time)
-                matched_time = matched_time.replace(' ', '')
+            if time_match:
+                # Found explicit time range (e.g., "13H:30 - 16H:45" or "13H:45 - 17H:00")
+                start_time = time_match.group(1)
+                end_time = time_match.group(2)
+                matched_time = f"{start_time}-{end_time}"
             else:
-                # Fallback: determine time block based on position
-                # Standard time blocks: 09H:00-10H:30, 10H:45-12H:15, 13H:30-15H:00, 15H:15-16H:45
-                position = match.start()
-                text_length = len(day_section)
-                relative_pos = position / text_length
+                # No explicit time found - this is a morning course
+                # Morning courses span the morning blocks: 09H:00-12H:15
+                matched_time = "09H:00-12H:15"
 
-                if relative_pos < 0.25:
-                    matched_time = "09H:00-10H:30"
-                elif relative_pos < 0.5:
-                    matched_time = "10H:45-12H:15"
-                elif relative_pos < 0.75:
-                    matched_time = "13H:30-15H:00"
-                else:
-                    matched_time = "15H:15-16H:45"
-
-            # Add course - allow duplicates as they may have different times
+            # Add course
             courses.append({
                 'time': matched_time,
                 'course': course_name,
@@ -184,50 +181,42 @@ class ScheduleToJSON:
 
             # Clean course name
             course_name = re.sub(r'\d{2}/\d{2}/\d{4}', '', course_name)
+            # Remove year at the beginning (e.g., "2025 Course Name" -> "Course Name")
             course_name = re.sub(r'^\d{4}\s+', '', course_name)
+            # Remove year in the middle (e.g., "Course 2025 Name" -> "Course Name")
             course_name = re.sub(r'\s+\d{4}\s+', ' ', course_name)
+            # Remove year at the end (e.g., "Course Name 2025" -> "Course Name")
+            course_name = re.sub(r'\s+\d{4}$', '', course_name)
+            # Normalize whitespace
             course_name = re.sub(r'\s+', ' ', course_name).strip()
 
             if course_name.upper() == 'PAUSE' or not course_name:
                 continue
 
-            # Determine time - look for the closest time BEFORE the course
+            # Determine time for this course
+            # In the PDF:
+            # - Morning courses (09H:00-12H:15) don't have explicit times in cells (times are in header)
+            # - Afternoon courses have explicit times above the course name (e.g., "13H:30 - 16H:45")
             text_before = day_section[:match.start()]
 
-            # Find the last (closest) time occurrence before the course
-            # Try format with dash first: "09H:00 - 10H:30"
-            time_matches = list(re.finditer(
-                r'(\d{2}H:\d{2}\s*-\s*\d{2}H:\d{2})', text_before))
+            # Look for explicit time range with dash (afternoon/special courses have this)
+            # Search in reasonable context before the course
+            context = text_before[-200:] if len(
+                text_before) > 200 else text_before
+            time_range_pattern = r'(\d{2}H:\d{2})\s*-\s*(\d{2}H:\d{2})'
+            time_match = re.search(time_range_pattern, context)
 
-            # Also try format without dash: "09H:00 10H:30"
-            if not time_matches:
-                time_matches = list(re.finditer(
-                    r'(\d{2}H:\d{2}\s+\d{2}H:\d{2})', text_before))
-
-            if time_matches:
-                # Use the last match (closest to the course)
-                matched_time = time_matches[-1].group(1)
-                # Normalize: ensure dash format and no extra spaces
-                matched_time = re.sub(
-                    r'(\d{2}H:\d{2})\s+(\d{2}H:\d{2})', r'\1-\2', matched_time)
-                matched_time = matched_time.replace(' ', '')
+            if time_match:
+                # Found explicit time range (e.g., "13H:30 - 16H:45" or "13H:45 - 17H:00")
+                start_time = time_match.group(1)
+                end_time = time_match.group(2)
+                matched_time = f"{start_time}-{end_time}"
             else:
-                # Fallback: determine time block based on position
-                # Standard time blocks: 09H:00-10H:30, 10H:45-12H:15, 13H:30-15H:00, 15H:15-16H:45
-                position = match.start()
-                text_length = len(day_section)
-                relative_pos = position / text_length
+                # No explicit time found - this is a morning course
+                # Morning courses span the morning blocks: 09H:00-12H:15
+                matched_time = "09H:00-12H:15"
 
-                if relative_pos < 0.25:
-                    matched_time = "09H:00-10H:30"
-                elif relative_pos < 0.5:
-                    matched_time = "10H:45-12H:15"
-                elif relative_pos < 0.75:
-                    matched_time = "13H:30-15H:00"
-                else:
-                    matched_time = "15H:15-16H:45"
-
-            # Add course - allow duplicates as they may have different times
+            # Add course
             courses.append({
                 'time': matched_time,
                 'course': course_name,
@@ -250,9 +239,10 @@ class ScheduleToJSON:
         courses_sorted = sorted(courses, key=lambda c: self._time_to_minutes(
             re.findall(TIME_PATTERN, c['time'])[0]))
 
-        # Insert FREE slots
+        # Insert FREE slots only for gaps between courses
+        # Don't add FREE before 09H:00 or after 16H:45 (end of last class slot)
         result = []
-        last_end_time = "08H:30"
+        last_end_time = None
 
         for course in courses_sorted:
             time_parts = re.findall(TIME_PATTERN, course['time'])
@@ -260,22 +250,84 @@ class ScheduleToJSON:
                 start_time = time_parts[0]
                 end_time = time_parts[1]
 
-                # Check if there's a gap
-                if self._time_to_minutes(start_time) > self._time_to_minutes(last_end_time):
-                    # Add FREE slot for the gap
-                    result.append({
-                        'time': f"{last_end_time} - {start_time}",
-                        'course': 'FREE',
-                        'room': primary_room
-                    })
+                # Only add FREE slot if there's a gap and we're within schedule hours
+                if last_end_time and self._time_to_minutes(start_time) > self._time_to_minutes(last_end_time):
+                    # Check if this gap is the lunch break (PAUSE period: ~12H:15 to ~13H:30)
+                    gap_start = self._time_to_minutes(last_end_time)
+                    gap_end = self._time_to_minutes(start_time)
+
+                    # Standard lunch break is from 12H:15 to 13H:30 (735 to 810 minutes)
+                    # Don't add FREE slot if the gap overlaps with lunch break
+                    is_lunch_break = (gap_start >= 720 and gap_start <= 750) and (
+                        gap_end >= 800 and gap_end <= 820)
+
+                    if not is_lunch_break:
+                        # Add FREE slot for the gap (not lunch break)
+                        result.append({
+                            'time': f"{last_end_time} - {start_time}",
+                            'course': 'FREE',
+                            'room': primary_room
+                        })
 
                 result.append(course)
                 last_end_time = end_time
 
-        # Check if there's time after the last course
-        if last_end_time and self._time_to_minutes(last_end_time) < self._time_to_minutes("18H:00"):
+        return result
+
+    def _fill_empty_time_slots(self, courses, class_name):
+        """Fill in FREE slots for missing morning or afternoon sessions"""
+        if not courses:
+            # Completely empty day - add both morning and afternoon as FREE
+            primary_room = self._get_primary_room(class_name)
+            return [
+                {
+                    'time': '09H:00-12H:15',
+                    'course': 'FREE',
+                    'room': primary_room
+                },
+                {
+                    'time': '13H:30-16H:45',
+                    'course': 'FREE',
+                    'room': primary_room
+                }
+            ]
+
+        TIME_PATTERN = r'(\d{2}H:\d{2})'
+        primary_room = self._get_primary_room(class_name)
+
+        # Check what time slots are covered
+        has_morning = False
+        has_afternoon = False
+
+        for course in courses:
+            time_parts = re.findall(TIME_PATTERN, course['time'])
+            if len(time_parts) >= 2:
+                start_minutes = self._time_to_minutes(time_parts[0])
+                end_minutes = self._time_to_minutes(time_parts[1])
+
+                # Morning session is roughly 09H:00 to 12H:15 (540 to 735 minutes)
+                if start_minutes < 750:  # Starts before 12H:30
+                    has_morning = True
+
+                # Afternoon session is roughly 13H:30 to 17H:00 (810 to 1020 minutes)
+                if end_minutes > 800:  # Ends after 13H:20
+                    has_afternoon = True
+
+        # Add missing sessions as FREE
+        result = list(courses)
+
+        if not has_morning:
+            # Add morning FREE slot at the beginning
+            result.insert(0, {
+                'time': '09H:00-12H:15',
+                'course': 'FREE',
+                'room': primary_room
+            })
+
+        if not has_afternoon:
+            # Add afternoon FREE slot at the end
             result.append({
-                'time': f"{last_end_time} - 18H:00",
+                'time': '13H:30-16H:45',
                 'course': 'FREE',
                 'room': primary_room
             })
