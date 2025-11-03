@@ -109,7 +109,8 @@ export function ClassResults({ result }: Readonly<ClassResultsProps>) {
             We couldn&apos;t find any schedule for class{" "}
             <span className="font-bold text-foreground">
               {result.classCode}
-            </span>.
+            </span>
+            .
           </p>
         </Card>
       </motion.div>

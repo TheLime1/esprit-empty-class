@@ -29,8 +29,22 @@ export default function Home() {
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
             ESPRIT Classroom Finder
           </h1>
-          <p className="text-muted-foreground text-xs sm:text-sm md:text-base px-2">
-            Find empty classrooms and locate your classes instantly
+          <p className="text-sm sm:text-base md:text-lg px-4 leading-relaxed">
+            <span className="font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Make sure to join ESPRIT Discord server
+            </span>{" "}
+            <span className="text-muted-foreground">
+              to get free drives and courses and get notified about events, PFEs
+              and internships
+            </span>{" "}
+            <a
+              href="https://discord.gg/P67qvJp6fW"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors underline decoration-2 underline-offset-2"
+            >
+              Join Discord
+            </a>
           </p>
         </div>
 
