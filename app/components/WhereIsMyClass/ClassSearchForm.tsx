@@ -55,12 +55,16 @@ export function ClassSearchForm({
               {loading ? "Finding..." : "Find"}
             </Button>
           </div>
-          
+
           {/* Quick Access */}
           <div className="pt-2 border-t">
             <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="text-xs text-muted-foreground">Quick Access:</span>
-              <span className="text-[10px] text-muted-foreground/60 italic">(the developer is so lazy)</span>
+              <span className="text-xs text-muted-foreground">
+                Quick Access:
+              </span>
+              <span className="text-[10px] text-muted-foreground/60 italic">
+                (the developer is so lazy)
+              </span>
             </div>
             <Button
               type="button"
