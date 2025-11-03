@@ -53,6 +53,7 @@ export function FindEmptyRooms() {
       const timeSlots = [
         { start: "09:00", end: "12:15" },
         { start: "13:30", end: "16:45" },
+        { start: "13:45", end: "17:00" }, // Friday afternoon slot
       ];
       const selectedSlot =
         timeSlots.find((slot) => slot.start === params.time) || timeSlots[0];

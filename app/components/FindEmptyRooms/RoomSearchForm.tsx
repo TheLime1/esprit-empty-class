@@ -39,6 +39,24 @@ export function RoomSearchForm({
     setDay(availableDays[0]);
   }
 
+  // Check if selected day is Friday (Vendredi) for different time slots
+  const isFriday = day.startsWith("Vendredi");
+
+  // Auto-adjust time when switching between Friday and non-Friday
+  // If switching to Friday and time is 13:30, change to 13:45
+  // If switching from Friday and time is 13:45, change to 13:30
+  const handleDayChange = (newDay: string) => {
+    const newIsFriday = newDay.startsWith("Vendredi");
+
+    if (newIsFriday && time === "13:30") {
+      setTime("13:45"); // Friday afternoon starts at 13:45
+    } else if (!newIsFriday && time === "13:45") {
+      setTime("13:30"); // Normal days afternoon starts at 13:30
+    }
+
+    setDay(newDay);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch({
@@ -47,9 +65,6 @@ export function RoomSearchForm({
       bloc: bloc === "all" ? undefined : bloc,
     });
   };
-
-  // Check if selected day is Friday (Vendredi) for different time slots
-  const isFriday = day.startsWith("Vendredi");
 
   const availableTimes = isFriday
     ? [
@@ -72,7 +87,7 @@ export function RoomSearchForm({
               <Calendar className="h-4 w-4" />
               Day
             </Label>
-            <Select value={day} onValueChange={setDay}>
+            <Select value={day} onValueChange={handleDayChange}>
               <SelectTrigger id="day-select">
                 <SelectValue placeholder="Select day" />
               </SelectTrigger>
