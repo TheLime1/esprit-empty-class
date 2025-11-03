@@ -2510,7 +2510,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "NOT-FREE",
           "room": "C24"
         }
       ],
@@ -6715,12 +6715,12 @@
       "Vendredi 07/11/2025": [
         {
           "time": "09H:00-12H:15",
-          "course": "FREE",
+          "course": "NOT-FREE",
           "room": "C06"
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "NOT-FREE",
           "room": "C06"
         }
       ],
@@ -13639,7 +13639,1809 @@
       "primary_room": "C04"
     }
   },
-  "4": {
+  "4ARCTIC1": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Machine Learning Appliqué",
+          "room": "C21"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Sécurité informatique",
+          "room": "C21"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "C21"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Initiation au Cloud",
+          "room": "D04"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "C21"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "C21"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Système d'exploitation avancé 2",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Administration des serveurs UNIX",
+          "room": "En Ligne"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Gestion de projet",
+          "room": "C06"
+        },
+        {
+          "time": "12H:15 - 13H:45",
+          "course": "FREE",
+          "room": "C21"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Architecture des SI I",
+          "room": "C06"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "C21"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "C21"
+    }
+  },
+  "4ARCTIC10": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Sécurité informatique",
+          "room": "C22"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Système d'exploitation avancé 2",
+          "room": "C22"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Gestion de projet",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Architecture des SI I",
+          "room": "En Ligne"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Administration des serveurs UNIX",
+          "room": "C22"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "C22"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "C22"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Machine Learning Appliqué",
+          "room": "C22"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Initiation au Cloud",
+          "room": "C22"
+        },
+        {
+          "time": "12H:15 - 13H:45",
+          "course": "FREE",
+          "room": "C22"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "C24"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "C22"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "C22"
+    }
+  },
+  "4ARCTIC11": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Administration des serveurs UNIX",
+          "room": "D01"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Sécurité informatique",
+          "room": "D01"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Architecture des SI I",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Initiation au Cloud",
+          "room": "En Ligne"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "D01"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "D01"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Gestion de projet",
+          "room": "D01"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Système d'exploitation avancé 2",
+          "room": "D01"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Machine Learning Appliqué",
+          "room": "D01"
+        },
+        {
+          "time": "12H:15 - 13H:45",
+          "course": "FREE",
+          "room": "D01"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "D01"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "D01"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "D01"
+    }
+  },
+  "4ARCTIC12": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Gestion de projet",
+          "room": "D02"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Architecture des SI I",
+          "room": "D06"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Administration des serveurs UNIX",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Sécurité informatique",
+          "room": "En Ligne"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Système d'exploitation avancé 2",
+          "room": "D02"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "D02"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "D02"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "D02"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Machine Learning Appliqué",
+          "room": "D02"
+        },
+        {
+          "time": "12H:15 - 13H:45",
+          "course": "FREE",
+          "room": "D02"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Initiation au Cloud",
+          "room": "D02"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "D02"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "D02"
+    }
+  },
+  "4ARCTIC13": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Système d'exploitation avancé 2",
+          "room": "D03"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Administration des serveurs UNIX",
+          "room": "D03"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "D03"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Gestion de projet",
+          "room": "D03"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "D03"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "D03"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Machine Learning Appliqué",
+          "room": "D03"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Architecture des SI I",
+          "room": "D03"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Sécurité informatique",
+          "room": "D03"
+        },
+        {
+          "time": "12H:15 - 13H:45",
+          "course": "FREE",
+          "room": "D03"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Initiation au Cloud",
+          "room": "D02"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "D03"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "D03"
+    }
+  },
+  "4ARCTIC2": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "D04"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Machine Learning Appliqué",
+          "room": "D04"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Gestion de projet",
+          "room": "D04"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Initiation au Cloud",
+          "room": "D04"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "D04"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "D04"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Administration des serveurs UNIX",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Système d'exploitation avancé 2",
+          "room": "En Ligne"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Architecture des SI I",
+          "room": "D04"
+        },
+        {
+          "time": "12H:15 - 13H:45",
+          "course": "FREE",
+          "room": "D04"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Sécurité informatique",
+          "room": "D04"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "D04"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "D04"
+    }
+  },
+  "4ARCTIC3": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Sécurité informatique",
+          "room": "D05"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Système d'exploitation avancé 2",
+          "room": "D05"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Machine Learning Appliqué",
+          "room": "D05"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Initiation au Cloud",
+          "room": "D04"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "D05"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "D05"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Gestion de projet",
+          "room": "D05"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "D04"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Administration des serveurs UNIX",
+          "room": "D05"
+        },
+        {
+          "time": "12H:15 - 13H:45",
+          "course": "FREE",
+          "room": "D05"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Architecture des SI I",
+          "room": "D05"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "D05"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "D05"
+    }
+  },
+  "4ARCTIC4": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Gestion de projet",
+          "room": "D06"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "NOT-FREE",
+          "room": "D06"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Système d'exploitation avancé 2",
+          "room": "D06"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Machine Learning Appliqué",
+          "room": "D06"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "D06"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "D06"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "D06"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Architecture des SI I",
+          "room": "D06"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Sécurité informatique",
+          "room": "En Ligne"
+        },
+        {
+          "time": "12H:15 - 13H:45",
+          "course": "FREE",
+          "room": "D06"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Administration des serveurs UNIX",
+          "room": "En Ligne"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "D06"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "D06"
+    }
+  },
+  "4ARCTIC5": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Sécurité informatique",
+          "room": "D07"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "D02"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Gestion de projet",
+          "room": "D07"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Administration des serveurs UNIX",
+          "room": "D07"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Système d'exploitation avancé 2",
+          "room": "D07"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "D07"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "D07"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Machine Learning Appliqué",
+          "room": "D07"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Architecture des SI I",
+          "room": "D07"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "D07"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "D07"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "D07"
+    }
+  },
+  "4ARCTIC6": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Machine Learning Appliqué",
+          "room": "G214"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G214"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Architecture des SI I",
+          "room": "G214"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Gestion de projet",
+          "room": "G214"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "G214"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G214"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "G214"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Sécurité informatique",
+          "room": "G214"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Administration des serveurs UNIX",
+          "room": "En Ligne"
+        },
+        {
+          "time": "12H:15 - 13H:45",
+          "course": "FREE",
+          "room": "G214"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Système d'exploitation avancé 2",
+          "room": "En Ligne"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G214"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "G214"
+    }
+  },
+  "4ARCTIC7": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Système d'exploitation avancé 2",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Sécurité informatique",
+          "room": "En Ligne"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Initiation au Cloud",
+          "room": "E06"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "G216"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "G216"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G216"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Gestion de projet",
+          "room": "G216"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Administration des serveurs UNIX",
+          "room": "G216"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Machine Learning Appliqué",
+          "room": "G216"
+        },
+        {
+          "time": "12H:15 - 13H:45",
+          "course": "FREE",
+          "room": "G216"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Architecture des SI I",
+          "room": "G216"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G216"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "G216"
+    }
+  },
+  "4ARCTIC8": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Gestion de projet",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Système d'exploitation avancé 2",
+          "room": "En Ligne"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Sécurité informatique",
+          "room": "G411"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Administration des serveurs UNIX",
+          "room": "G411"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Architecture des SI I",
+          "room": "G411"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G411"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "G411"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Initiation au Cloud",
+          "room": "G002"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "G411"
+        },
+        {
+          "time": "12H:15 - 13H:45",
+          "course": "FREE",
+          "room": "G411"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Machine Learning Appliqué",
+          "room": "G411"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G411"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "G411"
+    }
+  },
+  "4ARCTIC9": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Architecture des SI I",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Sécurité informatique",
+          "room": "En Ligne"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Gestion de projet",
+          "room": "G404"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Initiation au Cloud",
+          "room": "G008"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Administration des serveurs UNIX",
+          "room": "G404"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G404"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "G404"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "G404"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Machine Learning Appliqué",
+          "room": "G404"
+        },
+        {
+          "time": "12H:15 - 13H:45",
+          "course": "FREE",
+          "room": "G404"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Système d'exploitation avancé 2",
+          "room": "G404"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Projet d'intégration Cloud",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G404"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "G404"
+    }
+  },
+  "4ERP-BI1": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "NOT-FREE",
+          "room": "G006"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Informatique Décisionnelle",
+          "room": "G006"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Architecture Orientée Services \"SOA\"",
+          "room": "G006"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Informatique Décisionnelle",
+          "room": "G001"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Machine Learning Appliqué",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G006"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Innovation & Entrepreunariat_Atelier créatif",
+          "room": "G006"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Programmation linéaire",
+          "room": "G006"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "G006"
+        },
+        {
+          "time": "12H:15 - 13H:45",
+          "course": "FREE",
+          "room": "G006"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Architecture des SI II",
+          "room": "G006"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G006"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G006"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "G006"
+    }
+  },
+  "4ERP-BI2": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Architecture Orientée Services \"SOA\"",
+          "room": "G413"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Architecture des SI II",
+          "room": "G413"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Programmation linéaire",
+          "room": "G413"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Machine Learning Appliqué",
+          "room": "G413"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "G101"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G413"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Informatique Décisionnelle",
+          "room": "G413"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Innovation & Entrepreunariat_Atelier créatif",
+          "room": "G413"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Informatique Décisionnelle",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G413"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G413"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G413"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "G413"
+    }
+  },
+  "4ERP-BI3": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Architecture des SI II",
+          "room": "G114"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Informatique Décisionnelle",
+          "room": "G104"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Machine Learning Appliqué",
+          "room": "G114"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Innovation & Entrepreunariat_Atelier créatif",
+          "room": "G114"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "G114"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G114"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Informatique Décisionnelle",
+          "room": "G114"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Architecture Orientée Services \"SOA\"",
+          "room": "G114"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Programmation linéaire",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G114"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G114"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G114"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "G114"
+    }
+  },
+  "4ERP-BI4": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Architecture Orientée Services \"SOA\"",
+          "room": "G201"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Programmation linéaire",
+          "room": "G201"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Informatique Décisionnelle",
+          "room": "G201"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Informatique Décisionnelle",
+          "room": "G201"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Machine Learning Appliqué",
+          "room": "G201"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G201"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Architecture des SI II",
+          "room": "D04"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "G201"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Innovation & Entrepreunariat_Atelier créatif",
+          "room": "G201"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G201"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G201"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G201"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "G201"
+    }
+  },
+  "4ERP-BI5": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "G212"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Informatique Décisionnelle",
+          "room": "G212"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Innovation & Entrepreunariat_Atelier créatif",
+          "room": "G212"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Architecture Orientée Services \"SOA\"",
+          "room": "G212"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Machine Learning Appliqué",
+          "room": "G212"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G212"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Programmation linéaire",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G212"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Informatique Décisionnelle",
+          "room": "G212"
+        },
+        {
+          "time": "12H:15 - 13H:45",
+          "course": "FREE",
+          "room": "G212"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Architecture des SI II",
+          "room": "G212"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G212"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G212"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "G212"
+    }
+  },
+  "4ERP-BI6": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Machine Learning Appliqué",
+          "room": "G002"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "NOT-FREE",
+          "room": "G002"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Architecture Orientée Services \"SOA\"",
+          "room": "G002"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Innovation & Entrepreunariat_Atelier créatif",
+          "room": "G002"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Informatique Décisionnelle",
+          "room": "G002"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G002"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "G002"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Programmation linéaire",
+          "room": "G104"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Architecture des SI II",
+          "room": "G002"
+        },
+        {
+          "time": "12H:15 - 13H:45",
+          "course": "FREE",
+          "room": "G002"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Informatique Décisionnelle",
+          "room": "G002"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G002"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G002"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "G002"
+    }
+  },
+  "4ERP-BI7": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Innovation & Entrepreunariat_Atelier créatif",
+          "room": "G011"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Architecture des SI II",
+          "room": "G011"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Machine Learning Appliqué",
+          "room": "G011"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Programmation linéaire",
+          "room": "G011"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Informatique Décisionnelle",
+          "room": "G011"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G011"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "G011"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Informatique Décisionnelle",
+          "room": "G011"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Architecture Orientée Services \"SOA\"",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "NOT-FREE",
+          "room": "G011"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G011"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G011"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "G011"
+    }
+  },
+  "4ERP-BI8": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "NOT-FREE",
+          "room": "G012"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Innovation & Entrepreunariat_Atelier créatif",
+          "room": "G012"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "G012"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Architecture Orientée Services \"SOA\"",
+          "room": "G012"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Informatique Décisionnelle",
+          "room": "G012"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G012"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Architecture des SI II",
+          "room": "G012"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Informatique Décisionnelle",
+          "room": "G012"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Programmation linéaire",
+          "room": "En Ligne"
+        },
+        {
+          "time": "12H:15 - 13H:45",
+          "course": "FREE",
+          "room": "G012"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Machine Learning Appliqué",
+          "room": "En Ligne"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G012"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G012"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "G012"
+    }
+  },
+  "4ERP-BI9": {
     "days": {
       "Lundi 03/11/2025": [
         {
@@ -13674,7 +15476,7 @@
         {
           "time": "13H:30-16H:45",
           "course": "FREE",
-          "room": "D04"
+          "room": "G013"
         }
       ],
       "Jeudi 06/11/2025": [
@@ -13698,19 +15500,19 @@
         {
           "time": "13H:30-16H:45",
           "course": "FREE",
-          "room": "D04"
+          "room": "G013"
         }
       ],
       "Samedi 08/11/2025": [
         {
           "time": "09H:00-12H:15",
           "course": "FREE",
-          "room": "D04"
+          "room": "G013"
         },
         {
           "time": "13H:30-16H:45",
           "course": "FREE",
-          "room": "D04"
+          "room": "G013"
         }
       ]
     },
@@ -13718,7 +15520,7 @@
       "year": "2025/2026",
       "semester": "1",
       "period": "03/novembre - 08/novembre\nsamedi",
-      "primary_room": "D04"
+      "primary_room": "G013"
     }
   },
   "4DATA": {
@@ -16423,7 +18225,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "NOT-FREE",
           "room": "G006"
         }
       ],
@@ -20653,7 +22455,581 @@
       "primary_room": "G410"
     }
   },
-  "5ERP": {
+  "5ERP-BI1": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "SAP-BW",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Certification en Blockchain",
+          "room": "En Ligne"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "C-SDG",
+          "room": "En Ligne"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "AWS Fundamentals",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "Unknown"
+    }
+  },
+  "5ERP-BI2": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "C-SDG",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Certification en Blockchain",
+          "room": "En Ligne"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "SAP-BW",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "AWS Fundamentals",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "Unknown"
+    }
+  },
+  "5ERP-BI3": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Certification en Blockchain",
+          "room": "En Ligne"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "SAP-BW",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "C-SDG",
+          "room": "En Ligne"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "AWS Fundamentals",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "Unknown"
+    }
+  },
+  "5ERP-BI4": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Certification en Blockchain",
+          "room": "En Ligne"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "C-SDG",
+          "room": "En Ligne"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "SAP-BW",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "Unknown"
+    }
+  },
+  "5ERP-BI5": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "SAP-BW",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "C-SDG",
+          "room": "En Ligne"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "Certification en Blockchain",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "AWS Fundamentals",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "Unknown"
+    }
+  },
+  "5ERP-BI6": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Certification en Blockchain",
+          "room": "En Ligne"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "SAP-BW",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "C-SDG",
+          "room": "En Ligne"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "AWS Fundamentals",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "Unknown"
+    }
+  },
+  "5ERP-BI7": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "SAP-BW",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Certification en Blockchain",
+          "room": "En Ligne"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Samedi 08/11/2025": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "AWS Fundamentals",
+          "room": "En Ligne"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "Unknown"
+    }
+  },
+  "5ERP-BI8": {
     "days": {
       "Lundi 03/11/2025": [
         {

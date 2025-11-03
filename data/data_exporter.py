@@ -37,12 +37,14 @@ class ScheduleToJSON:
             if not page.strip():
                 continue
 
-            # Extract class name
-            class_match = re.search(r'Emploi du Temps\s+(\w+)', page)
+            # Extract class name (handles names with spaces like "4 ARCTIC9" and "4 ERP-BI1")
+            class_match = re.search(
+                r'Emploi du Temps\s+(.+?)(?:\n|Page|\Z)', page)
             if not class_match:
                 continue
 
-            class_name = class_match.group(1).strip()
+            # Remove spaces from class name (e.g., "4 ARCTIC9" -> "4ARCTIC9", "4 ERP-BI1" -> "4ERP-BI1")
+            class_name = class_match.group(1).strip().replace(' ', '')
 
             # Initialize schedule
             self.schedules[class_name] = {

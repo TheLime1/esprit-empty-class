@@ -45,6 +45,72 @@ function eventRangeToMinutes(range: string) {
   return { start: null, end: null };
 }
 
+/**
+ * Normalize class code for flexible searching.
+ * Handles aliases like "4erp1" or "4bi1" matching "4ERP-BI1"
+ */
+function findMatchingClassName(searchCode: string, schedules: ScheduleData): string | null {
+  const upperSearch = searchCode.toUpperCase();
+  
+  // Direct match first
+  if (schedules[upperSearch]) {
+    return upperSearch;
+  }
+  
+  // Try flexible matching for complex class names
+  // Example: "4erp1", "4bi1", or "4erp/bi1" should match "4ERP-BI1"
+  for (const className of Object.keys(schedules)) {
+    // Remove all non-alphanumeric characters for comparison
+    const normalizedClass = className.replaceAll(/[^A-Z0-9]/g, '');
+    const normalizedSearch = upperSearch.replaceAll(/[^A-Z0-9]/g, '');
+    
+    // Check if search is a substring of the class name (for partial matches)
+    if (normalizedClass.includes(normalizedSearch)) {
+      return className;
+    }
+    
+    // Special handling for "ERP/BI" pattern: "4erp/bi1" should match "4ERP-BI1"
+    // Convert "/" or "-" separated patterns to match the combined form
+    const searchWithSlashOrDash = upperSearch.replaceAll(/[/-]/g, '');
+    if (searchWithSlashOrDash !== upperSearch.replaceAll(/[^A-Z0-9]/g, '')) {
+      // User used / or - in search, try this alternate normalized form
+      if (normalizedClass.includes(searchWithSlashOrDash)) {
+        return className;
+      }
+    }
+    
+    // Special case for complex names like "4ERP-BI1"
+    // Accept: "4ERP1", "4BI1", etc.
+    // Strategy: if the search starts with the same digit and contains any significant letters+numbers
+    if (normalizedSearch.length >= 3 && normalizedClass.startsWith(normalizedSearch.charAt(0))) {
+      // Extract all letter sequences from both
+      const classLetters = normalizedClass.match(/[A-Z]+/g) || [];
+      const searchLetters = normalizedSearch.match(/[A-Z]+/g) || [];
+      const searchNumbers = normalizedSearch.match(/\d+/g) || [];
+      
+      // Check if search letters match any part of the class letters
+      for (const searchLetter of searchLetters) {
+        for (const classLetter of classLetters) {
+          // If search letters are contained in any class letter group
+          if (classLetter.includes(searchLetter) && searchNumbers.length > 0) {
+            // And the numbers match somewhere in the class
+            const classNumbers = normalizedClass.match(/\d+/g) || [];
+            for (const searchNum of searchNumbers) {
+              for (const classNum of classNumbers) {
+                if (classNum.includes(searchNum) || searchNum.includes(classNum)) {
+                  return className;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  return null;
+}
+
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ classCode: string }> }
@@ -61,15 +127,19 @@ export async function GET(
     const raw = await fs.promises.readFile(dataPath, "utf-8");
     const schedules: ScheduleData = JSON.parse(raw);
 
-    // Find the class in the schedules
-    const classSchedule = schedules[classCode.toUpperCase()];
+    // Find the class in the schedules using flexible matching
+    const matchedClassName = findMatchingClassName(classCode, schedules);
+    const classSchedule = matchedClassName ? schedules[matchedClassName] : null;
 
-    if (!classSchedule) {
+    if (!classSchedule || !matchedClassName) {
       return NextResponse.json({
         classCode,
         status: "no_schedule",
       });
     }
+    
+    // Use the matched class name for the response
+    const resolvedClassCode = matchedClassName;
 
     // Build full schedule for the response (organized by day)
     const fullSchedule: { [day: string]: TimeSlot[] } = {};
@@ -133,7 +203,7 @@ export async function GET(
     if (currentSession) {
       const { start, end } = eventRangeToMinutes(currentSession.time);
       return NextResponse.json({
-        classCode,
+        classCode: resolvedClassCode,
         status: "in_session",
         room: {
           roomId: currentSession.room,
@@ -235,7 +305,7 @@ export async function GET(
     }
 
     return NextResponse.json({
-      classCode,
+      classCode: resolvedClassCode,
       status: "not_in_session",
       nextSession,
       fullSchedule,
