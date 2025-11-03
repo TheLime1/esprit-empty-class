@@ -1,0 +1,128 @@
+{
+  "4SAE11": {
+    "days": {
+      "Lundi 03/11/2025": [
+        {
+          "time": "08H:30 - 09H:00",
+          "course": "FREE",
+          "room": "G308"
+        },
+        {
+          "time": "09H:00-10H:30",
+          "course": "Architecture des SI II",
+          "room": "G308"
+        },
+        {
+          "time": "10H:30 - 13H:30",
+          "course": "FREE",
+          "room": "G308"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Graphes et applications",
+          "room": "G308"
+        },
+        {
+          "time": "16H:45 - 18H:00",
+          "course": "FREE",
+          "room": "G308"
+        }
+      ],
+      "Mardi 04/11/2025": [
+        {
+          "time": "08H:30 - 09H:00",
+          "course": "FREE",
+          "room": "G308"
+        },
+        {
+          "time": "09H:00-10H:30",
+          "course": "Droit de la propriété intellectuelle",
+          "room": "G308"
+        },
+        {
+          "time": "10H:30 - 13H:30",
+          "course": "FREE",
+          "room": "G308"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Communication, Culture et Citoyenneté F4",
+          "room": "G308"
+        },
+        {
+          "time": "16H:45 - 18H:00",
+          "course": "FREE",
+          "room": "G308"
+        }
+      ],
+      "Mercredi 05/11/2025": [
+        {
+          "time": "08H:30 - 09H:00",
+          "course": "FREE",
+          "room": "G308"
+        },
+        {
+          "time": "09H:00-10H:30",
+          "course": "Initiation application côté client",
+          "room": "G308"
+        },
+        {
+          "time": "10H:30 - 18H:00",
+          "course": "FREE",
+          "room": "G308"
+        }
+      ],
+      "Jeudi 06/11/2025": [
+        {
+          "time": "08H:30 - 09H:00",
+          "course": "FREE",
+          "room": "G308"
+        },
+        {
+          "time": "09H:00-10H:30",
+          "course": "DEVOPS",
+          "room": "G308"
+        },
+        {
+          "time": "10H:30 - 13H:30",
+          "course": "FREE",
+          "room": "G308"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "Architecture Orientée Services \"SOA\"",
+          "room": "G308"
+        },
+        {
+          "time": "16H:45 - 18H:00",
+          "course": "FREE",
+          "room": "G308"
+        }
+      ],
+      "Vendredi 07/11/2025": [
+        {
+          "time": "08H:30 - 13H:45",
+          "course": "FREE",
+          "room": "G308"
+        },
+        {
+          "time": "13H:45-17H:00",
+          "course": "Advanced Big Data",
+          "room": "G308"
+        },
+        {
+          "time": "17H:00 - 18H:00",
+          "course": "FREE",
+          "room": "G308"
+        }
+      ],
+      "Samedi 08/11/2025": []
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "semester": "1",
+      "period": "03/novembre - 08/novembre\nsamedi",
+      "primary_room": "G308"
+    }
+  }
+}
