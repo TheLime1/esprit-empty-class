@@ -48,10 +48,18 @@ export function RoomSearchForm({
     });
   };
 
-  const availableTimes = [
-    { label: "9:00 AM - 12:15 PM", value: "09:00" },
-    { label: "1:30 PM - 4:45 PM", value: "13:30" },
-  ];
+  // Check if selected day is Friday (Vendredi) for different time slots
+  const isFriday = day.startsWith("Vendredi");
+
+  const availableTimes = isFriday
+    ? [
+        { label: "9:00 AM - 12:15 PM", value: "09:00" },
+        { label: "1:45 PM - 5:00 PM", value: "13:45" },
+      ]
+    : [
+        { label: "9:00 AM - 12:15 PM", value: "09:00" },
+        { label: "1:30 PM - 4:45 PM", value: "13:30" },
+      ];
 
   return (
     <Card className="p-3 sm:p-4 md:p-6 mb-4 sm:mb-6">

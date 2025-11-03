@@ -81,9 +81,10 @@ export async function GET(
       fullSchedule[dayName].push(...sessions);
     }
 
-    // Get current time or use query parameters
+    // Get current time in Tunisia timezone (Africa/Tunis = UTC+1)
     const now = new Date();
-    let currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const tunisiaTime = new Date(now.toLocaleString("en-US", { timeZone: "Africa/Tunis" }));
+    let currentMinutes = tunisiaTime.getHours() * 60 + tunisiaTime.getMinutes();
     let targetDayName = "";
     
     // If query parameters are provided, use them
@@ -98,9 +99,9 @@ export async function GET(
     } else if (queryDay) {
       targetDayName = queryDay;
     } else {
-      // Use current day
+      // Use current day in Tunisia timezone
       const daysOfWeek = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-      targetDayName = daysOfWeek[now.getDay()];
+      targetDayName = daysOfWeek[tunisiaTime.getDay()];
     }
     
     // Find session for the target day and time
@@ -154,9 +155,29 @@ export async function GET(
     // Look for the next session starting from the current time/day
     let nextSession: { day: string; start: string; end: string; room: string; course: string } | null = null;
     
-    // If we're in lunch break (12:15-13:30 = 735-810 minutes), skip to after lunch
-    const isLunchBreak = currentMinutes >= 735 && currentMinutes < 810;
-    const searchFromMinutes = isLunchBreak ? 810 : currentMinutes; // Start search from 13:30 if in lunch break
+    // Detect if we're in a lunch break by checking if there's a FREE period around current time
+    let isLunchBreak = false;
+    let lunchBreakEnd = 810; // Default 13:30
+    
+    for (const [dayKey, sessions] of Object.entries(classSchedule.days)) {
+      const dayMatches = targetDayName ? dayKey.startsWith(targetDayName) : false;
+      if (dayMatches) {
+        for (const session of sessions) {
+          if (session.course.toUpperCase() === "FREE") {
+            const { start, end } = eventRangeToMinutes(session.time);
+            if (start !== null && end !== null && currentMinutes >= start && currentMinutes < end) {
+              // We're in a FREE period (likely lunch break)
+              isLunchBreak = true;
+              lunchBreakEnd = end;
+              break;
+            }
+          }
+        }
+        if (isLunchBreak) break;
+      }
+    }
+    
+    const searchFromMinutes = isLunchBreak ? lunchBreakEnd : currentMinutes; // Start search from end of lunch break
     
     // First, try to find next session on the same day
     for (const [dayKey, sessions] of Object.entries(classSchedule.days)) {
