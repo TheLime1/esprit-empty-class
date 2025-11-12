@@ -13,6 +13,7 @@ interface Room {
   freeFrom: string;
   freeUntil: string;
   coords?: { lat: number; lng: number };
+  isWarning?: boolean; // For FREEWARNING rooms
 }
 
 export function FindEmptyRooms() {
@@ -62,6 +63,7 @@ export function FindEmptyRooms() {
       const freeFrom = `${today}T${selectedSlot.start}:00`;
       const freeUntil = `${today}T${selectedSlot.end}:00`;
 
+      // Transform regular free rooms
       const transformedRooms: Room[] = (data.empty || []).map(
         (roomName: string) => ({
           roomId: roomName,
@@ -71,10 +73,25 @@ export function FindEmptyRooms() {
           features: [], // Can be populated from metadata
           freeFrom,
           freeUntil,
+          isWarning: false,
         })
       );
 
-      setRooms(transformedRooms);
+      // Transform warning rooms (FREEWARNING - soutenance risk)
+      const warningRooms: Room[] = (data.warning || []).map(
+        (roomName: string) => ({
+          roomId: roomName,
+          buildingId: roomName.match(/^[A-Z]+/)?.[0] || roomName.charAt(0),
+          name: roomName,
+          capacity: 30,
+          features: [],
+          freeFrom,
+          freeUntil,
+          isWarning: true,
+        })
+      );
+
+      setRooms([...transformedRooms, ...warningRooms]);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {

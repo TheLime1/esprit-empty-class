@@ -387,6 +387,7 @@ class ScheduleToJSON:
 
         # Second pass: check FREE slots against room occupancy
         changes_made = 0
+        warning_made = 0
         for class_name, class_data in self.schedules.items():
             for day_key, courses in class_data['days'].items():
                 for course in courses:
@@ -398,9 +399,13 @@ class ScheduleToJSON:
                         if self._is_room_occupied(room, day_key, time, room_occupancy):
                             course['course'] = 'NOT-FREE'
                             changes_made += 1
+                        # Check if this is a FREEWARNING slot (soutenance risk)
+                        elif self._is_free_warning(room, day_key, time):
+                            course['course'] = 'FREEWARNING'
+                            warning_made += 1
 
         print(
-            f"✓ Review completed: {changes_made} FREE slots changed to NOT-FREE")
+            f"✓ Review completed: {changes_made} FREE slots changed to NOT-FREE, {warning_made} to FREEWARNING")
         return changes_made
 
     def _is_room_occupied(self, room, day_key, free_time, room_occupancy):
@@ -437,6 +442,41 @@ class ScheduleToJSON:
         """Check if two time ranges overlap"""
         # Two ranges overlap if one starts before the other ends
         return start1 < end2 and start2 < end1
+
+    def _is_free_warning(self, room, day_key, time):
+        """Check if a FREE slot should be marked as FREEWARNING (soutenance risk)
+
+        Rules:
+        1. All A1X rooms (1er etage - first floor) are FREEWARNING
+        2. All C0X rooms on Wednesday 13:30-16:45 are FREEWARNING
+        """
+        TIME_PATTERN = r'(\d{2}H:\d{2})'
+
+        # Check if room is A1X (first floor)
+        if room.startswith('A1'):
+            return True
+
+        # Check if room is C0X on Wednesday afternoon
+        if room.startswith('C0'):
+            # Extract day name from day_key (e.g., "Mercredi 05/11/2025" -> "Mercredi")
+            day_name = day_key.split(' ')[0]
+
+            if day_name == 'Mercredi':
+                # Parse time slot
+                time_parts = re.findall(TIME_PATTERN, time)
+                if len(time_parts) >= 2:
+                    start_minutes = self._time_to_minutes(time_parts[0])
+                    end_minutes = self._time_to_minutes(time_parts[1])
+
+                    # Check if it overlaps with 13:30-16:45 (810-1005 minutes)
+                    soutenance_start = 13 * 60 + 30  # 810 minutes
+                    soutenance_end = 16 * 60 + 45    # 1005 minutes
+
+                    # Check for overlap
+                    if self._times_overlap(start_minutes, end_minutes, soutenance_start, soutenance_end):
+                        return True
+
+        return False
 
     def export_to_json(self, output_file):
         """Export schedules to JSON file"""

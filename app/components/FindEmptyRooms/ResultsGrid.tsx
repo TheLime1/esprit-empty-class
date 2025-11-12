@@ -14,6 +14,7 @@ interface Room {
   freeFrom: string;
   freeUntil: string;
   coords?: { lat: number; lng: number };
+  isWarning?: boolean; // For FREEWARNING rooms
 }
 
 interface ResultsGridProps {
@@ -65,6 +66,7 @@ export function ResultsGrid({
             freeFrom={room.freeFrom}
             freeUntil={room.freeUntil}
             coords={room.coords}
+            isWarning={room.isWarning}
             onNavigate={(coords) => {
               window.open(
                 `https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}`,

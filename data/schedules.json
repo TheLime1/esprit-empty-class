@@ -33,7 +33,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A12"
         }
       ],
@@ -52,12 +52,12 @@
       "Vendredi 14/11/2025": [
         {
           "time": "09H:00-12H:15",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A12"
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A12"
         }
       ],
@@ -69,7 +69,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A12"
         }
       ]
@@ -115,7 +115,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A13"
         }
       ],
@@ -139,7 +139,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A13"
         }
       ],
@@ -151,7 +151,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A13"
         }
       ]
@@ -197,7 +197,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A14"
         }
       ],
@@ -221,19 +221,19 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A14"
         }
       ],
       "Samedi 15/11/2025": [
         {
           "time": "09H:00-12H:15",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A14"
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A14"
         }
       ]
@@ -279,7 +279,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A15"
         }
       ],
@@ -303,19 +303,19 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A15"
         }
       ],
       "Samedi 15/11/2025": [
         {
           "time": "09H:00-12H:15",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A15"
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A15"
         }
       ]
@@ -361,7 +361,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A16"
         }
       ],
@@ -373,7 +373,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A16"
         }
       ],
@@ -385,7 +385,7 @@
         },
         {
           "time": "12H:15 - 13H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A16"
         },
         {
@@ -402,7 +402,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A16"
         }
       ]
@@ -443,12 +443,12 @@
       "Mercredi 12/11/2025": [
         {
           "time": "09H:00-12H:15",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A17"
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A17"
         }
       ],
@@ -472,7 +472,7 @@
         },
         {
           "time": "12H:15 - 13H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A17"
         },
         {
@@ -484,12 +484,12 @@
       "Samedi 15/11/2025": [
         {
           "time": "09H:00-12H:15",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A17"
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "A17"
         }
       ]
@@ -1206,7 +1206,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "C02"
         }
       ],
@@ -1882,7 +1882,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "C01"
         }
       ],
@@ -3234,7 +3234,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "C05"
         }
       ],
@@ -6701,7 +6701,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "C06"
         }
       ],
@@ -13380,7 +13380,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "C03"
         }
       ],
@@ -13636,7 +13636,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "FREEWARNING",
           "room": "C04"
         }
       ],

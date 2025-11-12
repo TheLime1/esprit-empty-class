@@ -67,6 +67,7 @@ export async function GET(req: NextRequest) {
     const qMinutes = timeParam ? parseTimeStr(timeParam) : null;
 
     const occupied = new Set<string>();
+    const freeWarning = new Set<string>();
     
     if (selectedDay && qMinutes !== null) {
       for (const groupKey of Object.keys(schedules)) {
@@ -85,6 +86,12 @@ export async function GET(req: NextRequest) {
           
           // Skip if course is FREE (room is empty)
           if (course.toUpperCase() === "FREE") {
+            continue;
+          }
+          
+          // If course is FREEWARNING, room is technically free but has soutenance risk
+          if (course.toUpperCase() === "FREEWARNING" && room) {
+            freeWarning.add(room);
             continue;
           }
           
@@ -108,16 +115,19 @@ export async function GET(req: NextRequest) {
     }
 
     const occupiedArr = Array.from(occupied).sort((a, b) => a.localeCompare(b));
+    const freeWarningArr = Array.from(freeWarning).sort((a, b) => a.localeCompare(b));
     
-    // All rooms that are NOT occupied are empty
-    let empty = rooms.filter((r) => !occupied.has(r));
+    // All rooms that are NOT occupied and NOT in freeWarning are empty
+    let empty = rooms.filter((r) => !occupied.has(r) && !freeWarning.has(r));
+    let warning = rooms.filter((r) => freeWarning.has(r));
     
-    // Apply building filter to empty rooms
+    // Apply building filter to empty and warning rooms
     if (buildingParam && buildingParam !== "all") {
       empty = empty.filter((r) => r.startsWith(buildingParam));
+      warning = warning.filter((r) => r.startsWith(buildingParam));
     }
 
-    return NextResponse.json({ days, rooms, occupied: occupiedArr, empty });
+    return NextResponse.json({ days, rooms, occupied: occupiedArr, empty, warning: freeWarningArr });
   } catch (err: unknown) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : String(err) },
