@@ -88,6 +88,22 @@ function getStatusBadgeText(): string {
   return "📚 Free Period";
 }
 
+// Helper to check if a course is FREE or FREEWARNING (both count as "free")
+function isFreeSlot(course: string): boolean {
+  const upperCourse = course.toUpperCase();
+  return upperCourse === "FREE" || upperCourse === "FREEWARNING";
+}
+
+// Helper to check if a course is a real class (not FREE, FREEWARNING, or NOT-FREE)
+function isRealClass(course: string): boolean {
+  const upperCourse = course.toUpperCase();
+  return (
+    upperCourse !== "FREE" &&
+    upperCourse !== "FREEWARNING" &&
+    upperCourse !== "NOT-FREE"
+  );
+}
+
 export function ClassResults({ result }: Readonly<ClassResultsProps>) {
   if (!result) return null;
 
@@ -224,23 +240,14 @@ function FullTimetable({
     "Samedi",
   ];
   const orderedDays = dayOrder.filter((day) =>
-    schedule[day]?.some(
-      (s) =>
-        s.course.toUpperCase() !== "FREE" &&
-        s.course.toUpperCase() !== "NOT-FREE"
-    )
+    schedule[day]?.some((s) => isRealClass(s.course))
   );
 
   if (orderedDays.length === 0) return null;
 
   // Check if there are any online classes this week
   const hasOnlineClasses = orderedDays.some((day) =>
-    schedule[day]?.some(
-      (s) =>
-        s.room === "En Ligne" &&
-        s.course.toUpperCase() !== "FREE" &&
-        s.course.toUpperCase() !== "NOT-FREE"
-    )
+    schedule[day]?.some((s) => s.room === "En Ligne" && isRealClass(s.course))
   );
 
   return (
@@ -286,10 +293,8 @@ function FullTimetable({
         {viewMode === "list" ? (
           <>
             {orderedDays.map((day) => {
-              const sessions = schedule[day].filter(
-                (session) =>
-                  session.course.toUpperCase() !== "FREE" &&
-                  session.course.toUpperCase() !== "NOT-FREE"
+              const sessions = schedule[day].filter((session) =>
+                isRealClass(session.course)
               );
 
               if (sessions.length === 0) return null;
@@ -362,10 +367,8 @@ function CalendarView({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {orderedDays.map((day) => {
-        const sessions = schedule[day].filter(
-          (session) =>
-            session.course.toUpperCase() !== "FREE" &&
-            session.course.toUpperCase() !== "NOT-FREE"
+        const sessions = schedule[day].filter((session) =>
+          isRealClass(session.course)
         );
 
         if (sessions.length === 0) return null;
