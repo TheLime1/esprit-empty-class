@@ -10,14 +10,10 @@ export function ThemeToggle() {
 
   useEffect(() => {
     setMounted(true);
-    // Check localStorage and system preference
+    // Check localStorage, default to light mode
     const savedTheme = localStorage.getItem("theme");
-    const systemPrefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
 
-    const shouldBeDark =
-      savedTheme === "dark" || (!savedTheme && systemPrefersDark);
+    const shouldBeDark = savedTheme === "dark";
     setIsDark(shouldBeDark);
 
     if (shouldBeDark) {

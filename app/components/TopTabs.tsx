@@ -14,13 +14,13 @@ interface TopTabsProps {
 export function TopTabs({ tabs, defaultTab }: Readonly<TopTabsProps>) {
   return (
     <div className="relative">
-      {/* Theme toggle in top right corner */}
-      <div className="absolute -top-2 right-0 z-10">
+      {/* Theme toggle in top right corner - hidden on small screens */}
+      <div className="hidden sm:block absolute -top-2 right-0 z-10">
         <ThemeToggle />
       </div>
 
       <Tabs defaultValue={defaultTab || tabs[0]?.id} className="w-full">
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-6 relative">
           <TabsList className="inline-flex">
             {tabs.map((tab) => (
               <TabsTrigger
@@ -33,6 +33,11 @@ export function TopTabs({ tabs, defaultTab }: Readonly<TopTabsProps>) {
               </TabsTrigger>
             ))}
           </TabsList>
+
+          {/* Theme toggle for mobile - below tabs */}
+          <div className="sm:hidden absolute -bottom-16 right-0">
+            <ThemeToggle />
+          </div>
         </div>
 
         {tabs.map((tab) => (
