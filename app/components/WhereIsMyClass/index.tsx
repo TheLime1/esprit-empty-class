@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ClassSearchForm } from "./ClassSearchForm";
 import { ClassResults } from "./ClassResults";
 import { ClassResultSkeleton } from "../Shared/Skeletons";
@@ -38,10 +38,22 @@ interface ClassLocation {
   };
 }
 
+const LAST_CLASS_KEY = "lastSearchedClass";
+
 export function WhereIsMyClass() {
   const [result, setResult] = useState<ClassLocation | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [initialSearchDone, setInitialSearchDone] = useState(false);
+
+  // Auto-search last class on mount
+  useEffect(() => {
+    const lastClass = localStorage.getItem(LAST_CLASS_KEY);
+    if (lastClass && !initialSearchDone) {
+      setInitialSearchDone(true);
+      handleSearch(lastClass);
+    }
+  }, [initialSearchDone]);
 
   const handleSearch = async (classCode: string) => {
     setLoading(true);
@@ -49,6 +61,9 @@ export function WhereIsMyClass() {
     setResult(null);
 
     try {
+      // Save to localStorage for next visit
+      localStorage.setItem(LAST_CLASS_KEY, classCode);
+
       const url = `/api/classes/${encodeURIComponent(classCode)}/location`;
       const res = await fetch(url);
       const data = await res.json();

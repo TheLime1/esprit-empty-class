@@ -12,11 +12,19 @@ interface ClassSearchFormProps {
   loading?: boolean;
 }
 
+const LAST_CLASS_KEY = "lastSearchedClass";
+
 export function ClassSearchForm({
   onSearch,
   loading = false,
 }: Readonly<ClassSearchFormProps>) {
-  const [classCode, setClassCode] = useState<string>("");
+  // Load last searched class on mount using lazy initialization
+  const [classCode, setClassCode] = useState<string>(() => {
+    if (globalThis.window !== undefined) {
+      return localStorage.getItem(LAST_CLASS_KEY) || "";
+    }
+    return "";
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,31 +61,6 @@ export function ClassSearchForm({
             >
               <Search className="h-4 w-4 mr-2" />
               {loading ? "Finding..." : "Find"}
-            </Button>
-          </div>
-
-          {/* Quick Access */}
-          <div className="pt-2 border-t">
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="text-xs text-muted-foreground">
-                Quick Access:
-              </span>
-              <span className="text-[10px] text-muted-foreground/60 italic">
-                (the developer is so lazy)
-              </span>
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setClassCode("4SAE11");
-                onSearch("4SAE11");
-              }}
-              disabled={loading}
-              className="text-xs"
-            >
-              4SAE11
             </Button>
           </div>
         </div>
