@@ -306,7 +306,7 @@ function FullTimetable({
           <>
             {orderedDays.map((day) => {
               const allSessions = schedule[day] || [];
-              
+
               // Check if there are any real classes
               const hasRealClasses = allSessions.some((session) =>
                 isRealClass(session.course)
@@ -315,7 +315,7 @@ function FullTimetable({
               if (!hasRealClasses) return null;
 
               // Map all sessions, marking FREE slots
-              const mappedSessions = allSessions.map(session => {
+              const mappedSessions = allSessions.map((session) => {
                 if (isFreeSlot(session.course)) {
                   return { ...session, isFree: true };
                 }
@@ -323,8 +323,8 @@ function FullTimetable({
               });
 
               // Filter to only real classes and free slots (exclude NOT-FREE)
-              const validSessions = mappedSessions.filter(s => 
-                isRealClass(s.course) || ('isFree' in s && s.isFree)
+              const validSessions = mappedSessions.filter(
+                (s) => isRealClass(s.course) || ("isFree" in s && s.isFree)
               );
 
               // Sort by time
@@ -434,7 +434,7 @@ function CalendarView({
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {orderedDays.map((day) => {
         const allSessions = schedule[day] || [];
-        
+
         // Check if there are any real classes
         const hasRealClasses = allSessions.some((session) =>
           isRealClass(session.course)
@@ -443,7 +443,7 @@ function CalendarView({
         if (!hasRealClasses) return null;
 
         // Map all sessions, marking FREE slots
-        const mappedSessions = allSessions.map(session => {
+        const mappedSessions = allSessions.map((session) => {
           if (isFreeSlot(session.course)) {
             return { ...session, isFree: true };
           }
@@ -451,8 +451,8 @@ function CalendarView({
         });
 
         // Filter to only real classes and free slots (exclude NOT-FREE)
-        const validSessions = mappedSessions.filter(s => 
-          isRealClass(s.course) || ('isFree' in s && s.isFree)
+        const validSessions = mappedSessions.filter(
+          (s) => isRealClass(s.course) || ("isFree" in s && s.isFree)
         );
 
         // Sort by time
