@@ -104,6 +104,18 @@ function isRealClass(course: string): boolean {
   );
 }
 
+// Helper to parse time string and get start time in minutes for sorting
+function getStartTimeInMinutes(timeStr: string): number {
+  // Extract first time from formats like "09H:00-12H:15" or "09:00-12:15" or "13H:45"
+  const regex = /(\d{1,2})[H:](\d{2})/;
+  const match = regex.exec(timeStr);
+  if (match) {
+    return Number.parseInt(match[1], 10) * 60 + Number.parseInt(match[2], 10);
+  }
+  // Return a large number for unparseable times so they sort to the end
+  return 9999;
+}
+
 export function ClassResults({ result }: Readonly<ClassResultsProps>) {
   if (!result) return null;
 
@@ -293,11 +305,36 @@ function FullTimetable({
         {viewMode === "list" ? (
           <>
             {orderedDays.map((day) => {
-              const sessions = schedule[day].filter((session) =>
+              const allSessions = schedule[day] || [];
+
+              // Check if there are any real classes
+              const hasRealClasses = allSessions.some((session) =>
                 isRealClass(session.course)
               );
 
-              if (sessions.length === 0) return null;
+              if (!hasRealClasses) return null;
+
+              // Map all sessions, marking FREE slots
+              const mappedSessions = allSessions.map((session) => {
+                if (isFreeSlot(session.course)) {
+                  return { ...session, isFree: true };
+                }
+                return session;
+              });
+
+              // Filter to only real classes and free slots (exclude NOT-FREE)
+              const validSessions = mappedSessions.filter(
+                (s) => isRealClass(s.course) || ("isFree" in s && s.isFree)
+              );
+
+              // Sort by time
+              validSessions.sort(
+                (a, b) =>
+                  getStartTimeInMinutes(a.time) - getStartTimeInMinutes(b.time)
+              );
+
+              // Take first 2 chronologically
+              const displaySessions = validSessions.slice(0, 2);
 
               return (
                 <Card
@@ -308,42 +345,71 @@ function FullTimetable({
                     <Calendar className="h-5 w-5" />
                     {day}
                   </h4>
-                  <div className="space-y-3">
-                    {sessions.map((session, idx) => (
-                      <motion.div
-                        key={`${day}-${session.time}-${session.room}`}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.05 }}
-                        className="flex flex-col gap-3 p-4 bg-white dark:bg-slate-950 rounded-lg border-l-4 border-blue-500 shadow-sm hover:shadow-md transition-shadow"
-                      >
-                        <div className="flex flex-wrap items-center gap-3">
-                          <Badge
-                            variant="outline"
-                            className="text-sm font-semibold px-3 py-1"
-                          >
-                            <Clock className="h-4 w-4 mr-1.5" />
-                            {session.time}
-                          </Badge>
-                          <Badge
-                            className={`text-sm font-semibold px-3 py-1 ${
-                              session.room === "En Ligne"
-                                ? "bg-purple-600 hover:bg-purple-700"
-                                : "bg-blue-600"
-                            }`}
-                          >
-                            <MapPin className="h-4 w-4 mr-1.5" />
-                            {session.room === "En Ligne"
-                              ? "Home"
-                              : session.room}
-                          </Badge>
-                        </div>
-                        <p className="text-base font-medium text-foreground leading-relaxed">
-                          {session.course} @{" "}
-                          {session.room === "En Ligne" ? "Home" : session.room}
-                        </p>
-                      </motion.div>
-                    ))}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {displaySessions.map((session, idx) => {
+                      const isFreeBox = "isFree" in session && session.isFree;
+
+                      return (
+                        <motion.div
+                          key={`${day}-${session.time}-${idx}`}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: idx * 0.05 }}
+                          className={`flex flex-col gap-3 p-4 rounded-lg border-l-4 shadow-sm hover:shadow-md transition-shadow ${
+                            isFreeBox
+                              ? "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-500"
+                              : "bg-white dark:bg-slate-950 border-blue-500"
+                          }`}
+                        >
+                          {isFreeBox ? (
+                            <>
+                              <Badge
+                                variant="outline"
+                                className="text-sm font-semibold px-3 py-1 w-fit"
+                              >
+                                <Clock className="h-4 w-4 mr-1.5" />
+                                {session.time}
+                              </Badge>
+                              <div className="flex-1 flex items-center justify-center">
+                                <span className="text-4xl font-black text-green-600 dark:text-green-400">
+                                  FREE
+                                </span>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="flex flex-wrap items-center gap-3">
+                                <Badge
+                                  variant="outline"
+                                  className="text-sm font-semibold px-3 py-1"
+                                >
+                                  <Clock className="h-4 w-4 mr-1.5" />
+                                  {session.time}
+                                </Badge>
+                                <Badge
+                                  className={`text-sm font-semibold px-3 py-1 ${
+                                    session.room === "En Ligne"
+                                      ? "bg-purple-600 hover:bg-purple-700"
+                                      : "bg-blue-600"
+                                  }`}
+                                >
+                                  <MapPin className="h-4 w-4 mr-1.5" />
+                                  {session.room === "En Ligne"
+                                    ? "Home"
+                                    : session.room}
+                                </Badge>
+                              </div>
+                              <p className="text-base font-medium text-foreground leading-relaxed">
+                                {session.course} @{" "}
+                                {session.room === "En Ligne"
+                                  ? "Home"
+                                  : session.room}
+                              </p>
+                            </>
+                          )}
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 </Card>
               );
@@ -367,11 +433,36 @@ function CalendarView({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {orderedDays.map((day) => {
-        const sessions = schedule[day].filter((session) =>
+        const allSessions = schedule[day] || [];
+
+        // Check if there are any real classes
+        const hasRealClasses = allSessions.some((session) =>
           isRealClass(session.course)
         );
 
-        if (sessions.length === 0) return null;
+        if (!hasRealClasses) return null;
+
+        // Map all sessions, marking FREE slots
+        const mappedSessions = allSessions.map((session) => {
+          if (isFreeSlot(session.course)) {
+            return { ...session, isFree: true };
+          }
+          return session;
+        });
+
+        // Filter to only real classes and free slots (exclude NOT-FREE)
+        const validSessions = mappedSessions.filter(
+          (s) => isRealClass(s.course) || ("isFree" in s && s.isFree)
+        );
+
+        // Sort by time
+        validSessions.sort(
+          (a, b) =>
+            getStartTimeInMinutes(a.time) - getStartTimeInMinutes(b.time)
+        );
+
+        // Take first 2 chronologically
+        const displaySessions = validSessions.slice(0, 2);
 
         return (
           <Card
@@ -383,22 +474,47 @@ function CalendarView({
               {day.split(" ")[0]}
             </h4>
             <div className="space-y-2">
-              {sessions.map((session) => (
-                <div
-                  key={`${day}-${session.time}-${session.room}`}
-                  className="p-3 bg-white dark:bg-slate-950 rounded-lg border-l-4 border-blue-500 text-sm"
-                >
-                  <div className="font-semibold text-blue-600 dark:text-blue-400 mb-1">
-                    {session.time}
+              {displaySessions.map((session, idx) => {
+                const isFreeBox = "isFree" in session && session.isFree;
+
+                return (
+                  <div
+                    key={`${day}-${session.time}-${idx}`}
+                    className={`p-3 rounded-lg border-l-4 text-sm flex flex-col ${
+                      isFreeBox
+                        ? "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-500"
+                        : "bg-white dark:bg-slate-950 border-blue-500"
+                    }`}
+                  >
+                    {isFreeBox ? (
+                      <>
+                        <div className="font-semibold text-green-600 dark:text-green-400 mb-2 text-xs">
+                          {session.time}
+                        </div>
+                        <div className="flex-1 flex items-center justify-center">
+                          <span className="text-2xl font-black text-green-600 dark:text-green-400">
+                            FREE
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="font-semibold text-blue-600 dark:text-blue-400 mb-1">
+                          {session.time}
+                        </div>
+                        <div className="text-xs text-muted-foreground mb-1">
+                          {session.room === "En Ligne"
+                            ? "🏠 Home"
+                            : `📍 ${session.room}`}
+                        </div>
+                        <div className="text-xs font-medium">
+                          {session.course}
+                        </div>
+                      </>
+                    )}
                   </div>
-                  <div className="text-xs text-muted-foreground mb-1">
-                    {session.room === "En Ligne"
-                      ? "🏠 Home"
-                      : `📍 ${session.room}`}
-                  </div>
-                  <div className="text-xs font-medium">{session.course}</div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </Card>
         );

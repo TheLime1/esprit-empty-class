@@ -115,7 +115,6 @@ export async function GET(req: NextRequest) {
     }
 
     const occupiedArr = Array.from(occupied).sort((a, b) => a.localeCompare(b));
-    const freeWarningArr = Array.from(freeWarning).sort((a, b) => a.localeCompare(b));
     
     // All rooms that are NOT occupied and NOT in freeWarning are empty
     let empty = rooms.filter((r) => !occupied.has(r) && !freeWarning.has(r));
@@ -127,7 +126,7 @@ export async function GET(req: NextRequest) {
       warning = warning.filter((r) => r.startsWith(buildingParam));
     }
 
-    return NextResponse.json({ days, rooms, occupied: occupiedArr, empty, warning: freeWarningArr });
+    return NextResponse.json({ days, rooms, occupied: occupiedArr, empty, warning });
   } catch (err: unknown) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : String(err) },
