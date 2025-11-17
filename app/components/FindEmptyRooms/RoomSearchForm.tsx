@@ -17,6 +17,8 @@ interface RoomSearchFormProps {
   onSearch: (params: SearchParams) => void;
   availableDays?: string[];
   loading?: boolean;
+  initialDay?: string;
+  initialTime?: string;
 }
 
 export interface SearchParams {
@@ -29,14 +31,26 @@ export function RoomSearchForm({
   onSearch,
   availableDays = [],
   loading = false,
+  initialDay,
+  initialTime,
 }: Readonly<RoomSearchFormProps>) {
-  const [day, setDay] = useState<string>(availableDays[0] || "");
-  const [time, setTime] = useState<string>("09:00");
+  const [day, setDay] = useState<string>(initialDay || availableDays[0] || "");
+  const [time, setTime] = useState<string>(initialTime || "09:00");
   const [bloc, setBloc] = useState<string>("all");
 
   // Update day when availableDays becomes available
   if (availableDays.length > 0 && !day && availableDays[0]) {
     setDay(availableDays[0]);
+  }
+
+  // Update day when initialDay changes
+  if (initialDay && day !== initialDay && availableDays.includes(initialDay)) {
+    setDay(initialDay);
+  }
+
+  // Update time when initialTime changes
+  if (initialTime && time !== initialTime) {
+    setTime(initialTime);
   }
 
   // Check if selected day is Friday (Vendredi) for different time slots
