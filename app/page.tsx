@@ -39,7 +39,7 @@ export default function Home() {
           {/* Header */}
           <div className="text-center mb-4 sm:mb-6 md:mb-8">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
-              ESPRIT Classroom Finder v1.4
+              ESPRIT Classroom Finder v1.5
             </h1>
             <p className="text-sm sm:text-base md:text-lg px-4 leading-relaxed">
               <span className="font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
