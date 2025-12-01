@@ -46,7 +46,7 @@ export function AcademicTicker() {
   );
 
   useEffect(() => {
-    fetch("/year_calendar2025-2026.json")
+    fetch("/api/calendar")
       .then((res) => res.json())
       .then((calData: CalendarData) => {
         setData(calData);

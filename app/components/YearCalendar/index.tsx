@@ -51,7 +51,7 @@ export function YearCalendar() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/year_calendar2025-2026.json")
+    fetch("/api/calendar")
       .then((res) => res.json())
       .then((data) => {
         setCalendarData(data);
