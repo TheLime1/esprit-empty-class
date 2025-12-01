@@ -11,23 +11,36 @@ A modern Next.js web application to help ESPRIT students find empty classrooms a
 - 📱 **Responsive Design**: Works seamlessly on all devices
 - 🎨 **Modern UI**: Beautiful gradients and smooth animations
 
-## 🚀 Quick Start
+## ⚠️ Known Issues
 
-### Development
+**Note**: There are currently bugs in the schedule parsing logic. The data extraction from ESPRIT's schedule system needs improvements. Contributions to fix the parser are welcome!
 
-First, install dependencies:
+## 🚀 Getting Started
 
+### Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/TheLime1/esprit-empty-class.git
+cd esprit-empty-class
+```
+
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-Then, run the development server:
-
+3. Run the development server:
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ### Production Build
 
@@ -36,28 +49,18 @@ npm run build
 npm start
 ```
 
-## 📦 Deploy to Vercel
+## 📁 Project Structure
 
-The easiest way to deploy this app is using [Vercel](https://vercel.com):
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/TheLime1/esprit-empty-class)
-
-### Manual Deployment Steps
-
-1. Push your code to GitHub (already done ✅)
-2. Go to [vercel.com](https://vercel.com) and sign in with GitHub
-3. Click "Add New Project"
-4. Import your `esprit-empty-class` repository
-5. Vercel will auto-detect Next.js settings
-6. Click "Deploy"
-7. Your app will be live in ~2 minutes! 🎉
-
-That's it! Vercel will automatically:
-
-- Build your app
-- Deploy it to a global CDN
-- Provide a free `.vercel.app` domain
-- Set up automatic deployments on every push to main
+```
+app/                      # Next.js app directory
+  ├── api/               # API routes
+  ├── components/        # React components
+  └── core/              # Core pages
+components/ui/           # shadcn/ui components
+data/                    # Schedule data and parsers
+lib/                     # Utility functions
+public/                  # Static assets
+```
 
 ## 🛠️ Tech Stack
 
@@ -68,6 +71,16 @@ That's it! Vercel will automatically:
 - **Animations**: Framer Motion
 - **Icons**: Lucide React
 
-## 👨‍💻 Made with 🍋 by Aymen Hmani (TheLime1)
+## 🤝 Contributing
 
-[GitHub](https://github.com/TheLime1)
+Contributions are welcome! Especially help with fixing the schedule parser bugs.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is open source and available under the MIT License.
