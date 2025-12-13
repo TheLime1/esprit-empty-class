@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { ClassSearchForm } from "./ClassSearchForm";
 import { ClassResults } from "./ClassResults";
+import { NearestEmptyRoom } from "./NearestEmptyRoom";
 import { ClassResultSkeleton } from "../Shared/Skeletons";
 import { ErrorState } from "../Shared/ErrorState";
 
@@ -81,8 +82,28 @@ export function WhereIsMyClass() {
   };
 
   return (
-    <div>
+    <div className="space-y-4">
       <ClassSearchForm onSearch={handleSearch} loading={loading} />
+
+      {/* Show Nearest Empty Room after search when result is available */}
+      {!loading && !error && result && (
+        <>
+          {(result.room?.name || result.nextSession?.room) && (
+            <NearestEmptyRoom
+              classRoom={result.room?.name || result.nextSession?.room || ""}
+              day={
+                result.nextSession?.day ||
+                new Date().toLocaleDateString("fr-FR", { weekday: "long" })
+              }
+              time={
+                result.session?.start?.split("-")[0] ||
+                result.nextSession?.start?.split("-")[0] ||
+                "09:00"
+              }
+            />
+          )}
+        </>
+      )}
 
       {loading && <ClassResultSkeleton />}
 

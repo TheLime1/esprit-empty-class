@@ -1,0 +1,125 @@
+{
+  "academic_year": "2025-2026",
+  "weeks": [
+    { "name": "S1", "start_date": "2025-09-07", "end_date": "2025-09-13" },
+    { "name": "S2", "start_date": "2025-09-14", "end_date": "2025-09-20" },
+    { "name": "S3", "start_date": "2025-09-21", "end_date": "2025-09-27" },
+    { "name": "S4", "start_date": "2025-09-28", "end_date": "2025-10-04" },
+    { "name": "S5", "start_date": "2025-10-05", "end_date": "2025-10-11" },
+    { "name": "S6", "start_date": "2025-10-12", "end_date": "2025-10-18" },
+    { "name": "S7", "start_date": "2025-10-19", "end_date": "2025-10-25" },
+    { "name": "S8", "start_date": "2025-10-26", "end_date": "2025-11-01" },
+    { "name": "S9", "start_date": "2025-11-02", "end_date": "2025-11-08" },
+    { "name": "S10", "start_date": "2025-11-09", "end_date": "2025-11-15" },
+    { "name": "S11", "start_date": "2025-11-16", "end_date": "2025-11-22" },
+    { "name": "S12", "start_date": "2025-11-23", "end_date": "2025-11-29" },
+    { "name": "S13", "start_date": "2025-11-30", "end_date": "2025-12-06" },
+    { "name": "S14", "start_date": "2025-12-07", "end_date": "2025-12-13" }
+  ],
+
+  "5A": {
+    "periods": [
+      {
+        "name": "APP0",
+        "start_date": "2025-09-02",
+        "end_date": "2025-09-06",
+        "note": "Merged APP0 early-September block"
+      },
+      {
+        "name": "Conseils - Session Principale",
+        "start_date": "2025-12-02",
+        "end_date": "2025-12-04"
+      },
+      {
+        "name": "Examens de la Session de Rattrapage",
+        "start_date": "2025-12-08",
+        "end_date": "2025-12-26"
+      },
+      {
+        "name": "Conseils - Session de Rattrapage",
+        "start_date": "2025-12-23",
+        "end_date": "2025-12-25"
+      },
+      {
+        "name": "Examens de la Session Principale",
+        "start_date": "2025-12-19",
+        "end_date": "2026-01-05",
+        "note": "Merged principal session range per your instruction (vacation falls inside this block)."
+      },
+      {
+        "name": "Vacances d'hiver",
+        "start_date": "2025-12-29",
+        "end_date": "2026-01-05",
+        "note": "As confirmed."
+      }
+    ],
+
+    "events": [
+      { "name": "Reprise des enseignants", "date": "2025-09-01" },
+      { "name": "Fête du Mouled", "date": "2025-09-04" },
+      { "name": "Début Semestre 1", "date": "2025-09-08" },
+      { "name": "Fin des cours - Semestre 1", "date": "2025-12-20" },
+      {
+        "name": "Proclamation des résultats de la session principale",
+        "date": "2025-12-05"
+      },
+      {
+        "name": "Proclamation des résultats de la session de rattrapage",
+        "date": "2025-12-26"
+      },
+      { "name": "Jour de l'An", "date": "2026-01-01" }
+    ]
+  },
+
+  "1-4A": {
+    "periods": [
+      {
+        "name": "APP0",
+        "start_date": "2025-09-02",
+        "end_date": "2025-09-06",
+        "note": "Merged APP0 early-September block (per your instruction)"
+      },
+      {
+        "name": "Examens/DS_P1 (S1 block)",
+        "start_date": "2025-10-28",
+        "end_date": "2025-11-01",
+        "note": "Corrected label / dates per your message"
+      },
+      {
+        "name": "Examens/DS_S1",
+        "start_date": "2025-11-01",
+        "end_date": "2025-11-07"
+      },
+      {
+        "name": "Vacances d'hiver",
+        "start_date": "2025-12-21",
+        "end_date": "2026-01-04",
+        "note": "As you confirmed for 1–4A"
+      },
+      {
+        "name": "Soutenances PI et Examens pratiques",
+        "start_date": "2026-01-05",
+        "end_date": "2026-01-09"
+      },
+      {
+        "name": "Examens S1 (January)",
+        "start_date": "2026-01-09",
+        "end_date": "2026-01-17"
+      }
+    ],
+
+    "events": [
+      { "name": "Reprise des enseignants", "date": "2025-09-01" },
+      { "name": "Fête du Mouled", "date": "2025-09-04" },
+      { "name": "Début Semestre 1", "date": "2025-09-08" },
+      { "name": "Fin des cours - Semestre 1", "date": "2025-12-20" },
+      { "name": "Jour de l'An", "date": "2026-01-01" }
+    ]
+  },
+
+  "notes": {
+    "weeks_note": "Weeks S1..S14 are shared (Sunday→Saturday) and listed at top-level. Per your request, weeks were removed from the per-class sections.",
+    "merge_policy": "Periods were merged into single start/end ranges even where a holiday lies inside the block (per your instruction).",
+    "sources": "Dates and blocks derived from the PNG close-ups you provided."
+  }
+}

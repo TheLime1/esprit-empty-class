@@ -21,13 +21,65 @@ export function FindEmptyRooms() {
   const [availableDays, setAvailableDays] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [initialDay, setInitialDay] = useState<string | undefined>(undefined);
+  const [initialTime, setInitialTime] = useState<string | undefined>(undefined);
 
-  // Load available days on mount
+  // Load available days on mount and detect current day/time
   useEffect(() => {
     fetch("/api/empty")
       .then((r) => r.json())
       .then((json) => {
-        setAvailableDays(json.days || []);
+        const days = json.days || [];
+        setAvailableDays(days);
+
+        // Detect current day and time for auto-selection
+        const now = new Date();
+        const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 5 = Friday
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+
+        // Map day of week to French day names
+        const dayMap: Record<number, string> = {
+          1: "Lundi",
+          2: "Mardi",
+          3: "Mercredi",
+          4: "Jeudi",
+          5: "Vendredi",
+        };
+
+        const currentDayName = dayMap[dayOfWeek];
+
+        // Find matching day in available days (format: "Lundi 10 Février")
+        if (currentDayName && days.length > 0) {
+          const matchingDay = days.find((d: string) =>
+            d.startsWith(currentDayName)
+          );
+          if (matchingDay) {
+            setInitialDay(matchingDay);
+          }
+        }
+
+        // Determine time slot based on current time
+        const currentMinutes = hours * 60 + minutes;
+
+        // 09:00-12:15 is 540-735 minutes
+        // 13:30-16:45 is 810-1005 minutes
+        // 13:45-17:00 is 825-1020 minutes (Friday)
+
+        if (currentMinutes >= 540 && currentMinutes < 735) {
+          // Morning slot (9:00 AM)
+          setInitialTime("09:00");
+        } else if (currentMinutes >= 735) {
+          // Afternoon slot - depends on if it's Friday
+          if (dayOfWeek === 5) {
+            setInitialTime("13:45"); // Friday afternoon
+          } else {
+            setInitialTime("13:30"); // Regular afternoon
+          }
+        } else {
+          // Before 9:00 AM - default to morning slot
+          setInitialTime("09:00");
+        }
       })
       .catch((err) => setError(String(err)));
   }, []);
@@ -105,6 +157,8 @@ export function FindEmptyRooms() {
         onSearch={handleSearch}
         availableDays={availableDays}
         loading={loading}
+        initialDay={initialDay}
+        initialTime={initialTime}
       />
       <ResultsGrid
         rooms={rooms}
