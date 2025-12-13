@@ -4,8 +4,16 @@ import { TopTabs, TabIcons } from "./components/TopTabs";
 import { FindEmptyRooms } from "./components/FindEmptyRooms";
 import { WhereIsMyClass } from "./components/WhereIsMyClass";
 import { Card } from "@/components/ui/card";
+import { MAINTENANCE_MODE } from "./config";
+import { MaintenancePage } from "./components/MaintenancePage";
+import { AcquisitionFooter } from "./components/AcquisitionFooter";
 
 export default function Home() {
+  // Show maintenance page if enabled
+  if (MAINTENANCE_MODE) {
+    return <MaintenancePage />;
+  }
+
   const tabs = [
     {
       id: "find-empty",
@@ -67,6 +75,7 @@ export default function Home() {
               Aymen Hmani (TheLime1)
             </a>
           </p>
+          <AcquisitionFooter />
         </footer>
       </main>
     </div>
