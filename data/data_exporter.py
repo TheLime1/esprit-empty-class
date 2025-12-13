@@ -1,16 +1,28 @@
+"""PDF Schedule Parser - Converts ESPRIT schedule PDFs to JSON format."""
+
 import re
 import json
-import PyPDF2
 import sys
+import PyPDF2
 
 
 class ScheduleToJSON:
+    """Parse and convert PDF schedules to structured JSON format."""
+
     def __init__(self):
+        """Initialize the parser."""
         self.schedules = {}
         self.class_rooms = {}  # Track primary room for each class
 
     def load_pdf(self, pdf_path):
-        """Load and extract text from PDF file"""
+        """Load and extract text from PDF file.
+
+        Args:
+            pdf_path: Path to the PDF file
+
+        Returns:
+            str: Extracted text from all pages
+        """
         print(f"Loading PDF: {pdf_path}")
 
         with open(pdf_path, 'rb') as file:
@@ -28,7 +40,14 @@ class ScheduleToJSON:
             return all_text
 
     def parse_pdf_text(self, text):
-        """Parse schedules from PDF text"""
+        """Parse schedules from PDF text.
+
+        Args:
+            text: Raw text extracted from PDF
+
+        Returns:
+            dict: Parsed schedules organized by class
+        """
         pages = text.split("Page")
 
         print(f"Analyzing {len(pages)} sections...")
@@ -37,14 +56,20 @@ class ScheduleToJSON:
             if not page.strip():
                 continue
 
-            # Extract class name (handles names with spaces like "4 ARCTIC9" and "4 ERP-BI1")
+            # Extract class name (appears near "Emploi du Temps")
             class_match = re.search(
-                r'Emploi du Temps\s+(.+?)(?:\n|Page|\Z)', page)
+                r'Emploi du Temps\s+(\S+)',
+                page,
+                re.IGNORECASE
+            )
             if not class_match:
                 continue
 
-            # Remove spaces from class name (e.g., "4 ARCTIC9" -> "4ARCTIC9", "4 ERP-BI1" -> "4ERP-BI1")
-            class_name = class_match.group(1).strip().replace(' ', '')
+            class_name = class_match.group(1).strip()
+
+            # Remove "Année" suffix if present
+            if class_name.endswith('Année'):
+                class_name = class_name[:-5]  # Remove last 5 characters
 
             # Initialize schedule
             self.schedules[class_name] = {
@@ -54,230 +79,202 @@ class ScheduleToJSON:
 
             # Extract metadata
             year_match = re.search(
-                r'Année\s+universitaire\s*:\s*(\d{4}/\d{4})', page)
+                r'Année\s+[Uu]niversitaire\s*:\s*(\d{4}/\d{4})',
+                page
+            )
             if year_match:
-                self.schedules[class_name]['metadata']['year'] = year_match.group(
-                    1)
+                self.schedules[class_name]['metadata']['year'] = (
+                    year_match.group(1)
+                )
 
-            semester_match = re.search(r'Semestre\s+(\d+)', page)
-            if semester_match:
-                self.schedules[class_name]['metadata']['semester'] = semester_match.group(
-                    1)
+            # Extract date range
+            date_range_match = re.search(
+                r'(\d{2}/\d{2}/\d{4})\s*-\s*(\d{2}/\d{2}/\d{4})',
+                page
+            )
+            if date_range_match:
+                period = (
+                    f"{date_range_match.group(1)} - "
+                    f"{date_range_match.group(2)}"
+                )
+                self.schedules[class_name]['metadata']['period'] = period
 
-            period_match = re.search(
-                r'Semestre\s+\d+\s*:\s*([\d/\w\s-]+)', page)
-            if period_match:
-                self.schedules[class_name]['metadata']['period'] = period_match.group(
-                    1).strip()
+            # Parse the table structure
+            days_info = []
+            day_names = [
+                'Lundi', 'Mardi', 'Mercredi',
+                'Jeudi', 'Vendredi', 'Samedi'
+            ]
 
-            # Parse each day
-            days = ['Lundi', 'Mardi', 'Mercredi',
-                    'Jeudi', 'Vendredi', 'Samedi']
-
-            for day in days:
-                day_pattern = rf'{day}\s+(\d{{2}}/\d{{2}}/\d{{4}})'
+            for day_name in day_names:
+                # Match day name followed by date (DD/MM format)
+                day_pattern = rf'{day_name}\s+(\d{{2}}/\d{{2}})'
                 day_match = re.search(day_pattern, page)
 
                 if day_match:
-                    date = day_match.group(1)
-                    day_key = f"{day} {date}"
-                    day_start = day_match.start()
+                    date_short = day_match.group(1)
+                    # Try to get the full year from the date range
+                    year = "2025"  # Default
+                    if date_range_match:
+                        year = date_range_match.group(1).split('/')[-1]
 
-                    # Find next day boundary
-                    next_day_idx = len(page)
-                    for next_day in days:
-                        if next_day != day:
-                            next_match = re.search(
-                                rf'{next_day}\s+\d{{2}}/\d{{2}}/\d{{4}}', page[day_start+10:])
-                            if next_match:
-                                next_day_idx = day_start + 10 + next_match.start()
-                                break
+                    full_date = f"{date_short}/{year}"
+                    days_info.append({
+                        'name': day_name,
+                        'date': full_date,
+                        'key': f"{day_name} {full_date}"
+                    })
 
-                    day_section = page[day_start:next_day_idx]
-                    courses = self._parse_courses(day_section, class_name)
+            # For each day, extract courses
+            for day_info in days_info:
+                courses = self._parse_courses_new_format(
+                    page,
+                    day_info['name'],
+                    class_name
+                )
 
-                    # Add FREE slots for gaps in schedule
-                    courses_with_free = self._add_free_slots(
-                        courses, class_name)
-
-                    # Fill in missing morning/afternoon slots as FREE
+                if courses:
+                    # Fill in missing time slots as FREE
                     courses_complete = self._fill_empty_time_slots(
-                        courses_with_free, class_name)
-
-                    self.schedules[class_name]['days'][day_key] = courses_complete
+                        courses,
+                        class_name
+                    )
+                    self.schedules[class_name]['days'][day_info['key']] = (
+                        courses_complete
+                    )
 
         print(f"Analysis completed! {len(self.schedules)} classes found.")
         return self.schedules
 
-    def _parse_courses(self, day_section, class_name):
-        """Extract courses from day section"""
+    def _parse_courses_new_format(self, page, day_name, class_name):
+        """Extract courses for a specific day from the table format.
+
+        Args:
+            page: Text content of the page
+            day_name: Name of the day (e.g., 'Lundi')
+            class_name: Name of the class
+
+        Returns:
+            list: List of course dictionaries
+        """
         courses = []
 
-        # Find all courses with standard room format: CourseName/Room/
-        standard_pattern = r'([^/\n]+?)/\s*([A-Z]\d+)\s*/'
-        standard_matches = list(re.finditer(standard_pattern, day_section))
+        # Find the day header position
+        day_pattern = rf'{day_name}\s+\d{{2}}/\d{{2}}'
+        day_match = re.search(day_pattern, page)
+        if not day_match:
+            return courses
 
-        for match in standard_matches:
-            course_name = match.group(1).strip()
-            location = match.group(2).strip()
+        day_start = day_match.start()
 
-            # Clean course name: remove dates and years
-            course_name = re.sub(r'\d{2}/\d{2}/\d{4}', '', course_name)
-            # Remove year at the beginning (e.g., "2025 Course Name" -> "Course Name")
-            course_name = re.sub(r'^\d{4}\s+', '', course_name)
-            # Remove year in the middle (e.g., "Course 2025 Name" -> "Course Name")
-            course_name = re.sub(r'\s+\d{4}\s+', ' ', course_name)
-            # Remove year at the end (e.g., "Course Name 2025" -> "Course Name")
-            course_name = re.sub(r'\s+\d{4}$', '', course_name)
-            # Normalize whitespace
-            course_name = re.sub(r'\s+', ' ', course_name).strip()
+        # Find the next day or end of schedule
+        next_day_pos = len(page)
+        other_days = [
+            'Lundi', 'Mardi', 'Mercredi',
+            'Jeudi', 'Vendredi', 'Samedi'
+        ]
+        for other_day in other_days:
+            if other_day != day_name:
+                next_match = re.search(
+                    rf'{other_day}\s+\d{{2}}/\d{{2}}',
+                    page[day_start + 20:]
+                )
+                if next_match:
+                    candidate_pos = day_start + 20 + next_match.start()
+                    next_day_pos = min(next_day_pos, candidate_pos)
 
-            if course_name.upper() == 'PAUSE' or not course_name:
+        day_section = page[day_start:next_day_pos]
+
+        # Split by lines
+        lines = day_section.split('\n')
+
+        i = 0
+        while i < len(lines):
+            line = lines[i].strip()
+
+            # Skip empty lines and day headers
+            if (not line or line.startswith(day_name) or
+                    re.match(r'^\d{2}/\d{2}$', line)):
+                i += 1
                 continue
 
-            # Track the most common room for this class
-            if class_name not in self.class_rooms:
-                self.class_rooms[class_name] = {}
-            if location not in self.class_rooms[class_name]:
-                self.class_rooms[class_name][location] = 0
-            self.class_rooms[class_name][location] += 1
+            # Look for time patterns (HH:MM - HH:MM)
+            if re.search(r'\d{2}:\d{2}\s*-\s*\d{2}:\d{2}', line):
+                time_match = re.search(
+                    r'(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})',
+                    line
+                )
+                if time_match:
+                    start_time = time_match.group(1).replace(':', 'H:')
+                    end_time = time_match.group(2).replace(':', 'H:')
+                    time_str = f"{start_time}-{end_time}"
 
-            # Determine time for this course
-            # In the PDF:
-            # - Morning courses (09H:00-12H:15) don't have explicit times in cells (times are in header)
-            # - Afternoon courses have explicit times above the course name (e.g., "13H:30 - 16H:45")
-            text_before = day_section[:match.start()]
+                    # Look backwards for room and course name
+                    room = None
+                    course_lines = []
 
-            # Look for explicit time range with dash (afternoon/special courses have this)
-            # Search in reasonable context before the course
-            context = text_before[-200:] if len(
-                text_before) > 200 else text_before
-            time_range_pattern = r'(\d{2}H:\d{2})\s*-\s*(\d{2}H:\d{2})'
-            time_match = re.search(time_range_pattern, context)
+                    # Check previous lines (up to 5 for multi-line names)
+                    for j in range(max(0, i - 5), i):
+                        prev_line = lines[j].strip()
 
-            if time_match:
-                # Found explicit time range (e.g., "13H:30 - 16H:45" or "13H:45 - 17H:00")
-                start_time = time_match.group(1)
-                end_time = time_match.group(2)
-                matched_time = f"{start_time}-{end_time}"
-            else:
-                # No explicit time found - this is a morning course
-                # Morning courses span the morning blocks: 09H:00-12H:15
-                matched_time = "09H:00-12H:15"
+                        if not prev_line:
+                            continue
 
-            # Add course
-            courses.append({
-                'time': matched_time,
-                'course': course_name,
-                'room': location
-            })
+                        # Room pattern: letter followed by digits
+                        if re.match(r'^[A-Z]\d+$', prev_line):
+                            room = prev_line
+                        # Online class pattern (case-insensitive)
+                        elif re.match(r'^En\s+ligne$', prev_line,
+                                      re.IGNORECASE):
+                            room = 'En Ligne'
+                        # Course name parts: text lines
+                        elif (not re.match(r'^[A-Z]\d+$', prev_line) and
+                              not re.match(r'^\d+$', prev_line)):
+                            # Skip if has time pattern
+                            if not re.search(
+                                r'\d{2}:\d{2}\s*-\s*\d{2}:\d{2}',
+                                prev_line
+                            ):
+                                course_lines.append(prev_line)
 
-        # Find online courses: CourseName/\nEn Ligne
-        online_pattern = r'([^/\n]+?)/\s*\n\s*(En\s+Ligne)'
-        online_matches = list(re.finditer(
-            online_pattern, day_section, re.IGNORECASE))
+                    if room and course_lines:
+                        # Combine course name lines (reverse for order)
+                        course_lines.reverse()
+                        course_name = ' '.join(course_lines)
 
-        for match in online_matches:
-            course_name = match.group(1).strip()
-            location = 'En Ligne'
+                        # Clean course name
+                        course_name = re.sub(r'\d{4}', '', course_name)
+                        course_name = re.sub(r'\s+', ' ', course_name)
+                        course_name = course_name.strip()
 
-            # Clean course name
-            course_name = re.sub(r'\d{2}/\d{2}/\d{4}', '', course_name)
-            # Remove year at the beginning (e.g., "2025 Course Name" -> "Course Name")
-            course_name = re.sub(r'^\d{4}\s+', '', course_name)
-            # Remove year in the middle (e.g., "Course 2025 Name" -> "Course Name")
-            course_name = re.sub(r'\s+\d{4}\s+', ' ', course_name)
-            # Remove year at the end (e.g., "Course Name 2025" -> "Course Name")
-            course_name = re.sub(r'\s+\d{4}$', '', course_name)
-            # Normalize whitespace
-            course_name = re.sub(r'\s+', ' ', course_name).strip()
+                        if course_name:
+                            # Track room usage
+                            if class_name not in self.class_rooms:
+                                self.class_rooms[class_name] = {}
+                            if room not in self.class_rooms[class_name]:
+                                self.class_rooms[class_name][room] = 0
+                            self.class_rooms[class_name][room] += 1
 
-            if course_name.upper() == 'PAUSE' or not course_name:
-                continue
+                            courses.append({
+                                'time': time_str,
+                                'course': course_name,
+                                'room': room
+                            })
 
-            # Determine time for this course
-            # In the PDF:
-            # - Morning courses (09H:00-12H:15) don't have explicit times in cells (times are in header)
-            # - Afternoon courses have explicit times above the course name (e.g., "13H:30 - 16H:45")
-            text_before = day_section[:match.start()]
-
-            # Look for explicit time range with dash (afternoon/special courses have this)
-            # Search in reasonable context before the course
-            context = text_before[-200:] if len(
-                text_before) > 200 else text_before
-            time_range_pattern = r'(\d{2}H:\d{2})\s*-\s*(\d{2}H:\d{2})'
-            time_match = re.search(time_range_pattern, context)
-
-            if time_match:
-                # Found explicit time range (e.g., "13H:30 - 16H:45" or "13H:45 - 17H:00")
-                start_time = time_match.group(1)
-                end_time = time_match.group(2)
-                matched_time = f"{start_time}-{end_time}"
-            else:
-                # No explicit time found - this is a morning course
-                # Morning courses span the morning blocks: 09H:00-12H:15
-                matched_time = "09H:00-12H:15"
-
-            # Add course
-            courses.append({
-                'time': matched_time,
-                'course': course_name,
-                'room': location
-            })
+            i += 1
 
         return courses
 
-    def _add_free_slots(self, courses, class_name):
-        """Add FREE slots for gaps in the schedule"""
-        if not courses:
-            return courses
-
-        TIME_PATTERN = r'(\d{2}H:\d{2})'
-
-        # Get the primary room for this class
-        primary_room = self._get_primary_room(class_name)
-
-        # Sort courses by start time
-        courses_sorted = sorted(courses, key=lambda c: self._time_to_minutes(
-            re.findall(TIME_PATTERN, c['time'])[0]))
-
-        # Insert FREE slots only for gaps between courses
-        # Don't add FREE before 09H:00 or after 16H:45 (end of last class slot)
-        result = []
-        last_end_time = None
-
-        for course in courses_sorted:
-            time_parts = re.findall(TIME_PATTERN, course['time'])
-            if len(time_parts) >= 2:
-                start_time = time_parts[0]
-                end_time = time_parts[1]
-
-                # Only add FREE slot if there's a gap and we're within schedule hours
-                if last_end_time and self._time_to_minutes(start_time) > self._time_to_minutes(last_end_time):
-                    # Check if this gap is the lunch break (PAUSE period: ~12H:15 to ~13H:30)
-                    gap_start = self._time_to_minutes(last_end_time)
-                    gap_end = self._time_to_minutes(start_time)
-
-                    # Standard lunch break is from 12H:15 to 13H:30 (735 to 810 minutes)
-                    # Don't add FREE slot if the gap overlaps with lunch break
-                    is_lunch_break = (gap_start >= 720 and gap_start <= 750) and (
-                        gap_end >= 800 and gap_end <= 820)
-
-                    if not is_lunch_break:
-                        # Add FREE slot for the gap (not lunch break)
-                        result.append({
-                            'time': f"{last_end_time} - {start_time}",
-                            'course': 'FREE',
-                            'room': primary_room
-                        })
-
-                result.append(course)
-                last_end_time = end_time
-
-        return result
-
     def _fill_empty_time_slots(self, courses, class_name):
-        """Fill in FREE slots for missing morning or afternoon sessions"""
+        """Fill in FREE slots for missing morning or afternoon sessions.
+
+        Args:
+            courses: List of existing courses
+            class_name: Name of the class
+
+        Returns:
+            list: Complete list of courses with FREE slots added
+        """
         if not courses:
             # Completely empty day - add both morning and afternoon as FREE
             primary_room = self._get_primary_room(class_name)
@@ -294,7 +291,7 @@ class ScheduleToJSON:
                 }
             ]
 
-        TIME_PATTERN = r'(\d{2}H:\d{2})'
+        time_pattern = r'(\d{2}H:\d{2})'
         primary_room = self._get_primary_room(class_name)
 
         # Check what time slots are covered
@@ -302,16 +299,16 @@ class ScheduleToJSON:
         has_afternoon = False
 
         for course in courses:
-            time_parts = re.findall(TIME_PATTERN, course['time'])
+            time_parts = re.findall(time_pattern, course['time'])
             if len(time_parts) >= 2:
                 start_minutes = self._time_to_minutes(time_parts[0])
                 end_minutes = self._time_to_minutes(time_parts[1])
 
-                # Morning session is roughly 09H:00 to 12H:15 (540 to 735 minutes)
+                # Morning session: 09H:00 to 12H:15 (540 to 735 minutes)
                 if start_minutes < 750:  # Starts before 12H:30
                     has_morning = True
 
-                # Afternoon session is roughly 13H:30 to 17H:00 (810 to 1020 minutes)
+                # Afternoon session: 13H:30 to 17H:00 (810 to 1020 minutes)
                 if end_minutes > 800:  # Ends after 13H:20
                     has_afternoon = True
 
@@ -337,23 +334,41 @@ class ScheduleToJSON:
         return result
 
     def _get_primary_room(self, class_name):
-        """Get the most common room for a class"""
-        if class_name not in self.class_rooms or not self.class_rooms[class_name]:
+        """Get the most common room for a class.
+
+        Args:
+            class_name: Name of the class
+
+        Returns:
+            str: Most frequently used room
+        """
+        if (class_name not in self.class_rooms or
+                not self.class_rooms[class_name]):
             return "Unknown"
 
         # Filter out online rooms
-        physical_rooms = {room: count for room, count in self.class_rooms[class_name].items()
-                          if room != "En Ligne"}
+        physical_rooms = {
+            room: count
+            for room, count in self.class_rooms[class_name].items()
+            if room != "En Ligne"
+        }
 
         if not physical_rooms:
-            # If all rooms are online, check if there's at least one physical room mentioned
+            # If all rooms are online, return online
             return list(self.class_rooms[class_name].keys())[0]
 
         # Return the most frequently used physical room
         return max(physical_rooms.items(), key=lambda x: x[1])[0]
 
     def _time_to_minutes(self, time_str):
-        """Convert time string like '09H:00' to minutes since midnight"""
+        """Convert time string like '09H:00' to minutes since midnight.
+
+        Args:
+            time_str: Time string in format 'HHH:MM'
+
+        Returns:
+            int: Minutes since midnight
+        """
         parts = time_str.split('H:')
         if len(parts) == 2:
             hours = int(parts[0])
@@ -362,7 +377,11 @@ class ScheduleToJSON:
         return 0
 
     def _review_free_slots(self):
-        """Review FREE slots to check if rooms are actually occupied by other classes"""
+        """Review FREE slots to check if rooms are occupied by other classes.
+
+        Returns:
+            int: Number of changes made
+        """
         print("\nReviewing FREE slots...")
 
         # Build a mapping of room -> day -> time -> list of classes using it
@@ -383,7 +402,9 @@ class ScheduleToJSON:
                         if time not in room_occupancy[room][day_key]:
                             room_occupancy[room][day_key][time] = []
 
-                        room_occupancy[room][day_key][time].append(class_name)
+                        room_occupancy[room][day_key][time].append(
+                            class_name
+                        )
 
         # Second pass: check FREE slots against room occupancy
         changes_made = 0
@@ -396,27 +417,45 @@ class ScheduleToJSON:
                         time = course['time']
 
                         # Check if this room is occupied at this time
-                        if self._is_room_occupied(room, day_key, time, room_occupancy):
+                        is_occupied = self._is_room_occupied(
+                            room,
+                            day_key,
+                            time,
+                            room_occupancy
+                        )
+                        if is_occupied:
                             course['course'] = 'NOT-FREE'
                             changes_made += 1
-                        # Check if this is a FREEWARNING slot (soutenance risk)
+                        # Check if this is a FREEWARNING slot
                         elif self._is_free_warning(room, day_key, time):
                             course['course'] = 'FREEWARNING'
                             warning_made += 1
 
         print(
-            f"✓ Review completed: {changes_made} FREE slots changed to NOT-FREE, {warning_made} to FREEWARNING")
+            f"✓ Review completed: {changes_made} FREE slots changed to "
+            f"NOT-FREE, {warning_made} to FREEWARNING"
+        )
         return changes_made
 
     def _is_room_occupied(self, room, day_key, free_time, room_occupancy):
-        """Check if a room is occupied during a FREE time slot"""
+        """Check if a room is occupied during a FREE time slot.
+
+        Args:
+            room: Room identifier
+            day_key: Day key string
+            free_time: Time range of the FREE slot
+            room_occupancy: Dictionary of room occupancy data
+
+        Returns:
+            bool: True if room is occupied
+        """
         if room not in room_occupancy:
             return False
         if day_key not in room_occupancy[room]:
             return False
 
-        TIME_PATTERN = r'(\d{2}H:\d{2})'
-        free_time_parts = re.findall(TIME_PATTERN, free_time)
+        time_pattern = r'(\d{2}H:\d{2})'
+        free_time_parts = re.findall(time_pattern, free_time)
         if len(free_time_parts) < 2:
             return False
 
@@ -424,8 +463,8 @@ class ScheduleToJSON:
         free_end = self._time_to_minutes(free_time_parts[1])
 
         # Check all scheduled times in this room on this day
-        for scheduled_time, classes in room_occupancy[room][day_key].items():
-            scheduled_parts = re.findall(TIME_PATTERN, scheduled_time)
+        for scheduled_time in room_occupancy[room][day_key].keys():
+            scheduled_parts = re.findall(time_pattern, scheduled_time)
             if len(scheduled_parts) < 2:
                 continue
 
@@ -433,24 +472,46 @@ class ScheduleToJSON:
             scheduled_end = self._time_to_minutes(scheduled_parts[1])
 
             # Check if there's any overlap
-            if self._times_overlap(free_start, free_end, scheduled_start, scheduled_end):
+            if self._times_overlap(
+                free_start,
+                free_end,
+                scheduled_start,
+                scheduled_end
+            ):
                 return True
 
         return False
 
     def _times_overlap(self, start1, end1, start2, end2):
-        """Check if two time ranges overlap"""
-        # Two ranges overlap if one starts before the other ends
+        """Check if two time ranges overlap.
+
+        Args:
+            start1: Start time of first range (minutes)
+            end1: End time of first range (minutes)
+            start2: Start time of second range (minutes)
+            end2: End time of second range (minutes)
+
+        Returns:
+            bool: True if ranges overlap
+        """
         return start1 < end2 and start2 < end1
 
     def _is_free_warning(self, room, day_key, time):
-        """Check if a FREE slot should be marked as FREEWARNING (soutenance risk)
+        """Check if a FREE slot should be marked as FREEWARNING.
 
         Rules:
-        1. All A1X rooms (1er etage - first floor) are FREEWARNING
+        1. All A1X rooms (1st floor) are FREEWARNING
         2. All C0X rooms on Wednesday 13:30-16:45 are FREEWARNING
+
+        Args:
+            room: Room identifier
+            day_key: Day key string
+            time: Time range string
+
+        Returns:
+            bool: True if should be marked as FREEWARNING
         """
-        TIME_PATTERN = r'(\d{2}H:\d{2})'
+        time_pattern = r'(\d{2}H:\d{2})'
 
         # Check if room is A1X (first floor)
         if room.startswith('A1'):
@@ -458,32 +519,40 @@ class ScheduleToJSON:
 
         # Check if room is C0X on Wednesday afternoon
         if room.startswith('C0'):
-            # Extract day name from day_key (e.g., "Mercredi 05/11/2025" -> "Mercredi")
             day_name = day_key.split(' ')[0]
 
             if day_name == 'Mercredi':
-                # Parse time slot
-                time_parts = re.findall(TIME_PATTERN, time)
+                time_parts = re.findall(time_pattern, time)
                 if len(time_parts) >= 2:
                     start_minutes = self._time_to_minutes(time_parts[0])
                     end_minutes = self._time_to_minutes(time_parts[1])
 
-                    # Check if it overlaps with 13:30-16:45 (810-1005 minutes)
-                    soutenance_start = 13 * 60 + 30  # 810 minutes
-                    soutenance_end = 16 * 60 + 45    # 1005 minutes
+                    # Check if it overlaps with 13:30-16:45
+                    soutenance_start = 13 * 60 + 30
+                    soutenance_end = 16 * 60 + 45
 
-                    # Check for overlap
-                    if self._times_overlap(start_minutes, end_minutes, soutenance_start, soutenance_end):
+                    if self._times_overlap(
+                        start_minutes,
+                        end_minutes,
+                        soutenance_start,
+                        soutenance_end
+                    ):
                         return True
 
         return False
 
     def export_to_json(self, output_file):
-        """Export schedules to JSON file"""
+        """Export schedules to JSON file.
+
+        Args:
+            output_file: Path to output JSON file
+        """
         # Add primary room to metadata
         for class_name in self.schedules:
-            self.schedules[class_name]['metadata']['primary_room'] = self._get_primary_room(
-                class_name)
+            primary_room = self._get_primary_room(class_name)
+            self.schedules[class_name]['metadata']['primary_room'] = (
+                primary_room
+            )
 
         # Review FREE slots to ensure accuracy
         self._review_free_slots()
@@ -496,6 +565,7 @@ class ScheduleToJSON:
 
 
 def main():
+    """Main entry point for the script."""
     # Get PDF file path
     if len(sys.argv) > 1:
         pdf_file = sys.argv[1]
@@ -507,7 +577,8 @@ def main():
         json_file = sys.argv[2]
     else:
         json_file = input(
-            "Enter output JSON file name (default: schedules.json): ").strip()
+            "Enter output JSON file name (default: schedules.json): "
+        ).strip()
         if not json_file:
             json_file = "schedules.json"
 
