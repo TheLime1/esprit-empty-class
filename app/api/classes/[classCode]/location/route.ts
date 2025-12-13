@@ -46,21 +46,30 @@ function eventRangeToMinutes(range: string) {
 }
 
 /**
+ * Remove accents from a string (e.g., "Méca" → "MECA")
+ */
+function removeAccents(str: string): string {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+/**
  * Normalize class code for flexible searching.
  * Handles aliases like "4erp1" or "4bi1" matching "4ERP-BI1"
+ * Also handles accented characters like "4meca" matching "4MécaT1"
  */
 function findMatchingClassName(searchCode: string, schedules: ScheduleData): string | null {
-  const upperSearch = searchCode.toUpperCase();
+  const upperSearch = removeAccents(searchCode.toUpperCase());
   
   console.log(`\n[SEARCH DEBUG] Searching for: "${searchCode}" (uppercase: "${upperSearch}")`);
   
-  // Direct match first
-  if (schedules[upperSearch]) {
-    console.log(`[SEARCH DEBUG] ✓ Direct match found: ${upperSearch}`);
-    return upperSearch;
+  // Direct match first (with accent removal)
+  const directMatch = Object.keys(schedules).find(key => removeAccents(key.toUpperCase()) === upperSearch);
+  if (directMatch) {
+    console.log(`[SEARCH DEBUG] ✓ Direct match found: ${directMatch}`);
+    return directMatch;
   }
   
-  // Normalize search (remove special chars)
+  // Normalize search (remove special chars and accents)
   const normalizedSearch = upperSearch.replaceAll(/[^A-Z0-9]/g, '');
   
   // Validate: search must contain at least one digit
@@ -73,11 +82,11 @@ function findMatchingClassName(searchCode: string, schedules: ScheduleData): str
   
   // Try flexible matching for complex class names
   // Priority order:
-  // 1. Exact normalized match (e.g., "4ERPBI3" → "4ERP-BI3")
+  // 1. Exact normalized match (e.g., "4ERPBI3" → "4ERP-BI3", "4MECAT1" → "4MécaT1")
   // 2. Flexible match for ERP-BI style (e.g., "4bi3" → "4ERP-BI3", "4erp3" → "4ERP-BI3")
   
   for (const className of Object.keys(schedules)) {
-    const normalizedClass = className.replaceAll(/[^A-Z0-9]/g, '');
+    const normalizedClass = removeAccents(className.toUpperCase()).replaceAll(/[^A-Z0-9]/g, '');
     
     console.log(`[SEARCH DEBUG] Checking class: "${className}" (normalized: "${normalizedClass}")`);
     
@@ -106,7 +115,7 @@ function findMatchingClassName(searchCode: string, schedules: ScheduleData): str
   console.log(`[SEARCH DEBUG] Search trailing number: "${searchTrailingNum}"`);
   
   for (const className of Object.keys(schedules)) {
-    const normalizedClass = className.replaceAll(/[^A-Z0-9]/g, '');
+    const normalizedClass = removeAccents(className.toUpperCase()).replaceAll(/[^A-Z0-9]/g, '');
     
     // Extract trailing number from class name
     const classTrailingNum = normalizedClass.match(/\d+$/)?.[0];
