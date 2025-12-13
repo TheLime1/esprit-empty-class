@@ -15788,7 +15788,88 @@
       "primary_room": "G210"
     }
   },
-  "10h": {
+  "4MécaT1": {
+    "days": {
+      "Lundi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
+        }
+      ],
+      "Mardi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "PROJET D'INGÉNIERIE SIMULTANÉE",
+          "room": "G211"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INNOVATION & ENTREPREUNARIAT_ATELIER CRÉATIF",
+          "room": "G211"
+        }
+      ],
+      "Mercredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G211"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G211"
+        }
+      ],
+      "Jeudi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "COMMUNICATION, CULTURE ET CITOYENNETÉ",
+          "room": "G211"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G211"
+        }
+      ],
+      "Vendredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "AUTOMATISATION DES SYSTÈMES INDUSTRIELS",
+          "room": "G211"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "GESTION DE PROJET",
+          "room": "G211"
+        }
+      ],
+      "Samedi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G211"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G211"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
+      "primary_room": "G211"
+    }
+  },
+  "4MécaT2": {
     "days": {
       "Lundi": [
         {
@@ -15798,8 +15879,89 @@
         },
         {
           "time": "13H:30-16H:45",
+          "course": "INNOVATION & ENTREPREUNARIAT_ATELIER CRÉATIF",
+          "room": "G008"
+        }
+      ],
+      "Mardi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "COMMUNICATION, CULTURE ET CITOYENNETÉ",
+          "room": "G008"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "PROJET D'INGÉNIERIE SIMULTANÉE G405,",
+          "room": "G008"
+        }
+      ],
+      "Mercredi": [
+        {
+          "time": "09H:00-12H:15",
           "course": "FREE",
           "room": "G008"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G008"
+        }
+      ],
+      "Jeudi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "AUTOMATISATION DES SYSTÈMES INDUSTRIELS",
+          "room": "G008"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "GESTION DE PROJET",
+          "room": "G008"
+        }
+      ],
+      "Vendredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "CONTRÔLE DE LA QUALITÉ",
+          "room": "G008"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G008"
+        }
+      ],
+      "Samedi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G008"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G008"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
+      "primary_room": "G008"
+    }
+  },
+  "4MécaT3": {
+    "days": {
+      "Lundi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "Unknown"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "Unknown"
         }
       ],
       "Mardi": [
@@ -15818,12 +15980,12 @@
         {
           "time": "09H:00-12H:15",
           "course": "FREE",
-          "room": "G008"
+          "room": "G213"
         },
         {
           "time": "13H:30-16H:45",
           "course": "FREE",
-          "room": "G008"
+          "room": "G213"
         }
       ],
       "Jeudi": [
@@ -15854,19 +16016,19 @@
         {
           "time": "09H:00-12H:15",
           "course": "FREE",
-          "room": "G008"
+          "room": "G213"
         },
         {
           "time": "13H:30-16H:45",
           "course": "FREE",
-          "room": "G008"
+          "room": "G213"
         }
       ]
     },
     "metadata": {
       "year": "2025/2026",
       "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
-      "primary_room": "G008"
+      "primary_room": "G213"
     }
   },
   "4NIDS1": {

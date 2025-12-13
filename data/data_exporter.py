@@ -69,6 +69,9 @@ class ScheduleToJSON:
         """
         print(f"Parsing PDF with spatial awareness: {pdf_path}")
 
+        skipped_pages = []
+        duplicate_classes = {}
+
         with pdfplumber.open(pdf_path) as pdf:
             total_pages = len(pdf.pages)
             print(f"Total pages in PDF: {total_pages}")
@@ -77,6 +80,7 @@ class ScheduleToJSON:
                 words = page.extract_words()
 
                 if not words:
+                    skipped_pages.append(page_num + 1)
                     print(f"  ⚠ Page {page_num + 1} skipped - no words found")
                     continue
 
@@ -84,6 +88,7 @@ class ScheduleToJSON:
                 class_name = self._extract_class_name_from_words(
                     words, page_num + 1)
                 if not class_name:
+                    skipped_pages.append(page_num + 1)
                     # Debug: print first few words to see what's on this page
                     if len(words) > 0:
                         first_words = ' '.join([w['text'] for w in words[:20]])
@@ -94,7 +99,18 @@ class ScheduleToJSON:
                 # Extract day columns (x-coordinates for each day)
                 day_columns = self._extract_day_columns(words)
                 if not day_columns:
+                    skipped_pages.append(page_num + 1)
+                    print(
+                        f"  ⚠ Page {page_num + 1} skipped - no day columns found (class: {class_name})")
                     continue
+
+                # Check for duplicate class names
+                if class_name in self.schedules:
+                    if class_name not in duplicate_classes:
+                        duplicate_classes[class_name] = []
+                    duplicate_classes[class_name].append(page_num + 1)
+                    print(
+                        f"  ⚠ Page {page_num + 1} - DUPLICATE class name '{class_name}' (will overwrite previous)")
 
                 # Extract metadata
                 metadata = self._extract_metadata_from_words(words)
@@ -117,8 +133,14 @@ class ScheduleToJSON:
         print(
             f"\nAnalysis completed! {classes_found} classes found from {total_pages} pages.")
         if classes_found < total_pages:
-            print(
-                f"  ⚠ Warning: {total_pages - classes_found} pages were skipped (no class name detected)")
+            missing_count = total_pages - classes_found
+            print(f"  ⚠ Warning: {missing_count} pages missing")
+            if skipped_pages:
+                print(f"  📄 Skipped page numbers: {skipped_pages}")
+            if duplicate_classes:
+                print(f"  🔄 Duplicate class names found (pages overwritten):")
+                for cls, pages in duplicate_classes.items():
+                    print(f"     - '{cls}' appears on pages: {pages}")
         return self.schedules
 
     def _extract_class_name_from_words(self, words, page_num=0):
@@ -128,14 +150,15 @@ class ScheduleToJSON:
 
         for i, w in enumerate(words):
             text = w['text'].strip()
-            # Class names patterns (case-insensitive, allow hyphens):
-            # - \d[A-Za-z-]+\d+ : like 4SAE11, 3IA2, 4ERP-BI1, 4GamiX1
-            # - \d[A-Za-z-]+ : like 3A1, 4A (ending with just letters)
-            # - [A-Za-z]+\d+ : like PREPA1, SLEAM2
-            # - \d+[A-Za-z-]+\d* : More flexible digit-letter combos
-            if (re.match(r'^\d[A-Za-z-]+\d*$', text) or
-                re.match(r'^[A-Za-z]+\d+$', text, re.IGNORECASE) or
-                    re.match(r'^\d+[A-Za-z-]+$', text)):
+            # Class names patterns (allow accented characters like é, à, è, ô):
+            # - \d[\w-]+\d+ : like 4SAE11, 3IA2, 4ERP-BI1, 4GamiX1, 4MécaT1
+            # - \d[\w-]+ : like 3A1, 4A (ending with just letters)
+            # - [\w]+\d+ : like PREPA1, SLEAM2
+            # - \d+[\w-]+\d* : More flexible digit-letter combos
+            # Using \w which matches [A-Za-z0-9_] plus Unicode letters (like é, à, etc)
+            if (re.match(r'^\d[\w-]+\d*$', text, re.UNICODE) or
+                re.match(r'^[\w]+\d+$', text, re.UNICODE | re.IGNORECASE) or
+                    re.match(r'^\d+[\w-]+$', text, re.UNICODE)):
                 # Prioritize entries near "Emploi" or at start of page
                 priority = 0
                 if i < 30:  # Near start of page
