@@ -37,10 +37,15 @@ export function NearestEmptyRoom({
 
     // Extract building from class room (e.g., "A17" -> "A")
     const buildingRegex = /^[A-Z]+/;
-    const building = buildingRegex.exec(classRoom)?.[0] || classRoom.charAt(0);
+    let building = buildingRegex.exec(classRoom)?.[0] || classRoom.charAt(0);
+
+    // Normalize I, J, K to IJK
+    if (building === "I" || building === "J" || building === "K") {
+      building = "IJK";
+    }
 
     fetch(
-      `/api/rooms/free?day=${encodeURIComponent(day)}&time=${encodeURIComponent(time)}&bloc=${building}`
+      `/api/rooms/free?day=${encodeURIComponent(day)}&time=${encodeURIComponent(time)}&building=${building}`
     )
       .then((res) => res.json())
       .then((data) => {
@@ -87,7 +92,16 @@ export function NearestEmptyRoom({
           classRoom.replaceAll(/[A-Z]/g, ""),
           10
         );
-        const sameBuilding = allRooms.filter((r) => r.buildingId === building);
+        // For IJK group, match any room from I, J, or K
+        const sameBuilding =
+          building === "IJK"
+            ? allRooms.filter(
+                (r) =>
+                  r.buildingId === "I" ||
+                  r.buildingId === "J" ||
+                  r.buildingId === "K"
+              )
+            : allRooms.filter((r) => r.buildingId === building);
 
         if (sameBuilding.length > 0) {
           const sorted = [...sameBuilding].sort((a, b) => {

@@ -37,17 +37,26 @@ export function RoomSearchForm({
   const [day, setDay] = useState<string>("");
   const [time, setTime] = useState<string>("09:00");
   const [bloc, setBloc] = useState<string>("all");
-  
+
   // Track if we've applied initial values to avoid re-applying on every render
   const [hasAppliedInitialDay, setHasAppliedInitialDay] = useState(false);
   const [hasAppliedInitialTime, setHasAppliedInitialTime] = useState(false);
 
   // Set initial day when it becomes available (only once)
   useEffect(() => {
-    if (!hasAppliedInitialDay && initialDay && availableDays.includes(initialDay)) {
+    if (
+      !hasAppliedInitialDay &&
+      initialDay &&
+      availableDays.includes(initialDay)
+    ) {
       setDay(initialDay);
       setHasAppliedInitialDay(true);
-    } else if (!hasAppliedInitialDay && !initialDay && availableDays.length > 0 && availableDays[0]) {
+    } else if (
+      !hasAppliedInitialDay &&
+      !initialDay &&
+      availableDays.length > 0 &&
+      availableDays[0]
+    ) {
       // Fallback: if no initialDay but we have available days, use first one
       setDay(availableDays[0]);
       setHasAppliedInitialDay(true);
@@ -61,7 +70,6 @@ export function RoomSearchForm({
       setHasAppliedInitialTime(true);
     }
   }, [initialTime, hasAppliedInitialTime]);
-
 
   // Check if selected day is Friday (Vendredi) for different time slots
   const isFriday = day.startsWith("Vendredi");
@@ -162,9 +170,7 @@ export function RoomSearchForm({
                 <SelectItem value="D">Bloc D</SelectItem>
                 <SelectItem value="G">Bloc G</SelectItem>
                 <SelectItem value="H">Bloc H</SelectItem>
-                <SelectItem value="I">Bloc I</SelectItem>
-                <SelectItem value="J">Bloc J</SelectItem>
-                <SelectItem value="K">Bloc K</SelectItem>
+                <SelectItem value="IJK">Bloc IJK</SelectItem>
                 <SelectItem value="M">Bloc M</SelectItem>
               </SelectContent>
             </Select>

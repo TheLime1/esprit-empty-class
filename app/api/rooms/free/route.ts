@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
 
+// Normalize bloc names - treat I, J, K as one group
+function normalizeBloc(bloc: string): string {
+  const upper = bloc.toUpperCase();
+  if (upper === 'I' || upper === 'J' || upper === 'K') {
+    return 'IJK';
+  }
+  return upper;
+}
+
 function parseTimeStr(s: string): number | null {
   if (!s) return null;
   // Handle formats like "09H:00" or "09:00"
@@ -122,8 +131,16 @@ export async function GET(req: NextRequest) {
     
     // Apply building filter to empty and warning rooms
     if (buildingParam && buildingParam !== "all") {
-      empty = empty.filter((r) => r.startsWith(buildingParam));
-      warning = warning.filter((r) => r.startsWith(buildingParam));
+      const normalizedParam = normalizeBloc(buildingParam);
+      
+      if (normalizedParam === 'IJK') {
+        // Filter for rooms starting with I, J, or K
+        empty = empty.filter((r) => r.startsWith('I') || r.startsWith('J') || r.startsWith('K'));
+        warning = warning.filter((r) => r.startsWith('I') || r.startsWith('J') || r.startsWith('K'));
+      } else {
+        empty = empty.filter((r) => r.startsWith(buildingParam));
+        warning = warning.filter((r) => r.startsWith(buildingParam));
+      }
     }
 
     return NextResponse.json({ days, rooms, occupied: occupiedArr, empty, warning });
