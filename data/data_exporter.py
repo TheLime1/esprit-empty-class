@@ -56,7 +56,7 @@ class ScheduleToJSON:
 
     def parse_pdf_spatial(self, pdf_path):
         """Parse schedules from PDF using spatial positioning.
-        
+
         Uses pdfplumber to extract words with their x,y positions,
         allowing correct mapping of courses to days even when some
         days are completely empty.
@@ -68,59 +68,105 @@ class ScheduleToJSON:
             dict: Parsed schedules organized by class
         """
         print(f"Parsing PDF with spatial awareness: {pdf_path}")
-        
+
         with pdfplumber.open(pdf_path) as pdf:
+            total_pages = len(pdf.pages)
+            print(f"Total pages in PDF: {total_pages}")
+
             for page_num, page in enumerate(pdf.pages):
                 words = page.extract_words()
-                
+
                 if not words:
+                    print(f"  ⚠ Page {page_num + 1} skipped - no words found")
                     continue
-                
+
                 # Extract class name from words
-                class_name = self._extract_class_name_from_words(words)
+                class_name = self._extract_class_name_from_words(
+                    words, page_num + 1)
                 if not class_name:
+                    # Debug: print first few words to see what's on this page
+                    if len(words) > 0:
+                        first_words = ' '.join([w['text'] for w in words[:20]])
+                        print(
+                            f"  ⚠ Page {page_num + 1} skipped - no class name found. First words: {first_words[:100]}...")
                     continue
-                
+
                 # Extract day columns (x-coordinates for each day)
                 day_columns = self._extract_day_columns(words)
                 if not day_columns:
                     continue
-                
+
                 # Extract metadata
                 metadata = self._extract_metadata_from_words(words)
-                
+
                 # Initialize schedule
                 self.schedules[class_name] = {
                     'days': {},
                     'metadata': metadata
                 }
-                
+
                 # Extract courses with their positions
-                courses = self._extract_courses_with_positions(words, day_columns)
-                
+                courses = self._extract_courses_with_positions(
+                    words, day_columns)
+
                 # Assign courses to days based on x-position
-                self._assign_courses_by_position(class_name, courses, day_columns)
-        
-        print(f"Analysis completed! {len(self.schedules)} classes found.")
+                self._assign_courses_by_position(
+                    class_name, courses, day_columns)
+
+        classes_found = len(self.schedules)
+        print(
+            f"\nAnalysis completed! {classes_found} classes found from {total_pages} pages.")
+        if classes_found < total_pages:
+            print(
+                f"  ⚠ Warning: {total_pages - classes_found} pages were skipped (no class name detected)")
         return self.schedules
-    
-    def _extract_class_name_from_words(self, words):
+
+    def _extract_class_name_from_words(self, words, page_num=0):
         """Extract class name from words list."""
         # Look for pattern like "4SAE11" or "4ARCTIC9" near "Emploi du Temps"
+        candidates = []
+
         for i, w in enumerate(words):
-            text = w['text']
-            # Class names typically start with a digit and contain letters
-            if re.match(r'^\d[A-Z]+\d+$', text):
-                return text
+            text = w['text'].strip()
+            # Class names patterns (case-insensitive, allow hyphens):
+            # - \d[A-Za-z-]+\d+ : like 4SAE11, 3IA2, 4ERP-BI1, 4GamiX1
+            # - \d[A-Za-z-]+ : like 3A1, 4A (ending with just letters)
+            # - [A-Za-z]+\d+ : like PREPA1, SLEAM2
+            # - \d+[A-Za-z-]+\d* : More flexible digit-letter combos
+            if (re.match(r'^\d[A-Za-z-]+\d*$', text) or
+                re.match(r'^[A-Za-z]+\d+$', text, re.IGNORECASE) or
+                    re.match(r'^\d+[A-Za-z-]+$', text)):
+                # Prioritize entries near "Emploi" or at start of page
+                priority = 0
+                if i < 30:  # Near start of page
+                    priority += 10
+                # Check if near "Emploi" keyword
+                for j in range(max(0, i-5), min(len(words), i+5)):
+                    if 'Emploi' in words[j]['text'] or 'Temps' in words[j]['text']:
+                        priority += 20
+                        break
+                candidates.append((priority, text))
+
+        if candidates:
+            # Return highest priority candidate
+            candidates.sort(reverse=True)
+            return candidates[0][1]
+
+        # If no candidates found, log all words for debugging
+        if page_num > 0:
+            all_text = ' '.join([w['text'] for w in words[:30]])
+            print(
+                f"  [Page {page_num}] No class name pattern found in: {all_text[:150]}...")
+
         return None
-    
+
     def _extract_day_columns(self, words):
         """Extract the x-coordinate ranges for each day column.
-        
+
         Returns a dict mapping day names to their x-coordinate range.
         """
         day_positions = {}
-        
+
         for w in words:
             if w['text'] in self.DAY_NAMES:
                 day_positions[w['text']] = {
@@ -128,14 +174,15 @@ class ScheduleToJSON:
                     'x0': w['x0'],
                     'x1': w['x1']
                 }
-        
+
         if not day_positions:
             return None
-        
+
         # Calculate column boundaries based on day header positions
         # Sort days by x position
-        sorted_days = sorted(day_positions.items(), key=lambda x: x[1]['x_center'])
-        
+        sorted_days = sorted(day_positions.items(),
+                             key=lambda x: x[1]['x_center'])
+
         # Calculate column boundaries - use full midpoint between adjacent days
         day_columns = {}
         for i, (day_name, pos) in enumerate(sorted_days):
@@ -145,22 +192,22 @@ class ScheduleToJSON:
             else:
                 prev_day_center = sorted_days[i - 1][1]['x_center']
                 x_start = (prev_day_center + pos['x_center']) / 2
-            
+
             # End boundary: midpoint to next day, or extend far right for last
             if i < len(sorted_days) - 1:
                 next_day_center = sorted_days[i + 1][1]['x_center']
                 x_end = (pos['x_center'] + next_day_center) / 2
             else:
                 x_end = 1500  # Extend to right edge of page for last column
-            
+
             day_columns[day_name] = {'x_start': x_start, 'x_end': x_end}
-        
+
         return day_columns
-    
+
     def _extract_metadata_from_words(self, words):
         """Extract metadata from words list."""
         metadata = {}
-        
+
         for i, w in enumerate(words):
             # Look for year pattern
             if re.match(r'\d{4}/\d{4}', w['text']):
@@ -171,23 +218,23 @@ class ScheduleToJSON:
                     metadata['period'] = w['text']
                 else:
                     metadata['period'] += f" - {w['text']}"
-        
+
         return metadata
-    
+
     def _extract_courses_with_positions(self, words, day_columns):
         """Extract courses with their positions from words.
-        
+
         Groups words into course blocks based on proximity and
         identifies course names, rooms, and times.
         """
         courses = []
-        
+
         # Find all time patterns (09:00 - 12:15 or 13:30 - 16:45)
         time_words = []
         for w in words:
             if re.match(r'\d{2}:\d{2}', w['text']):
                 time_words.append(w)
-        
+
         # Group time words into pairs (start-end)
         time_blocks = []
         i = 0
@@ -207,37 +254,37 @@ class ScheduleToJSON:
                     i += 2
                     continue
             i += 1
-        
+
         # For each time block, find associated course name and room
         for time_block in time_blocks:
             x = time_block['x']
             y = time_block['y']
-            
+
             # Find which day column this time block is in
             day_name = None
             for day, col in day_columns.items():
                 if col['x_start'] <= x <= col['x_end']:
                     day_name = day
                     break
-            
+
             if not day_name:
                 continue
-            
+
             # Find course name and room above or near this time
             course_words = []
             room = None
-            
+
             for w in words:
                 # Word should be in same column
                 if not (day_columns[day_name]['x_start'] <= w['x0'] <= day_columns[day_name]['x_end']):
                     continue
-                
+
                 # Word should be above or at same level as time
                 if w['top'] > y + 20:  # Allow some tolerance
                     continue
                 if w['top'] < y - 150:  # Not too far above
                     continue
-                
+
                 # Check if it's a room
                 if re.match(r'^[A-Z]\d+$', w['text']):
                     room = w['text']
@@ -259,7 +306,7 @@ class ScheduleToJSON:
                 # Otherwise it might be part of course name
                 elif w['text'] not in ['-']:
                     course_words.append(w)
-            
+
             # Build course name from words (sorted by y then x position)
             if course_words:
                 course_words.sort(key=lambda w: (w['top'], w['x0']))
@@ -267,11 +314,11 @@ class ScheduleToJSON:
                 course_name = self._clean_course_name(course_name)
             else:
                 course_name = None
-            
+
             if course_name and room:
                 # Determine time slot
                 time_str = f"{time_block['start'].replace(':', 'H:')}-{time_block['end'].replace(':', 'H:')}"
-                
+
                 courses.append({
                     'day': day_name,
                     'time': time_str,
@@ -279,30 +326,32 @@ class ScheduleToJSON:
                     'room': room,
                     'y': y  # Keep y for sorting
                 })
-                
+
                 self._track_room_usage_for_blocks(room)
-        
+
         return courses
-    
+
     def _assign_courses_by_position(self, class_name, courses, day_columns):
         """Assign courses to days based on their x-position."""
         # Get days info for full date keys
-        year = self.schedules[class_name]['metadata'].get('period', '').split('/')[-1][:4] or '2025'
-        
+        year = self.schedules[class_name]['metadata'].get(
+            'period', '').split('/')[-1][:4] or '2025'
+
         # Create schedule for each day
         for day_name in self.DAY_NAMES:
             if day_name not in day_columns:
                 continue
-            
+
             day_courses = [c for c in courses if c['day'] == day_name]
-            
+
             # Collect all morning and afternoon courses (there might be multiple)
             morning_courses = []
             afternoon_courses = []
-            
+
             for c in day_courses:
                 # Check start time to determine slot
-                time_start = c['time'].split('-')[0] if '-' in c['time'] else c['time']
+                time_start = c['time'].split(
+                    '-')[0] if '-' in c['time'] else c['time']
                 # Extract hour
                 hour_match = re.search(r'(\d{2})H?:', time_start)
                 if hour_match:
@@ -321,23 +370,24 @@ class ScheduleToJSON:
                             'room': c['room']
                         })
                         self._track_room_usage(class_name, c['room'])
-            
+
             # Find date for this day from metadata
             day_key = f"{day_name}"  # Will be enhanced with actual date
-            
+
             # Build day schedule - include all courses sorted by time
             day_schedule = []
-            
+
             # Sort morning courses by time and add them
             morning_courses.sort(key=lambda c: c['time'])
             day_schedule.extend(morning_courses)
-            
+
             # Sort afternoon courses by time and add them
             afternoon_courses.sort(key=lambda c: c['time'])
             day_schedule.extend(afternoon_courses)
-            
+
             # Fill empty slots only if we have no courses at all for a slot
-            filled = self._fill_empty_time_slots_multi(day_schedule, class_name)
+            filled = self._fill_empty_time_slots_multi(
+                day_schedule, class_name)
             if filled:
                 self.schedules[class_name]['days'][day_key] = filled
 
@@ -369,10 +419,10 @@ class ScheduleToJSON:
 
             # Extract days info first
             days_info = self._extract_days_info(page)
-            
+
             # Extract all course blocks from the page
             course_blocks = self._extract_all_course_blocks(page)
-            
+
             # Assign courses to days based on time slots
             self._assign_courses_to_days(
                 class_name,
@@ -382,57 +432,57 @@ class ScheduleToJSON:
 
         print(f"Analysis completed! {len(self.schedules)} classes found.")
         return self.schedules
-    
+
     def _extract_all_course_blocks(self, page):
         """Extract all course blocks from the page.
-        
+
         The PDF text extraction outputs courses in day order:
         Day1 morning, Day1 afternoon, Day2 morning, Day2 afternoon, etc.
-        
+
         Each course block format in the text is:
         [COURSE NAME possibly with hour prefix]
         [ROOM]
         [TIME in format HH:MM - HH:MM]
-        
+
         Sometimes the time and next course name are on the same line.
-        
+
         Args:
             page: Text content of the page
-            
+
         Returns:
             list: List of course block dictionaries with time, course, room
         """
         course_blocks = []
-        
+
         # Find all time patterns in the format HH:MM - HH:MM
         time_pattern = r'(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})'
         time_matches = list(re.finditer(time_pattern, page))
-        
+
         # Find where the actual schedule data starts (after the hour markers row)
         # The hour markers are "09h", "10h", ..., "17h"
         # The last hour marker (17h) followed by the first course name
         hour_marker_match = re.search(r'17h', page)
         data_start = hour_marker_match.end() if hour_marker_match else 0
-        
+
         # For each time, look backwards to find the room and course name
         for i, time_match in enumerate(time_matches):
             # Build time string
             start_h, start_m = time_match.group(1), time_match.group(2)
             end_h, end_m = time_match.group(3), time_match.group(4)
             time_str = f"{start_h}H:{start_m}-{end_h}H:{end_m}"
-            
+
             # Determine the search region: from previous time match (or data_start) to this one
             if i == 0:
                 search_start = data_start
             else:
                 search_start = time_matches[i-1].end()
-            
+
             text_before = page[search_start:time_match.start()]
-            
+
             # Split into lines and clean
             lines = text_before.split('\n')
             lines = [l.strip() for l in lines if l.strip()]
-            
+
             # Filter out hour markers, day headers, and header content
             filtered_lines = []
             for line in lines:
@@ -465,30 +515,30 @@ class ScheduleToJSON:
                         filtered_lines.append(after_time)
                     continue
                 filtered_lines.append(line)
-            
+
             if len(filtered_lines) < 2:  # Need at least course name and room
                 continue
-            
+
             # Room is the last element (right before time)
             room = None
             room_line = filtered_lines[-1]
-            
+
             if re.match(r'^[A-Z]\d+$', room_line):
                 room = room_line
                 filtered_lines = filtered_lines[:-1]
             elif re.match(r'^En\s+ligne$', room_line, re.IGNORECASE):
                 room = 'En Ligne'
                 filtered_lines = filtered_lines[:-1]
-            
+
             if not room or not filtered_lines:
                 continue
-            
+
             # Remaining filtered_lines are the course name parts
             course_name = ' '.join(filtered_lines)
-            
+
             # Clean the course name (removing hour prefixes like "17h")
             course_name = self._clean_course_name(course_name)
-            
+
             if course_name and len(course_name) >= 3:
                 course_blocks.append({
                     'time': time_str,
@@ -496,12 +546,12 @@ class ScheduleToJSON:
                     'room': room,
                     'position': i  # Keep track of order
                 })
-                
+
                 # Track room usage
                 self._track_room_usage_for_blocks(room)
-        
+
         return course_blocks
-    
+
     def _track_room_usage_for_blocks(self, room):
         """Simple room tracking for blocks extraction."""
         if '_temp_rooms' not in dir(self):
@@ -509,25 +559,25 @@ class ScheduleToJSON:
         if room not in self._temp_rooms:
             self._temp_rooms[room] = 0
         self._temp_rooms[room] += 1
-    
+
     def _assign_courses_to_days(self, class_name, days_info, course_blocks):
         """Assign course blocks to the appropriate days.
-        
+
         The courses are extracted in order as they appear in the PDF:
         Day1 morning, Day1 afternoon (optional), Day2 morning, Day2 afternoon (optional), etc.
-        
+
         When we see two morning courses in a row, it means the previous day
         has no afternoon course.
-        
+
         Args:
             class_name: Name of the class
             days_info: List of day info dictionaries
             course_blocks: List of extracted course blocks
         """
         day_keys = [day['key'] for day in days_info]
-        day_schedules = {day_key: {'morning': None, 'afternoon': None} 
-                        for day_key in day_keys}
-        
+        day_schedules = {day_key: {'morning': None, 'afternoon': None}
+                         for day_key in day_keys}
+
         # Mark each course with its slot type
         for course in course_blocks:
             time_parts = re.findall(r'(\d{2})H:(\d{2})', course['time'])
@@ -536,18 +586,18 @@ class ScheduleToJSON:
                 course['slot'] = 'morning' if start_hour < 12 else 'afternoon'
             else:
                 course['slot'] = 'morning'  # Default
-        
+
         # Process courses sequentially, assigning them to days in order
         current_day_index = 0
         expecting_slot = 'morning'  # Start expecting a morning course
-        
+
         for course in course_blocks:
             if current_day_index >= len(day_keys):
                 break
-            
+
             current_day_key = day_keys[current_day_index]
             slot = course['slot']
-            
+
             if expecting_slot == 'morning':
                 if slot == 'morning':
                     # Assign morning course to current day
@@ -594,17 +644,18 @@ class ScheduleToJSON:
                         }
                         self._track_room_usage(class_name, course['room'])
                         expecting_slot = 'afternoon'
-        
+
         # Convert to final format and fill empty slots
         for day_key in day_keys:
             courses_for_day = []
-            
+
             if day_schedules[day_key]['morning']:
                 courses_for_day.append(day_schedules[day_key]['morning'])
             if day_schedules[day_key]['afternoon']:
                 courses_for_day.append(day_schedules[day_key]['afternoon'])
-            
-            courses_complete = self._fill_empty_time_slots(courses_for_day, class_name)
+
+            courses_complete = self._fill_empty_time_slots(
+                courses_for_day, class_name)
             if courses_complete:
                 self.schedules[class_name]['days'][day_key] = courses_complete
 
@@ -774,7 +825,8 @@ class ScheduleToJSON:
         # Remove time references like "17h", "16h" - with or without word boundary
         # This handles cases like "17hARCHITECTURE" -> "ARCHITECTURE"
         course_name = re.sub(r'^\d{2}h', '', course_name)  # At start
-        course_name = re.sub(r'\s\d{2}h\b', '', course_name)  # In middle with space before
+        # In middle with space before
+        course_name = re.sub(r'\s\d{2}h\b', '', course_name)
         # Clean up whitespace
         course_name = re.sub(r'\s+', ' ', course_name).strip()
         return course_name
@@ -935,10 +987,10 @@ class ScheduleToJSON:
             )
 
         return result
-    
+
     def _fill_empty_time_slots_multi(self, courses, class_name):
         """Fill in FREE slots for missing morning or afternoon sessions.
-        
+
         Handles multiple courses in the same slot (e.g., two morning courses).
 
         Args:
@@ -959,9 +1011,10 @@ class ScheduleToJSON:
         # Check if we have any morning or afternoon courses
         has_morning = False
         has_afternoon = False
-        
+
         for course in courses:
-            time_start = course['time'].split('-')[0] if '-' in course['time'] else course['time']
+            time_start = course['time'].split(
+                '-')[0] if '-' in course['time'] else course['time']
             hour_match = re.search(r'(\d{2})H?:', time_start)
             if hour_match:
                 hour = int(hour_match.group(1))

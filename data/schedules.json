@@ -13308,6 +13308,87 @@
       "primary_room": "G013"
     }
   },
+  "4DATA": {
+    "days": {
+      "Lundi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "SYSTÈMES DE TRANSMISSION ET TRAITEMENT DES SIGNAU",
+          "room": "G105"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "GESTION DE PROJET",
+          "room": "G105"
+        }
+      ],
+      "Mardi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "CELLULAR NETWORKS 1",
+          "room": "G105"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "COMMUNICATION, CULTURE ET CITOYENNETÉ",
+          "room": "G105"
+        }
+      ],
+      "Mercredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G105"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G105"
+        }
+      ],
+      "Jeudi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "BIG DATA",
+          "room": "G105"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "MLOPS",
+          "room": "G105"
+        }
+      ],
+      "Vendredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "TECHNOLOGIES BACKEND",
+          "room": "G105"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "TECHNOLOGIES WAN",
+          "room": "G105"
+        }
+      ],
+      "Samedi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "MACHINE LEARNING ET OPTIMISATION",
+          "room": "G105"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G105"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
+      "primary_room": "G105"
+    }
+  },
   "4DS1": {
     "days": {
       "Lundi": [
@@ -14249,6 +14330,735 @@
       "primary_room": "G007"
     }
   },
+  "4ERP-BI1": {
+    "days": {
+      "Lundi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "ARCHITECTURE DES SI II",
+          "room": "G006"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G006"
+        }
+      ],
+      "Mardi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "ARCHITECTURE ORIENTÉE SERVICES \"SOA\"",
+          "room": "G006"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "PROGRAMMATION LINÉAIRE",
+          "room": "G006"
+        }
+      ],
+      "Mercredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G006"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G006"
+        }
+      ],
+      "Jeudi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "INNOVATION & ENTREPREUNARIAT_ATELIER CRÉATIF",
+          "room": "G006"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G006"
+        }
+      ],
+      "Vendredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "COMMUNICATION, CULTURE ET CITOYENNETÉ",
+          "room": "G006"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "MACHINE LEARNING APPLIQUÉ",
+          "room": "G006"
+        }
+      ],
+      "Samedi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G006"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G006"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
+      "primary_room": "G006"
+    }
+  },
+  "4ERP-BI2": {
+    "days": {
+      "Lundi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "ARCHITECTURE ORIENTÉE SERVICES \"SOA\"",
+          "room": "G413"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "ARCHITECTURE DES SI II",
+          "room": "G413"
+        }
+      ],
+      "Mardi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "PROGRAMMATION LINÉAIRE",
+          "room": "G413"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G413"
+        }
+      ],
+      "Mercredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G413"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G413"
+        }
+      ],
+      "Jeudi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "MACHINE LEARNING APPLIQUÉ",
+          "room": "G413"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INNOVATION & ENTREPREUNARIAT_ATELIER CRÉATIF",
+          "room": "G413"
+        }
+      ],
+      "Vendredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G413"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "COMMUNICATION, CULTURE ET CITOYENNETÉ",
+          "room": "G413"
+        }
+      ],
+      "Samedi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G413"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G413"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
+      "primary_room": "G413"
+    }
+  },
+  "4ERP-BI3": {
+    "days": {
+      "Lundi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "ARCHITECTURE DES SI II",
+          "room": "G114"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G114"
+        }
+      ],
+      "Mardi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "MACHINE LEARNING APPLIQUÉ",
+          "room": "G114"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "COMMUNICATION, CULTURE ET CITOYENNETÉ",
+          "room": "G114"
+        }
+      ],
+      "Mercredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G114"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G114"
+        }
+      ],
+      "Jeudi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G114"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "ARCHITECTURE ORIENTÉE SERVICES \"SOA\"",
+          "room": "G114"
+        }
+      ],
+      "Vendredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "PROGRAMMATION LINÉAIRE",
+          "room": "G114"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INNOVATION & ENTREPREUNARIAT_ATELIER CRÉATIF",
+          "room": "G114"
+        }
+      ],
+      "Samedi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "INNOVATION & ENTREUPRENARIAT_IDEATION CAMP",
+          "room": "G114"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G114"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
+      "primary_room": "G114"
+    }
+  },
+  "4ERP-BI4": {
+    "days": {
+      "Lundi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "ARCHITECTURE ORIENTÉE SERVICES \"SOA\"",
+          "room": "G201"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "PROGRAMMATION LINÉAIRE",
+          "room": "G201"
+        }
+      ],
+      "Mardi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G201"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G201"
+        }
+      ],
+      "Mercredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G201"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G201"
+        }
+      ],
+      "Jeudi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "ARCHITECTURE DES SI II",
+          "room": "G201"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "COMMUNICATION, CULTURE ET CITOYENNETÉ",
+          "room": "G201"
+        }
+      ],
+      "Vendredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "INNOVATION & ENTREPREUNARIAT_ATELIER CRÉATIF",
+          "room": "G201"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "MACHINE LEARNING APPLIQUÉ",
+          "room": "G201"
+        }
+      ],
+      "Samedi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G201"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G201"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
+      "primary_room": "G201"
+    }
+  },
+  "4ERP-BI5": {
+    "days": {
+      "Lundi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "COMMUNICATION, CULTURE ET CITOYENNETÉ",
+          "room": "G212"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G212"
+        }
+      ],
+      "Mardi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "INNOVATION & ENTREPREUNARIAT_ATELIER CRÉATIF",
+          "room": "G212"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "ARCHITECTURE ORIENTÉE SERVICES \"SOA\"",
+          "room": "G212"
+        }
+      ],
+      "Mercredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G212"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G212"
+        }
+      ],
+      "Jeudi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "PROGRAMMATION LINÉAIRE",
+          "room": "G212"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "MACHINE LEARNING APPLIQUÉ",
+          "room": "G212"
+        }
+      ],
+      "Vendredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G212"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "ARCHITECTURE DES SI II",
+          "room": "G212"
+        }
+      ],
+      "Samedi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G212"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G212"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
+      "primary_room": "G212"
+    }
+  },
+  "4ERP-BI6": {
+    "days": {
+      "Lundi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "MACHINE LEARNING APPLIQUÉ",
+          "room": "G002"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "ARCHITECTURE DES SI II",
+          "room": "G002"
+        }
+      ],
+      "Mardi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "ARCHITECTURE ORIENTÉE SERVICES \"SOA\"",
+          "room": "G002"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INNOVATION & ENTREPREUNARIAT_ATELIER CRÉATIF",
+          "room": "G002"
+        }
+      ],
+      "Mercredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G002"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G002"
+        }
+      ],
+      "Jeudi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G002"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "PROGRAMMATION LINÉAIRE",
+          "room": "G002"
+        }
+      ],
+      "Vendredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "COMMUNICATION, CULTURE ET CITOYENNETÉ",
+          "room": "G002"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G002"
+        }
+      ],
+      "Samedi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G002"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G002"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
+      "primary_room": "G002"
+    }
+  },
+  "4ERP-BI7": {
+    "days": {
+      "Lundi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "INNOVATION & ENTREPREUNARIAT_ATELIER CRÉATIF",
+          "room": "G011"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "ARCHITECTURE DES SI II",
+          "room": "G011"
+        }
+      ],
+      "Mardi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "MACHINE LEARNING APPLIQUÉ",
+          "room": "G011"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "PROGRAMMATION LINÉAIRE",
+          "room": "G011"
+        }
+      ],
+      "Mercredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G011"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G011"
+        }
+      ],
+      "Jeudi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "COMMUNICATION, CULTURE ET CITOYENNETÉ",
+          "room": "G011"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G011"
+        }
+      ],
+      "Vendredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "ARCHITECTURE ORIENTÉE SERVICES \"SOA\"",
+          "room": "G011"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G011"
+        }
+      ],
+      "Samedi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G011"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G011"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
+      "primary_room": "G011"
+    }
+  },
+  "4ERP-BI8": {
+    "days": {
+      "Lundi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "MACHINE LEARNING APPLIQUÉ",
+          "room": "G012"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INNOVATION & ENTREPREUNARIAT_ATELIER CRÉATIF",
+          "room": "G012"
+        }
+      ],
+      "Mardi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G012"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "COMMUNICATION, CULTURE ET CITOYENNETÉ",
+          "room": "G012"
+        }
+      ],
+      "Mercredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G012"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G012"
+        }
+      ],
+      "Jeudi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "ARCHITECTURE DES SI II",
+          "room": "G012"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G012"
+        }
+      ],
+      "Vendredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "PROGRAMMATION LINÉAIRE",
+          "room": "G012"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "ARCHITECTURE ORIENTÉE SERVICES \"SOA\"",
+          "room": "G012"
+        }
+      ],
+      "Samedi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G012"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G012"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
+      "primary_room": "G012"
+    }
+  },
+  "4ERP-BI9": {
+    "days": {
+      "Lundi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "COMMUNICATION, CULTURE ET CITOYENNETÉ",
+          "room": "G404"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "ARCHITECTURE ORIENTÉE SERVICES \"SOA\"",
+          "room": "G404"
+        }
+      ],
+      "Mardi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "MACHINE LEARNING APPLIQUÉ",
+          "room": "G404"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G404"
+        }
+      ],
+      "Mercredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G404"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G404"
+        }
+      ],
+      "Jeudi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "INNOVATION & ENTREPREUNARIAT_ATELIER CRÉATIF",
+          "room": "G404"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "PROGRAMMATION LINÉAIRE",
+          "room": "G404"
+        }
+      ],
+      "Vendredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "INFORMATIQUE DÉCISIONNELLE",
+          "room": "G404"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "ARCHITECTURE DES SI II",
+          "room": "G404"
+        }
+      ],
+      "Samedi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G404"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G404"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
+      "primary_room": "G404"
+    }
+  },
   "4GC1": {
     "days": {
       "Lundi": [
@@ -14328,6 +15138,87 @@
       "year": "2025/2026",
       "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
       "primary_room": "G203"
+    }
+  },
+  "4GamiX1": {
+    "days": {
+      "Lundi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "CONCEPTION NARRATIVE",
+          "room": "G202"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "ARCHITECTURE DES SI II",
+          "room": "G202"
+        }
+      ],
+      "Mardi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "TECHNOLOGIES XR",
+          "room": "G202"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "TECHNOLOGIES XR",
+          "room": "G202"
+        }
+      ],
+      "Mercredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G202"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G202"
+        }
+      ],
+      "Jeudi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "DEVOPS",
+          "room": "G202"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "JEUX VIDÉO CÔTÉ SERVEUR",
+          "room": "G202"
+        }
+      ],
+      "Vendredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "COMMUNICATION, CULTURE ET CITOYENNETÉ",
+          "room": "G202"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "INNOVATION & ENTREUPRENARIAT_IDEATION CAMP",
+          "room": "G202"
+        }
+      ],
+      "Samedi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G202"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G202"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
+      "primary_room": "G202"
     }
   },
   "4IA1": {
@@ -14814,6 +15705,168 @@
       "year": "2025/2026",
       "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
       "primary_room": "G209"
+    }
+  },
+  "4IoSyS1": {
+    "days": {
+      "Lundi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "TECHNOLOGIES WAN",
+          "room": "G210"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "COMMUNICATION, CULTURE ET CITOYENNETÉ",
+          "room": "G210"
+        }
+      ],
+      "Mardi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "SYSTÈMES DE TRANSMISSION ET TRAITEMENT DES SIGNAU",
+          "room": "G210"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "IOT NETWORKS & PROTOCOLS",
+          "room": "G210"
+        }
+      ],
+      "Mercredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G210"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G210"
+        }
+      ],
+      "Jeudi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "INITIATION APPLICATION CÔTÉ CLIENT",
+          "room": "G210"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "GRAPHES ET APPLICATIONS",
+          "room": "G210"
+        }
+      ],
+      "Vendredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "CELLULAR NETWORKS 1",
+          "room": "G210"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "TECHNOLOGIES BACKEND",
+          "room": "G210"
+        }
+      ],
+      "Samedi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G210"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G210"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
+      "primary_room": "G210"
+    }
+  },
+  "10h": {
+    "days": {
+      "Lundi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G008"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G008"
+        }
+      ],
+      "Mardi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "GESTION DE PROJET",
+          "room": "G213"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "COMMUNICATION, CULTURE ET CITOYENNETÉ",
+          "room": "G213"
+        }
+      ],
+      "Mercredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G008"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G008"
+        }
+      ],
+      "Jeudi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "AUTOMATISATION DES SYSTÈMES INDUSTRIELS",
+          "room": "G213"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "PROJET D'INGÉNIERIE SIMULTANÉE G211,",
+          "room": "G213"
+        }
+      ],
+      "Vendredi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "INNOVATION & ENTREPREUNARIAT_ATELIER CRÉATIF",
+          "room": "G213"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "CONTRÔLE DE LA QUALITÉ",
+          "room": "G213"
+        }
+      ],
+      "Samedi": [
+        {
+          "time": "09H:00-12H:15",
+          "course": "FREE",
+          "room": "G008"
+        },
+        {
+          "time": "13H:30-16H:45",
+          "course": "FREE",
+          "room": "G008"
+        }
+      ]
+    },
+    "metadata": {
+      "year": "2025/2026",
+      "period": "14/12/2025 - 20/12/2025 - 13/12/2025",
+      "primary_room": "G008"
     }
   },
   "4NIDS1": {
@@ -18512,7 +19565,7 @@
         },
         {
           "time": "13H:30-16H:45",
-          "course": "FREE",
+          "course": "NOT-FREE",
           "room": "G213"
         }
       ],
