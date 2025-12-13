@@ -4,6 +4,7 @@ import re
 import json
 import sys
 import PyPDF2
+import pdfplumber
 
 
 class ScheduleToJSON:
@@ -27,7 +28,6 @@ class ScheduleToJSON:
         """Initialize the parser."""
         self.schedules = {}
         self.class_rooms = {}  # Track primary room for each class
-        self._temp_rooms = {}  # Temporary room tracking for block extraction
 
     def load_pdf(self, pdf_path):
         """Load and extract text from PDF file.
@@ -53,6 +53,293 @@ class ScheduleToJSON:
 
             print("Extraction completed!")
             return all_text
+
+    def parse_pdf_spatial(self, pdf_path):
+        """Parse schedules from PDF using spatial positioning.
+        
+        Uses pdfplumber to extract words with their x,y positions,
+        allowing correct mapping of courses to days even when some
+        days are completely empty.
+
+        Args:
+            pdf_path: Path to the PDF file
+
+        Returns:
+            dict: Parsed schedules organized by class
+        """
+        print(f"Parsing PDF with spatial awareness: {pdf_path}")
+        
+        with pdfplumber.open(pdf_path) as pdf:
+            for page_num, page in enumerate(pdf.pages):
+                words = page.extract_words()
+                
+                if not words:
+                    continue
+                
+                # Extract class name from words
+                class_name = self._extract_class_name_from_words(words)
+                if not class_name:
+                    continue
+                
+                # Extract day columns (x-coordinates for each day)
+                day_columns = self._extract_day_columns(words)
+                if not day_columns:
+                    continue
+                
+                # Extract metadata
+                metadata = self._extract_metadata_from_words(words)
+                
+                # Initialize schedule
+                self.schedules[class_name] = {
+                    'days': {},
+                    'metadata': metadata
+                }
+                
+                # Extract courses with their positions
+                courses = self._extract_courses_with_positions(words, day_columns)
+                
+                # Assign courses to days based on x-position
+                self._assign_courses_by_position(class_name, courses, day_columns)
+        
+        print(f"Analysis completed! {len(self.schedules)} classes found.")
+        return self.schedules
+    
+    def _extract_class_name_from_words(self, words):
+        """Extract class name from words list."""
+        # Look for pattern like "4SAE11" or "4ARCTIC9" near "Emploi du Temps"
+        for i, w in enumerate(words):
+            text = w['text']
+            # Class names typically start with a digit and contain letters
+            if re.match(r'^\d[A-Z]+\d+$', text):
+                return text
+        return None
+    
+    def _extract_day_columns(self, words):
+        """Extract the x-coordinate ranges for each day column.
+        
+        Returns a dict mapping day names to their x-coordinate range.
+        """
+        day_positions = {}
+        
+        for w in words:
+            if w['text'] in self.DAY_NAMES:
+                day_positions[w['text']] = {
+                    'x_center': (w['x0'] + w['x1']) / 2,
+                    'x0': w['x0'],
+                    'x1': w['x1']
+                }
+        
+        if not day_positions:
+            return None
+        
+        # Calculate column boundaries based on day header positions
+        # Sort days by x position
+        sorted_days = sorted(day_positions.items(), key=lambda x: x[1]['x_center'])
+        
+        # Calculate column boundaries - use full midpoint between adjacent days
+        day_columns = {}
+        for i, (day_name, pos) in enumerate(sorted_days):
+            # Start boundary: midpoint to previous day, or extend far left for first
+            if i == 0:
+                x_start = 0  # Start from left edge of page
+            else:
+                prev_day_center = sorted_days[i - 1][1]['x_center']
+                x_start = (prev_day_center + pos['x_center']) / 2
+            
+            # End boundary: midpoint to next day, or extend far right for last
+            if i < len(sorted_days) - 1:
+                next_day_center = sorted_days[i + 1][1]['x_center']
+                x_end = (pos['x_center'] + next_day_center) / 2
+            else:
+                x_end = 1500  # Extend to right edge of page for last column
+            
+            day_columns[day_name] = {'x_start': x_start, 'x_end': x_end}
+        
+        return day_columns
+    
+    def _extract_metadata_from_words(self, words):
+        """Extract metadata from words list."""
+        metadata = {}
+        
+        for i, w in enumerate(words):
+            # Look for year pattern
+            if re.match(r'\d{4}/\d{4}', w['text']):
+                metadata['year'] = w['text']
+            # Look for date range
+            elif re.match(r'\d{2}/\d{2}/\d{4}', w['text']):
+                if 'period' not in metadata:
+                    metadata['period'] = w['text']
+                else:
+                    metadata['period'] += f" - {w['text']}"
+        
+        return metadata
+    
+    def _extract_courses_with_positions(self, words, day_columns):
+        """Extract courses with their positions from words.
+        
+        Groups words into course blocks based on proximity and
+        identifies course names, rooms, and times.
+        """
+        courses = []
+        
+        # Find all time patterns (09:00 - 12:15 or 13:30 - 16:45)
+        time_words = []
+        for w in words:
+            if re.match(r'\d{2}:\d{2}', w['text']):
+                time_words.append(w)
+        
+        # Group time words into pairs (start-end)
+        time_blocks = []
+        i = 0
+        while i < len(time_words) - 1:
+            start_time = time_words[i]
+            # Check if next non-dash word is end time
+            if i + 1 < len(time_words):
+                end_time = time_words[i + 1]
+                # Verify they're close together (same time block)
+                if abs(start_time['top'] - end_time['top']) < 10:
+                    time_blocks.append({
+                        'start': start_time['text'],
+                        'end': end_time['text'],
+                        'x': (start_time['x0'] + end_time['x1']) / 2,
+                        'y': start_time['top']
+                    })
+                    i += 2
+                    continue
+            i += 1
+        
+        # For each time block, find associated course name and room
+        for time_block in time_blocks:
+            x = time_block['x']
+            y = time_block['y']
+            
+            # Find which day column this time block is in
+            day_name = None
+            for day, col in day_columns.items():
+                if col['x_start'] <= x <= col['x_end']:
+                    day_name = day
+                    break
+            
+            if not day_name:
+                continue
+            
+            # Find course name and room above or near this time
+            course_words = []
+            room = None
+            
+            for w in words:
+                # Word should be in same column
+                if not (day_columns[day_name]['x_start'] <= w['x0'] <= day_columns[day_name]['x_end']):
+                    continue
+                
+                # Word should be above or at same level as time
+                if w['top'] > y + 20:  # Allow some tolerance
+                    continue
+                if w['top'] < y - 150:  # Not too far above
+                    continue
+                
+                # Check if it's a room
+                if re.match(r'^[A-Z]\d+$', w['text']):
+                    room = w['text']
+                # Check if it's "En ligne"
+                elif w['text'].lower() == 'en' or w['text'].lower() == 'ligne':
+                    room = 'En Ligne'
+                # Check if it's the time itself or hour markers
+                elif re.match(r'\d{2}:\d{2}', w['text']) or re.match(r'^\d{2}h$', w['text']):
+                    continue
+                # Skip day names
+                elif w['text'] in self.DAY_NAMES:
+                    continue
+                # Skip date patterns like "15/12" or "20/12"
+                elif re.match(r'^\d{2}/\d{2}$', w['text']):
+                    continue
+                # Skip full date patterns like "14/12/2025"
+                elif re.match(r'^\d{2}/\d{2}/\d{4}$', w['text']):
+                    continue
+                # Otherwise it might be part of course name
+                elif w['text'] not in ['-']:
+                    course_words.append(w)
+            
+            # Build course name from words (sorted by y then x position)
+            if course_words:
+                course_words.sort(key=lambda w: (w['top'], w['x0']))
+                course_name = ' '.join(w['text'] for w in course_words)
+                course_name = self._clean_course_name(course_name)
+            else:
+                course_name = None
+            
+            if course_name and room:
+                # Determine time slot
+                time_str = f"{time_block['start'].replace(':', 'H:')}-{time_block['end'].replace(':', 'H:')}"
+                
+                courses.append({
+                    'day': day_name,
+                    'time': time_str,
+                    'course': course_name,
+                    'room': room,
+                    'y': y  # Keep y for sorting
+                })
+                
+                self._track_room_usage_for_blocks(room)
+        
+        return courses
+    
+    def _assign_courses_by_position(self, class_name, courses, day_columns):
+        """Assign courses to days based on their x-position."""
+        # Get days info for full date keys
+        year = self.schedules[class_name]['metadata'].get('period', '').split('/')[-1][:4] or '2025'
+        
+        # Create schedule for each day
+        for day_name in self.DAY_NAMES:
+            if day_name not in day_columns:
+                continue
+            
+            day_courses = [c for c in courses if c['day'] == day_name]
+            
+            # Collect all morning and afternoon courses (there might be multiple)
+            morning_courses = []
+            afternoon_courses = []
+            
+            for c in day_courses:
+                # Check start time to determine slot
+                time_start = c['time'].split('-')[0] if '-' in c['time'] else c['time']
+                # Extract hour
+                hour_match = re.search(r'(\d{2})H?:', time_start)
+                if hour_match:
+                    hour = int(hour_match.group(1))
+                    if hour < 12:
+                        morning_courses.append({
+                            'time': c['time'],
+                            'course': c['course'],
+                            'room': c['room']
+                        })
+                        self._track_room_usage(class_name, c['room'])
+                    else:
+                        afternoon_courses.append({
+                            'time': c['time'],
+                            'course': c['course'],
+                            'room': c['room']
+                        })
+                        self._track_room_usage(class_name, c['room'])
+            
+            # Find date for this day from metadata
+            day_key = f"{day_name}"  # Will be enhanced with actual date
+            
+            # Build day schedule - include all courses sorted by time
+            day_schedule = []
+            
+            # Sort morning courses by time and add them
+            morning_courses.sort(key=lambda c: c['time'])
+            day_schedule.extend(morning_courses)
+            
+            # Sort afternoon courses by time and add them
+            afternoon_courses.sort(key=lambda c: c['time'])
+            day_schedule.extend(afternoon_courses)
+            
+            # Fill empty slots only if we have no courses at all for a slot
+            filled = self._fill_empty_time_slots_multi(day_schedule, class_name)
+            if filled:
+                self.schedules[class_name]['days'][day_key] = filled
 
     def parse_pdf_text(self, text):
         """Parse schedules from PDF text.
@@ -82,10 +369,10 @@ class ScheduleToJSON:
 
             # Extract days info first
             days_info = self._extract_days_info(page)
-
+            
             # Extract all course blocks from the page
             course_blocks = self._extract_all_course_blocks(page)
-
+            
             # Assign courses to days based on time slots
             self._assign_courses_to_days(
                 class_name,
@@ -95,266 +382,229 @@ class ScheduleToJSON:
 
         print(f"Analysis completed! {len(self.schedules)} classes found.")
         return self.schedules
-
+    
     def _extract_all_course_blocks(self, page):
         """Extract all course blocks from the page.
-
+        
         The PDF text extraction outputs courses in day order:
         Day1 morning, Day1 afternoon, Day2 morning, Day2 afternoon, etc.
-
+        
         Each course block format in the text is:
         [COURSE NAME possibly with hour prefix]
         [ROOM]
         [TIME in format HH:MM - HH:MM]
-
+        
         Sometimes the time and next course name are on the same line.
-
+        
         Args:
             page: Text content of the page
-
+            
         Returns:
             list: List of course block dictionaries with time, course, room
         """
         course_blocks = []
+        
+        # Find all time patterns in the format HH:MM - HH:MM
         time_pattern = r'(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})'
         time_matches = list(re.finditer(time_pattern, page))
-        data_start = self._find_data_start(page)
-
-        for i, time_match in enumerate(time_matches):
-            course_block = self._extract_single_course_block(
-                page, time_match, time_matches, i, data_start, time_pattern
-            )
-            if course_block:
-                course_blocks.append(course_block)
-                self._track_room_usage_for_blocks(course_block['room'])
-
-        return course_blocks
-
-    def _find_data_start(self, page):
-        """Find where the actual schedule data starts."""
+        
+        # Find where the actual schedule data starts (after the hour markers row)
+        # The hour markers are "09h", "10h", ..., "17h"
+        # The last hour marker (17h) followed by the first course name
         hour_marker_match = re.search(r'17h', page)
-        return hour_marker_match.end() if hour_marker_match else 0
-
-    def _extract_single_course_block(self, page, time_match, time_matches,
-                                     index, data_start, time_pattern):
-        """Extract a single course block from a time match."""
-        time_str = self._build_time_string(time_match)
-        search_start = data_start if index == 0 else time_matches[index-1].end(
-        )
-        text_before = page[search_start:time_match.start()]
-
-        filtered_lines = self._filter_course_lines(text_before, time_pattern)
-
-        if len(filtered_lines) < 2:
-            return None
-
-        room, course_lines = self._extract_room_from_lines(filtered_lines)
-
-        if not room or not course_lines:
-            return None
-
-        course_name = self._clean_course_name(' '.join(course_lines))
-
-        if course_name and len(course_name) >= 3:
-            return {
-                'time': time_str,
-                'course': course_name,
-                'room': room,
-                'position': index
-            }
-        return None
-
-    def _build_time_string(self, time_match):
-        """Build formatted time string from regex match."""
-        start_h, start_m = time_match.group(1), time_match.group(2)
-        end_h, end_m = time_match.group(3), time_match.group(4)
-        return f"{start_h}H:{start_m}-{end_h}H:{end_m}"
-
-    def _filter_course_lines(self, text_before, time_pattern):
-        """Filter and clean lines to extract course information."""
-        lines = [l.strip() for l in text_before.split('\n') if l.strip()]
-        filtered_lines = []
-
-        for line in lines:
-            if self._should_skip_line(line):
+        data_start = hour_marker_match.end() if hour_marker_match else 0
+        
+        # For each time, look backwards to find the room and course name
+        for i, time_match in enumerate(time_matches):
+            # Build time string
+            start_h, start_m = time_match.group(1), time_match.group(2)
+            end_h, end_m = time_match.group(3), time_match.group(4)
+            time_str = f"{start_h}H:{start_m}-{end_h}H:{end_m}"
+            
+            # Determine the search region: from previous time match (or data_start) to this one
+            if i == 0:
+                search_start = data_start
+            else:
+                search_start = time_matches[i-1].end()
+            
+            text_before = page[search_start:time_match.start()]
+            
+            # Split into lines and clean
+            lines = text_before.split('\n')
+            lines = [l.strip() for l in lines if l.strip()]
+            
+            # Filter out hour markers, day headers, and header content
+            filtered_lines = []
+            for line in lines:
+                # Skip standalone hour markers like "09h", "10h"
+                if re.match(r'^\d{2}h$', line):
+                    continue
+                # Skip day names
+                if line in self.DAY_NAMES:
+                    continue
+                # Skip dates like "15/12"
+                if re.match(r'^\d{2}/\d{2}$', line):
+                    continue
+                # Skip header content
+                if 'Emploi du Temps' in line:
+                    continue
+                if 'Université' in line or 'Universitaire' in line:
+                    continue
+                if 'ESPRIT' in line:
+                    continue
+                # Skip lines that look like class name + year info (header remnants)
+                if re.search(r'Année', line):
+                    continue
+                if re.match(r'^\d{2}/\d{2}/\d{4}\s*-\s*\d{2}/\d{2}/\d{4}', line):
+                    continue
+                # Skip if it contains a previous time pattern (leftover from last block)
+                if re.search(time_pattern, line):
+                    # But extract any course name that might be after the time on same line
+                    after_time = re.sub(time_pattern, '', line).strip()
+                    if after_time and len(after_time) >= 3:
+                        filtered_lines.append(after_time)
+                    continue
+                filtered_lines.append(line)
+            
+            if len(filtered_lines) < 2:  # Need at least course name and room
                 continue
-            if re.search(time_pattern, line):
-                after_time = re.sub(time_pattern, '', line).strip()
-                if after_time and len(after_time) >= 3:
-                    filtered_lines.append(after_time)
+            
+            # Room is the last element (right before time)
+            room = None
+            room_line = filtered_lines[-1]
+            
+            if re.match(r'^[A-Z]\d+$', room_line):
+                room = room_line
+                filtered_lines = filtered_lines[:-1]
+            elif re.match(r'^En\s+ligne$', room_line, re.IGNORECASE):
+                room = 'En Ligne'
+                filtered_lines = filtered_lines[:-1]
+            
+            if not room or not filtered_lines:
                 continue
-            filtered_lines.append(line)
-
-        return filtered_lines
-
-    def _should_skip_line(self, line):
-        """Check if a line should be skipped during course extraction."""
-        skip_patterns = [
-            (r'^\d{2}h$', None),  # Hour markers
-            (r'^\d{2}/\d{2}$', None),  # Dates
-            (r'^\d{2}/\d{2}/\d{4}\s*-\s*\d{2}/\d{2}/\d{4}', None),  # Date ranges
-            (r'Année', None),  # Year info
-        ]
-
-        skip_strings = [
-            'Emploi du Temps', 'Université', 'Universitaire', 'ESPRIT'
-        ]
-
-        for pattern, _ in skip_patterns:
-            if re.match(pattern, line) or re.search(pattern, line):
-                return True
-
-        if line in self.DAY_NAMES:
-            return True
-
-        for skip_str in skip_strings:
-            if skip_str in line:
-                return True
-
-        return False
-
-    def _extract_room_from_lines(self, lines):
-        """Extract room identifier from filtered lines."""
-        if not lines:
-            return None, []
-
-        room_line = lines[-1]
-        room = None
-
-        if re.match(r'^[A-Z]\d+$', room_line):
-            room = room_line
-            return room, lines[:-1]
-        elif re.match(r'^En\s+ligne$', room_line, re.IGNORECASE):
-            room = 'En Ligne'
-            return room, lines[:-1]
-
-        return None, lines
-
+            
+            # Remaining filtered_lines are the course name parts
+            course_name = ' '.join(filtered_lines)
+            
+            # Clean the course name (removing hour prefixes like "17h")
+            course_name = self._clean_course_name(course_name)
+            
+            if course_name and len(course_name) >= 3:
+                course_blocks.append({
+                    'time': time_str,
+                    'course': course_name,
+                    'room': room,
+                    'position': i  # Keep track of order
+                })
+                
+                # Track room usage
+                self._track_room_usage_for_blocks(room)
+        
+        return course_blocks
+    
     def _track_room_usage_for_blocks(self, room):
         """Simple room tracking for blocks extraction."""
+        if '_temp_rooms' not in dir(self):
+            self._temp_rooms = {}
         if room not in self._temp_rooms:
             self._temp_rooms[room] = 0
         self._temp_rooms[room] += 1
-
+    
     def _assign_courses_to_days(self, class_name, days_info, course_blocks):
         """Assign course blocks to the appropriate days.
-
+        
         The courses are extracted in order as they appear in the PDF:
         Day1 morning, Day1 afternoon (optional), Day2 morning, Day2 afternoon (optional), etc.
-
+        
         When we see two morning courses in a row, it means the previous day
         has no afternoon course.
-
+        
         Args:
             class_name: Name of the class
             days_info: List of day info dictionaries
             course_blocks: List of extracted course blocks
         """
         day_keys = [day['key'] for day in days_info]
-        day_schedules = {day_key: {'morning': {}, 'afternoon': {}}
-                         for day_key in day_keys}
-
+        day_schedules = {day_key: {'morning': None, 'afternoon': None} 
+                        for day_key in day_keys}
+        
         # Mark each course with its slot type
-        self._mark_course_slots(course_blocks)
-
-        # Process courses sequentially
-        self._process_courses_sequentially(
-            course_blocks, day_keys, day_schedules, class_name
-        )
-
-        # Convert to final format
-        self._finalize_day_schedules(class_name, day_keys, day_schedules)
-
-    def _mark_course_slots(self, course_blocks):
-        """Mark each course with its time slot type (morning/afternoon)."""
         for course in course_blocks:
             time_parts = re.findall(r'(\d{2})H:(\d{2})', course['time'])
             if time_parts:
                 start_hour = int(time_parts[0][0])
                 course['slot'] = 'morning' if start_hour < 12 else 'afternoon'
             else:
-                course['slot'] = 'morning'
-
-    def _process_courses_sequentially(self, course_blocks, day_keys,
-                                      day_schedules, class_name):
-        """Process courses and assign them to days in order."""
+                course['slot'] = 'morning'  # Default
+        
+        # Process courses sequentially, assigning them to days in order
         current_day_index = 0
-        expecting_slot = 'morning'
-
+        expecting_slot = 'morning'  # Start expecting a morning course
+        
         for course in course_blocks:
             if current_day_index >= len(day_keys):
                 break
-
-            current_day_index, expecting_slot = self._assign_single_course(
-                course, day_keys, day_schedules, class_name,
-                current_day_index, expecting_slot
-            )
-
-    def _assign_single_course(self, course, day_keys, day_schedules,
-                              class_name, current_day_index, expecting_slot):
-        """Assign a single course to the appropriate day and slot."""
-        current_day_key = day_keys[current_day_index]
-        slot = course['slot']
-        course_data = {
-            'time': course['time'],
-            'course': course['course'],
-            'room': course['room']
-        }
-
-        if expecting_slot == 'morning':
-            return self._handle_morning_assignment(
-                slot, course_data, day_schedules, current_day_key,
-                class_name, current_day_index
-            )
-        else:
-            return self._handle_afternoon_assignment(
-                slot, course_data, day_schedules, day_keys,
-                class_name, current_day_index
-            )
-
-    def _handle_morning_assignment(self, slot, course_data, day_schedules,
-                                   current_day_key, class_name, current_day_index):
-        """Handle assignment when expecting morning slot."""
-        if slot == 'morning':
-            day_schedules[current_day_key]['morning'] = course_data
-            self._track_room_usage(class_name, course_data['room'])
-            return current_day_index, 'afternoon'
-        else:
-            day_schedules[current_day_key]['afternoon'] = course_data
-            self._track_room_usage(class_name, course_data['room'])
-            return current_day_index + 1, 'morning'
-
-    def _handle_afternoon_assignment(self, slot, course_data, day_schedules,
-                                     day_keys, class_name, current_day_index):
-        """Handle assignment when expecting afternoon slot."""
-        current_day_key = day_keys[current_day_index]
-
-        if slot == 'afternoon':
-            day_schedules[current_day_key]['afternoon'] = course_data
-            self._track_room_usage(class_name, course_data['room'])
-            return current_day_index + 1, 'morning'
-        else:
-            # Morning when expecting afternoon - skip to next day
-            current_day_index += 1
-            if current_day_index < len(day_keys):
-                current_day_key = day_keys[current_day_index]
-                day_schedules[current_day_key]['morning'] = course_data
-                self._track_room_usage(class_name, course_data['room'])
-                return current_day_index, 'afternoon'
-            return current_day_index, 'morning'
-
-    def _finalize_day_schedules(self, class_name, day_keys, day_schedules):
-        """Convert day schedules to final format and fill empty slots."""
+            
+            current_day_key = day_keys[current_day_index]
+            slot = course['slot']
+            
+            if expecting_slot == 'morning':
+                if slot == 'morning':
+                    # Assign morning course to current day
+                    day_schedules[current_day_key]['morning'] = {
+                        'time': course['time'],
+                        'course': course['course'],
+                        'room': course['room']
+                    }
+                    self._track_room_usage(class_name, course['room'])
+                    expecting_slot = 'afternoon'  # Now expect afternoon
+                else:
+                    # Got afternoon when expecting morning - shouldn't happen normally
+                    # Just assign it and move on
+                    day_schedules[current_day_key]['afternoon'] = {
+                        'time': course['time'],
+                        'course': course['course'],
+                        'room': course['room']
+                    }
+                    self._track_room_usage(class_name, course['room'])
+                    current_day_index += 1
+                    expecting_slot = 'morning'
+            else:  # expecting_slot == 'afternoon'
+                if slot == 'afternoon':
+                    # Assign afternoon course to current day
+                    day_schedules[current_day_key]['afternoon'] = {
+                        'time': course['time'],
+                        'course': course['course'],
+                        'room': course['room']
+                    }
+                    self._track_room_usage(class_name, course['room'])
+                    current_day_index += 1
+                    expecting_slot = 'morning'  # Move to next day
+                else:
+                    # Got morning when expecting afternoon
+                    # This means current day has no afternoon course
+                    # Move to next day and assign this morning course there
+                    current_day_index += 1
+                    if current_day_index < len(day_keys):
+                        current_day_key = day_keys[current_day_index]
+                        day_schedules[current_day_key]['morning'] = {
+                            'time': course['time'],
+                            'course': course['course'],
+                            'room': course['room']
+                        }
+                        self._track_room_usage(class_name, course['room'])
+                        expecting_slot = 'afternoon'
+        
+        # Convert to final format and fill empty slots
         for day_key in day_keys:
             courses_for_day = []
-
+            
             if day_schedules[day_key]['morning']:
                 courses_for_day.append(day_schedules[day_key]['morning'])
             if day_schedules[day_key]['afternoon']:
                 courses_for_day.append(day_schedules[day_key]['afternoon'])
-
-            courses_complete = self._fill_empty_time_slots(
-                courses_for_day, class_name)
+            
+            courses_complete = self._fill_empty_time_slots(courses_for_day, class_name)
             if courses_complete:
                 self.schedules[class_name]['days'][day_key] = courses_complete
 
@@ -524,8 +774,7 @@ class ScheduleToJSON:
         # Remove time references like "17h", "16h" - with or without word boundary
         # This handles cases like "17hARCHITECTURE" -> "ARCHITECTURE"
         course_name = re.sub(r'^\d{2}h', '', course_name)  # At start
-        # In middle with space before
-        course_name = re.sub(r'\s\d{2}h\b', '', course_name)
+        course_name = re.sub(r'\s\d{2}h\b', '', course_name)  # In middle with space before
         # Clean up whitespace
         course_name = re.sub(r'\s+', ' ', course_name).strip()
         return course_name
@@ -564,7 +813,7 @@ class ScheduleToJSON:
         # Track the end position of the previous time match
         prev_end_pos = 0
 
-        for time_match in time_matches:
+        for i, time_match in enumerate(time_matches):
             # Determine the start position for this course
             # (after the previous time match)
             course_start = prev_end_pos
@@ -686,6 +935,55 @@ class ScheduleToJSON:
             )
 
         return result
+    
+    def _fill_empty_time_slots_multi(self, courses, class_name):
+        """Fill in FREE slots for missing morning or afternoon sessions.
+        
+        Handles multiple courses in the same slot (e.g., two morning courses).
+
+        Args:
+            courses: List of existing courses (may have multiple per slot)
+            class_name: Name of the class
+
+        Returns:
+            list: Complete list of courses with FREE slots added where needed
+        """
+        primary_room = self._get_primary_room(class_name)
+
+        if not courses:
+            return [
+                self._create_free_slot(self.MORNING_SLOT, primary_room),
+                self._create_free_slot(self.AFTERNOON_SLOT, primary_room)
+            ]
+
+        # Check if we have any morning or afternoon courses
+        has_morning = False
+        has_afternoon = False
+        
+        for course in courses:
+            time_start = course['time'].split('-')[0] if '-' in course['time'] else course['time']
+            hour_match = re.search(r'(\d{2})H?:', time_start)
+            if hour_match:
+                hour = int(hour_match.group(1))
+                if hour < 12:
+                    has_morning = True
+                else:
+                    has_afternoon = True
+
+        result = list(courses)
+
+        if not has_morning:
+            result.insert(
+                0,
+                self._create_free_slot(self.MORNING_SLOT, primary_room)
+            )
+
+        if not has_afternoon:
+            result.append(
+                self._create_free_slot(self.AFTERNOON_SLOT, primary_room)
+            )
+
+        return result
 
     def _create_free_slot(self, time_str, room):
         """Create a FREE slot entry.
@@ -783,7 +1081,7 @@ class ScheduleToJSON:
         changes_made = 0
         warning_made = 0
 
-        for class_data in self.schedules.values():
+        for class_name, class_data in self.schedules.items():
             for day_key, courses in class_data['days'].items():
                 for course in courses:
                     if course['course'] == 'FREE':
@@ -821,25 +1119,21 @@ class ScheduleToJSON:
             for day_key, courses in class_data['days'].items():
                 for course in courses:
                     if course['course'] != 'FREE':
-                        self._add_course_to_occupancy(
-                            room_occupancy, course, day_key, class_name
+                        room = course['room']
+                        time = course['time']
+
+                        if room not in room_occupancy:
+                            room_occupancy[room] = {}
+                        if day_key not in room_occupancy[room]:
+                            room_occupancy[room][day_key] = {}
+                        if time not in room_occupancy[room][day_key]:
+                            room_occupancy[room][day_key][time] = []
+
+                        room_occupancy[room][day_key][time].append(
+                            class_name
                         )
 
         return room_occupancy
-
-    def _add_course_to_occupancy(self, room_occupancy, course, day_key, class_name):
-        """Add a course to the room occupancy map."""
-        room = course['room']
-        time = course['time']
-
-        if room not in room_occupancy:
-            room_occupancy[room] = {}
-        if day_key not in room_occupancy[room]:
-            room_occupancy[room][day_key] = {}
-        if time not in room_occupancy[room][day_key]:
-            room_occupancy[room][day_key][time] = []
-
-        room_occupancy[room][day_key][time].append(class_name)
 
     def _is_room_occupied(self, room, day_key, free_time, room_occupancy):
         """Check if a room is occupied during a FREE time slot.
@@ -982,24 +1276,16 @@ def main():
     parser = ScheduleToJSON()
 
     try:
-        pdf_text = parser.load_pdf(pdf_file)
-        parser.parse_pdf_text(pdf_text)
+        # Use spatial parsing for accurate day mapping
+        parser.parse_pdf_spatial(pdf_file)
         parser.export_to_json(json_file)
 
         print("\n✓ Process completed successfully!")
 
     except FileNotFoundError:
         print(f"Error: File '{pdf_file}' not found!")
-    except json.JSONDecodeError as e:
-        print(f"Error decoding JSON: {e}")
-        import traceback
-        traceback.print_exc()
-    except (IOError, OSError) as e:
-        print(f"Error accessing file: {e}")
-        import traceback
-        traceback.print_exc()
-    except ValueError as e:
-        print(f"Error processing PDF: {e}")
+    except Exception as e:
+        print(f"Error: {e}")
         import traceback
         traceback.print_exc()
 

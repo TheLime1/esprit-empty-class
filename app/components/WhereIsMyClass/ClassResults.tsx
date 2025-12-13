@@ -251,9 +251,14 @@ function FullTimetable({
     "Vendredi",
     "Samedi",
   ];
-  const orderedDays = dayOrder.filter((day) =>
-    schedule[day]?.some((s) => isRealClass(s.course))
-  );
+  const orderedDays = dayOrder.filter((day) => {
+    const sessions = schedule[day] || [];
+    // Include days with real classes OR days with exactly 2 FREE sessions (entire day free)
+    const hasRealClasses = sessions.some((s) => isRealClass(s.course));
+    const freeSessions = sessions.filter((s) => isFreeSlot(s.course));
+    const hasFullDayFree = freeSessions.length === 2;
+    return hasRealClasses || hasFullDayFree;
+  });
 
   if (orderedDays.length === 0) return null;
 
@@ -307,12 +312,7 @@ function FullTimetable({
             {orderedDays.map((day) => {
               const allSessions = schedule[day] || [];
 
-              // Check if there are any real classes
-              const hasRealClasses = allSessions.some((session) =>
-                isRealClass(session.course)
-              );
-
-              if (!hasRealClasses) return null;
+              // Already filtered in orderedDays, no need to check again
 
               // Map all sessions, marking FREE slots
               const mappedSessions = allSessions.map((session) => {
@@ -435,12 +435,14 @@ function CalendarView({
       {orderedDays.map((day) => {
         const allSessions = schedule[day] || [];
 
-        // Check if there are any real classes
+        // Check if there are any real classes or 2 FREE sessions
         const hasRealClasses = allSessions.some((session) =>
           isRealClass(session.course)
         );
+        const freeSessions = allSessions.filter((s) => isFreeSlot(s.course));
+        const hasFullDayFree = freeSessions.length === 2;
 
-        if (!hasRealClasses) return null;
+        if (!hasRealClasses && !hasFullDayFree) return null;
 
         // Map all sessions, marking FREE slots
         const mappedSessions = allSessions.map((session) => {

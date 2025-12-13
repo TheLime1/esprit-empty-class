@@ -116,7 +116,7 @@ export function NearestEmptyRoom({
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <Card className="p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 bg-blue-50 dark:bg-blue-950/20 border-2 border-blue-200 dark:border-blue-800">
+        <Card className="p-6 md:p-8 bg-blue-50 dark:bg-blue-950/20 border-2 border-blue-200 dark:border-blue-800">
           <p className="text-sm text-center text-muted-foreground">
             Finding nearest empty room...
           </p>
@@ -134,7 +134,7 @@ export function NearestEmptyRoom({
       transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
     >
       <Card
-        className={`p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border-2 ${
+        className={`p-6 md:p-8 border-2 ${
           nearestRoom.isWarning
             ? "bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20 border-yellow-400 dark:border-yellow-600"
             : "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-400 dark:border-green-600"
