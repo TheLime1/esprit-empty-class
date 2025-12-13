@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -34,24 +34,34 @@ export function RoomSearchForm({
   initialDay,
   initialTime,
 }: Readonly<RoomSearchFormProps>) {
-  const [day, setDay] = useState<string>(initialDay || availableDays[0] || "");
-  const [time, setTime] = useState<string>(initialTime || "09:00");
+  const [day, setDay] = useState<string>("");
+  const [time, setTime] = useState<string>("09:00");
   const [bloc, setBloc] = useState<string>("all");
+  
+  // Track if we've applied initial values to avoid re-applying on every render
+  const [hasAppliedInitialDay, setHasAppliedInitialDay] = useState(false);
+  const [hasAppliedInitialTime, setHasAppliedInitialTime] = useState(false);
 
-  // Update day when availableDays becomes available
-  if (availableDays.length > 0 && !day && availableDays[0]) {
-    setDay(availableDays[0]);
-  }
+  // Set initial day when it becomes available (only once)
+  useEffect(() => {
+    if (!hasAppliedInitialDay && initialDay && availableDays.includes(initialDay)) {
+      setDay(initialDay);
+      setHasAppliedInitialDay(true);
+    } else if (!hasAppliedInitialDay && !initialDay && availableDays.length > 0 && availableDays[0]) {
+      // Fallback: if no initialDay but we have available days, use first one
+      setDay(availableDays[0]);
+      setHasAppliedInitialDay(true);
+    }
+  }, [initialDay, availableDays, hasAppliedInitialDay]);
 
-  // Update day when initialDay changes
-  if (initialDay && day !== initialDay && availableDays.includes(initialDay)) {
-    setDay(initialDay);
-  }
+  // Set initial time when it becomes available (only once)
+  useEffect(() => {
+    if (!hasAppliedInitialTime && initialTime) {
+      setTime(initialTime);
+      setHasAppliedInitialTime(true);
+    }
+  }, [initialTime, hasAppliedInitialTime]);
 
-  // Update time when initialTime changes
-  if (initialTime && time !== initialTime) {
-    setTime(initialTime);
-  }
 
   // Check if selected day is Friday (Vendredi) for different time slots
   const isFriday = day.startsWith("Vendredi");
