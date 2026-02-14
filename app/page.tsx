@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { MAINTENANCE_MODE } from "./config";
 import { MaintenancePage } from "./components/MaintenancePage";
 import { AcquisitionFooter } from "./components/AcquisitionFooter";
+import { ThemeToggle } from "./components/Shared/ThemeToggle";
 
 export default function Home() {
   // Show maintenance page if enabled
@@ -41,6 +42,11 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
       {/* Academic Ticker */}
       <AcademicTicker />
+
+      {/* Theme Toggle - Fixed Bottom Right */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
 
       <div className="p-3 sm:p-4 md:p-6 lg:p-8">
         <main className="mx-auto max-w-6xl">
