@@ -10,7 +10,6 @@ import { MAINTENANCE_MODE, RAMADAN_MODE } from "./config";
 import { MaintenancePage } from "./components/MaintenancePage";
 import { ContributorsFooter } from "./components/ContributorsFooter";
 import { DashboardBanner } from "./components/DashboardBanner";
-import { AcquisitionFooter } from "./components/AcquisitionFooter";
 import { ThemeToggle } from "./components/Shared/ThemeToggle";
 
 export default function Home() {
@@ -45,8 +44,8 @@ export default function Home() {
       {/* Academic Ticker */}
       <AcademicTicker />
 
-      {/* Theme Toggle - Fixed Bottom Right */}
-      <div className="fixed bottom-6 right-6 z-50">
+      {/* Theme Toggle - Top Right under ticker */}
+      <div className="absolute top-12 right-4 z-40">
         <ThemeToggle />
       </div>
 
