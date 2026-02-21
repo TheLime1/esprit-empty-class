@@ -116,7 +116,6 @@ export function YearCalendar() {
     null,
   );
   const [selectedLevel, setSelectedLevel] = useState<"5A" | "1-4A">("1-4A");
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -350,9 +349,6 @@ export function YearCalendar() {
       return `linear-gradient(135deg, ${stops})`;
     }
   };
-
-  // Info panel for selected date
-  const selectedDateInfo = selectedDate ? getDateInfo(selectedDate) : null;
 
   const months = [
     new Date(2025, 8, 1), // September 2025
@@ -779,77 +775,6 @@ export function YearCalendar() {
           </Card>
         </motion.div>
 
-        {/* Selected Date Info Panel */}
-        {selectedDate && selectedDateInfo && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <Card className="p-4 sm:p-5 border-2 border-blue-200 dark:border-blue-800">
-              <h3 className="font-bold text-sm sm:text-base mb-2">
-                {selectedDate.toLocaleDateString("en-GB", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
-              </h3>
-
-              {selectedDateInfo.week && (
-                <div className="mb-2">
-                  <Badge variant="outline" className="text-xs">
-                    Week {selectedDateInfo.week.name}
-                  </Badge>
-                </div>
-              )}
-
-              {selectedDateInfo.periods.length > 0 && (
-                <div className="mb-2">
-                  <p className="text-xs font-semibold mb-1.5">Periods:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedDateInfo.periods.map((period, idx) => (
-                      <div
-                        key={idx}
-                        className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border"
-                      >
-                        <p className="font-medium text-xs">{period.name}</p>
-                        {period.note && (
-                          <p className="text-xs text-muted-foreground italic mt-1">
-                            {period.note}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {selectedDateInfo.events.length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold mb-1.5">Events:</p>
-                  <div className="flex flex-wrap gap-1">
-                    {selectedDateInfo.events.map((event, idx) => (
-                      <Badge
-                        key={idx}
-                        className="bg-red-500 text-white text-xs"
-                      >
-                        {event.name}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {selectedDateInfo.periods.length === 0 &&
-                selectedDateInfo.events.length === 0 && (
-                  <p className="text-xs text-muted-foreground italic">
-                    No special events or periods on this date
-                  </p>
-                )}
-            </Card>
-          </motion.div>
-        )}
-
         {/* Calendar Grid */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -867,8 +792,6 @@ export function YearCalendar() {
                 <Card className="p-3 flex items-center justify-center h-[340px]">
                   <Calendar
                     mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
                     month={month}
                     modifiers={modifiers}
                     modifiersClassNames={modifiersClassNames}
