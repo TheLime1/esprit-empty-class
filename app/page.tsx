@@ -6,7 +6,7 @@ import { WhereIsMyClass } from "./components/WhereIsMyClass";
 import { YearCalendar } from "./components/YearCalendar";
 import { AcademicTicker } from "./components/Shared/AcademicTicker";
 import { Card } from "@/components/ui/card";
-import { MAINTENANCE_MODE } from "./config";
+import { MAINTENANCE_MODE, RAMADAN_MODE } from "./config";
 import { MaintenancePage } from "./components/MaintenancePage";
 import { AcquisitionFooter } from "./components/AcquisitionFooter";
 
@@ -44,6 +44,15 @@ export default function Home() {
 
       <div className="p-3 sm:p-4 md:p-6 lg:p-8">
         <main className="mx-auto max-w-6xl">
+          {/* Ramadan Banner */}
+          {RAMADAN_MODE && (
+            <div className="text-center mb-3 sm:mb-4">
+              <span className="inline-flex items-center gap-1.5 text-sm sm:text-base font-medium text-amber-700 dark:text-amber-300">
+                🌙 Ramadan Karim
+              </span>
+            </div>
+          )}
+
           {/* Header */}
           <div className="text-center mb-4 sm:mb-6 md:mb-8">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
@@ -94,4 +103,3 @@ export default function Home() {
     </div>
   );
 }
-
