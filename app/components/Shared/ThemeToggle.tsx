@@ -38,13 +38,13 @@ export function ThemeToggle() {
 
   // Avoid hydration mismatch
   if (!mounted) {
-    return <div className="w-14 h-14 rounded-full bg-muted animate-pulse" />;
+    return <div className="w-10 h-10 rounded-full bg-muted animate-pulse" />;
   }
 
   return (
     <motion.button
       onClick={toggleTheme}
-      className="relative w-14 h-14 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 border-2 border-slate-300 dark:border-slate-700 shadow-lg hover:shadow-xl transition-shadow overflow-hidden"
+      className="relative w-10 h-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 border-2 border-slate-300 dark:border-slate-700 shadow-lg hover:shadow-xl transition-shadow overflow-hidden"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       aria-label="Toggle theme"
@@ -59,7 +59,7 @@ export function ThemeToggle() {
             transition={{ duration: 0.3 }}
             className="absolute inset-0 flex items-center justify-center"
           >
-            <Moon className="w-6 h-6 text-slate-200" />
+            <Moon className="w-5 h-5 text-slate-200" />
           </motion.div>
         ) : (
           <motion.div
@@ -70,7 +70,7 @@ export function ThemeToggle() {
             transition={{ duration: 0.3 }}
             className="absolute inset-0 flex items-center justify-center"
           >
-            <Sun className="w-6 h-6 text-amber-500" />
+            <Sun className="w-5 h-5 text-amber-500" />
           </motion.div>
         )}
       </AnimatePresence>

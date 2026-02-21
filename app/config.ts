@@ -48,5 +48,5 @@ export const FRIDAY_AFTERNOON = RAMADAN_MODE
 
 // Contributors (shown in footer, hidden if empty)
 export const CONTRIBUTORS: { name: string; url: string }[] = [
-  // { name: "Contributor Name", url: "https://github.com/username" },
+  { name: "Mohamed Aziz LAKHDHAR", url: "https://github.com/AzizLAKHDHAR" },
 ];

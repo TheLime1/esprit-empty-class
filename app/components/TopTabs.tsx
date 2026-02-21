@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, MapPin, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { ReactNode } from "react";
-import { ThemeToggle } from "./Shared/ThemeToggle";
 
 interface TopTabsProps {
   tabs: { id: string; title: string; icon?: ReactNode; content: ReactNode }[];
@@ -21,11 +20,6 @@ export function TopTabs({ tabs, defaultTab }: Readonly<TopTabsProps>) {
 
   return (
     <div className="relative">
-      {/* Theme toggle in top right corner - hidden on small screens */}
-      <div className="hidden sm:block absolute -top-2 right-0 z-10">
-        <ThemeToggle />
-      </div>
-
       <Tabs defaultValue={defaultTab || tabs[0]?.id} className="w-full">
         <div className="mb-6 relative">
           {/* Scrollable container for mobile */}
@@ -46,11 +40,6 @@ export function TopTabs({ tabs, defaultTab }: Readonly<TopTabsProps>) {
                 ))}
               </TabsList>
             </div>
-          </div>
-
-          {/* Theme toggle for mobile - below tabs */}
-          <div className="sm:hidden absolute -bottom-16 right-0">
-            <ThemeToggle />
           </div>
         </div>
 
