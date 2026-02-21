@@ -8,7 +8,8 @@ import { AcademicTicker } from "./components/Shared/AcademicTicker";
 import { Card } from "@/components/ui/card";
 import { MAINTENANCE_MODE, RAMADAN_MODE } from "./config";
 import { MaintenancePage } from "./components/MaintenancePage";
-import { AcquisitionFooter } from "./components/AcquisitionFooter";
+import { ContributorsFooter } from "./components/ContributorsFooter";
+import { DashboardBanner } from "./components/DashboardBanner";
 
 export default function Home() {
   // Show maintenance page if enabled
@@ -56,7 +57,7 @@ export default function Home() {
           {/* Header */}
           <div className="text-center mb-4 sm:mb-6 md:mb-8">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
-              ESPRIT Classroom Finder v1.5
+              ESPRIT Classroom Finder
             </h1>
             <p className="text-sm sm:text-base md:text-lg px-4 leading-relaxed">
               <span className="font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
@@ -96,10 +97,13 @@ export default function Home() {
                 Aymen Hmani (TheLime1)
               </a>
             </p>
-            <AcquisitionFooter />
+            <ContributorsFooter />
           </footer>
         </main>
       </div>
+
+      {/* Dashboard Banner - bottom right on desktop */}
+      <DashboardBanner />
     </div>
   );
 }

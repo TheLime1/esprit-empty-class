@@ -46,8 +46,7 @@ export const FRIDAY_AFTERNOON = RAMADAN_MODE
   ? { label: "11:40 AM - 2:45 PM", value: "11:40" }
   : { label: "1:45 PM - 5:00 PM", value: "13:45" };
 
-// Project acquisition info (shown in maintenance page and footer)
-export const ACQUISITION_INFO = {
-  monthlyVisitors: "1k",
-  contactUrl: "https://github.com/TheLime1",
-};
+// Contributors (shown in footer, hidden if empty)
+export const CONTRIBUTORS: { name: string; url: string }[] = [
+  // { name: "Contributor Name", url: "https://github.com/username" },
+];
