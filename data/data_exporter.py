@@ -16,18 +16,47 @@ class ScheduleToJSON:
     ROOM_PATTERN = r'^[A-Z]\d+$'
     ONLINE_PATTERN = r'^En\s+ligne$'
 
-    # Standard time slots
-    MORNING_SLOT = '09H:00-12H:15'
-    AFTERNOON_SLOT = '13H:30-16H:45'
-    MORNING_START = 540   # 09:00 in minutes
-    MORNING_END = 750     # 12:30 in minutes
-    AFTERNOON_START = 810  # 13:30 in minutes
-    AFTERNOON_END = 1005   # 16:45 in minutes
+    # Standard time slots (normal mode)
+    NORMAL_MORNING_SLOT = '09H:00-12H:15'
+    NORMAL_AFTERNOON_SLOT = '13H:30-16H:45'
+    NORMAL_MORNING_START = 540   # 09:00 in minutes
+    NORMAL_MORNING_END = 750     # 12:30 in minutes
+    NORMAL_AFTERNOON_START = 810  # 13:30 in minutes
+    NORMAL_AFTERNOON_END = 1005   # 16:45 in minutes
 
-    def __init__(self):
-        """Initialize the parser."""
+    # Ramadan time slots
+    RAMADAN_MORNING_SLOT = '08H:30-11H:10'
+    RAMADAN_AFTERNOON_SLOT = '11H:50-14H:30'
+    RAMADAN_MORNING_START = 510   # 08:30 in minutes
+    RAMADAN_MORNING_END = 690     # 11:30 in minutes (boundary)
+    RAMADAN_AFTERNOON_START = 710  # 11:50 in minutes
+    RAMADAN_AFTERNOON_END = 870    # 14:30 in minutes
+
+    def __init__(self, ramadan_mode=False):
+        """Initialize the parser.
+
+        Args:
+            ramadan_mode: If True, use Ramadan schedule times
+        """
         self.schedules = {}
         self.class_rooms = {}  # Track primary room for each class
+        self.ramadan_mode = ramadan_mode
+
+        # Set active time slots based on mode
+        if ramadan_mode:
+            self.MORNING_SLOT = self.RAMADAN_MORNING_SLOT
+            self.AFTERNOON_SLOT = self.RAMADAN_AFTERNOON_SLOT
+            self.MORNING_START = self.RAMADAN_MORNING_START
+            self.MORNING_END = self.RAMADAN_MORNING_END
+            self.AFTERNOON_START = self.RAMADAN_AFTERNOON_START
+            self.AFTERNOON_END = self.RAMADAN_AFTERNOON_END
+        else:
+            self.MORNING_SLOT = self.NORMAL_MORNING_SLOT
+            self.AFTERNOON_SLOT = self.NORMAL_AFTERNOON_SLOT
+            self.MORNING_START = self.NORMAL_MORNING_START
+            self.MORNING_END = self.NORMAL_MORNING_END
+            self.AFTERNOON_START = self.NORMAL_AFTERNOON_START
+            self.AFTERNOON_END = self.NORMAL_AFTERNOON_END
 
     def load_pdf(self, pdf_path):
         """Load and extract text from PDF file.
@@ -1332,15 +1361,19 @@ class ScheduleToJSON:
 
 def main():
     """Main entry point for the script."""
+    # Check for --ramadan flag
+    ramadan_mode = '--ramadan' in sys.argv
+    args = [a for a in sys.argv[1:] if a != '--ramadan']
+
     # Get PDF file path
-    if len(sys.argv) > 1:
-        pdf_file = sys.argv[1]
+    if len(args) > 0:
+        pdf_file = args[0]
     else:
         pdf_file = input("Enter PDF file path: ")
 
     # Get output JSON file path
-    if len(sys.argv) > 2:
-        json_file = sys.argv[2]
+    if len(args) > 1:
+        json_file = args[1]
     else:
         json_file = input(
             "Enter output JSON file name (default: schedules.json): "
@@ -1349,7 +1382,10 @@ def main():
             json_file = "schedules.json"
 
     # Parse and export
-    parser = ScheduleToJSON()
+    if ramadan_mode:
+        print("🌙 Ramadan mode enabled - using adjusted time slots")
+        print("   Morning: 08:30-11:10 | Afternoon: 11:50-14:30")
+    parser = ScheduleToJSON(ramadan_mode=ramadan_mode)
 
     try:
         # Use spatial parsing for accurate day mapping
