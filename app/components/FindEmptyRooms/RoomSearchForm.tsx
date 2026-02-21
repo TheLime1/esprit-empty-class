@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search, Clock, Calendar, Building2 } from "lucide-react";
+import { TIME_SLOTS, FRIDAY_AFTERNOON, RAMADAN_MODE } from "@/app/config";
 
 interface RoomSearchFormProps {
   onSearch: (params: SearchParams) => void;
@@ -35,7 +36,7 @@ export function RoomSearchForm({
   initialTime,
 }: Readonly<RoomSearchFormProps>) {
   const [day, setDay] = useState<string>("");
-  const [time, setTime] = useState<string>("09:00");
+  const [time, setTime] = useState<string>(TIME_SLOTS.morningValue);
   const [bloc, setBloc] = useState<string>("all");
 
   // Track if we've applied initial values to avoid re-applying on every render
@@ -75,15 +76,14 @@ export function RoomSearchForm({
   const isFriday = day.startsWith("Vendredi");
 
   // Auto-adjust time when switching between Friday and non-Friday
-  // If switching to Friday and time is 13:30, change to 13:45
-  // If switching from Friday and time is 13:45, change to 13:30
   const handleDayChange = (newDay: string) => {
     const newIsFriday = newDay.startsWith("Vendredi");
 
-    if (newIsFriday && time === "13:30") {
-      setTime("13:45"); // Friday afternoon starts at 13:45
-    } else if (!newIsFriday && time === "13:45") {
-      setTime("13:30"); // Normal days afternoon starts at 13:30
+    // Friday has a different afternoon time in both modes
+    if (newIsFriday && time === TIME_SLOTS.afternoonValue) {
+      setTime(FRIDAY_AFTERNOON.value);
+    } else if (!newIsFriday && time === FRIDAY_AFTERNOON.value) {
+      setTime(TIME_SLOTS.afternoonValue);
     }
 
     setDay(newDay);
@@ -100,12 +100,12 @@ export function RoomSearchForm({
 
   const availableTimes = isFriday
     ? [
-        { label: "9:00 AM - 12:15 PM", value: "09:00" },
-        { label: "1:45 PM - 5:00 PM", value: "13:45" },
+        { label: TIME_SLOTS.morningLabel, value: TIME_SLOTS.morningValue },
+        { label: FRIDAY_AFTERNOON.label, value: FRIDAY_AFTERNOON.value },
       ]
     : [
-        { label: "9:00 AM - 12:15 PM", value: "09:00" },
-        { label: "1:30 PM - 4:45 PM", value: "13:30" },
+        { label: TIME_SLOTS.morningLabel, value: TIME_SLOTS.morningValue },
+        { label: TIME_SLOTS.afternoonLabel, value: TIME_SLOTS.afternoonValue },
       ];
 
   return (

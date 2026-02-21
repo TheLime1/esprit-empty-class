@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Clock, Calendar, List, CalendarDays } from "lucide-react";
 import { motion } from "framer-motion";
+import { TIME_SLOTS } from "@/app/config";
 
 interface ClassSession {
   time: string;
@@ -64,8 +65,10 @@ function calculateTimeLeft(endTime: string): string {
 function isLunchBreak(): boolean {
   const now = new Date();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  // Lunch break is between 12:15 (735 minutes) and 13:30 (810 minutes)
-  return currentMinutes >= 735 && currentMinutes < 810;
+  return (
+    currentMinutes >= TIME_SLOTS.lunchBreakStart &&
+    currentMinutes < TIME_SLOTS.lunchBreakEnd
+  );
 }
 
 function getStatusBadgeText(): string {
@@ -75,13 +78,21 @@ function getStatusBadgeText(): string {
   // Check if it's weekend or late evening
   const now = new Date();
   const day = now.getDay();
-  const hour = now.getHours();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  // Parse start/end hours from config
+  const startMinutes =
+    Number.parseInt(TIME_SLOTS.morningStart.split(":")[0], 10) * 60 +
+    Number.parseInt(TIME_SLOTS.morningStart.split(":")[1], 10);
+  const endMinutes =
+    Number.parseInt(TIME_SLOTS.afternoonEnd.split(":")[0], 10) * 60 +
+    Number.parseInt(TIME_SLOTS.afternoonEnd.split(":")[1], 10);
 
   if (day === 0 || day === 6) {
     return "📅 No Classes Today";
   }
 
-  if (hour < 9 || hour >= 17) {
+  if (currentMinutes < startMinutes || currentMinutes >= endMinutes) {
     return "⏰ Outside Class Hours";
   }
 
@@ -264,7 +275,7 @@ function FullTimetable({
 
   // Check if there are any online classes this week
   const hasOnlineClasses = orderedDays.some((day) =>
-    schedule[day]?.some((s) => s.room === "En Ligne" && isRealClass(s.course))
+    schedule[day]?.some((s) => s.room === "En Ligne" && isRealClass(s.course)),
   );
 
   return (
@@ -324,13 +335,13 @@ function FullTimetable({
 
               // Filter to only real classes and free slots (exclude NOT-FREE)
               const validSessions = mappedSessions.filter(
-                (s) => isRealClass(s.course) || ("isFree" in s && s.isFree)
+                (s) => isRealClass(s.course) || ("isFree" in s && s.isFree),
               );
 
               // Sort by time
               validSessions.sort(
                 (a, b) =>
-                  getStartTimeInMinutes(a.time) - getStartTimeInMinutes(b.time)
+                  getStartTimeInMinutes(a.time) - getStartTimeInMinutes(b.time),
               );
 
               // Take first 2 chronologically
@@ -437,7 +448,7 @@ function CalendarView({
 
         // Check if there are any real classes or 2 FREE sessions
         const hasRealClasses = allSessions.some((session) =>
-          isRealClass(session.course)
+          isRealClass(session.course),
         );
         const freeSessions = allSessions.filter((s) => isFreeSlot(s.course));
         const hasFullDayFree = freeSessions.length === 2;
@@ -454,13 +465,13 @@ function CalendarView({
 
         // Filter to only real classes and free slots (exclude NOT-FREE)
         const validSessions = mappedSessions.filter(
-          (s) => isRealClass(s.course) || ("isFree" in s && s.isFree)
+          (s) => isRealClass(s.course) || ("isFree" in s && s.isFree),
         );
 
         // Sort by time
         validSessions.sort(
           (a, b) =>
-            getStartTimeInMinutes(a.time) - getStartTimeInMinutes(b.time)
+            getStartTimeInMinutes(a.time) - getStartTimeInMinutes(b.time),
         );
 
         // Take first 2 chronologically

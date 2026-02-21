@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
+import { TIME_SLOTS } from "@/app/config";
 
 interface TimeSlot {
   time: string;
@@ -276,7 +277,7 @@ export async function GET(
     
     // Detect if we're in a lunch break by checking if there's a FREE period around current time
     let isLunchBreak = false;
-    let lunchBreakEnd = 810; // Default 13:30
+    let lunchBreakEnd = TIME_SLOTS.lunchBreakEnd;
     
     for (const [dayKey, sessions] of Object.entries(classSchedule.days)) {
       const dayMatches = targetDayName ? dayKey.startsWith(targetDayName) : false;
