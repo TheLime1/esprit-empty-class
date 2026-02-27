@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { RoomSearchForm, SearchParams } from "./RoomSearchForm";
 import { ResultsGrid } from "./ResultsGrid";
+import { TIME_SLOTS, FRIDAY_AFTERNOON } from "@/app/config";
 
 interface Room {
   roomId: string;
@@ -52,7 +53,7 @@ export function FindEmptyRooms() {
         // Find matching day in available days (format: "Lundi 10 Février")
         if (currentDayName && days.length > 0) {
           const matchingDay = days.find((d: string) =>
-            d.startsWith(currentDayName)
+            d.startsWith(currentDayName),
           );
           if (matchingDay) {
             setInitialDay(matchingDay);
@@ -104,9 +105,9 @@ export function FindEmptyRooms() {
       // Transform the data to match our interface
       // Calculate free time based on the selected time slot
       const timeSlots = [
-        { start: "09:00", end: "12:15" },
-        { start: "13:30", end: "16:45" },
-        { start: "13:45", end: "17:00" }, // Friday afternoon slot
+        { start: TIME_SLOTS.morningStart, end: TIME_SLOTS.morningEnd },
+        { start: TIME_SLOTS.afternoonStart, end: TIME_SLOTS.afternoonEnd },
+        { start: FRIDAY_AFTERNOON.value, end: FRIDAY_AFTERNOON.end }, // Friday afternoon slot
       ];
       const selectedSlot =
         timeSlots.find((slot) => slot.start === params.time) || timeSlots[0];
@@ -126,7 +127,7 @@ export function FindEmptyRooms() {
           freeFrom,
           freeUntil,
           isWarning: false,
-        })
+        }),
       );
 
       // Transform warning rooms (FREEWARNING - soutenance risk)
@@ -140,7 +141,7 @@ export function FindEmptyRooms() {
           freeFrom,
           freeUntil,
           isWarning: true,
-        })
+        }),
       );
 
       setRooms([...transformedRooms, ...warningRooms]);

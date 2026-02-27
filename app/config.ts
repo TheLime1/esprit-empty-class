@@ -43,8 +43,8 @@ export const TIME_SLOTS = RAMADAN_MODE
 
 // Friday-specific afternoon time slot
 export const FRIDAY_AFTERNOON = RAMADAN_MODE
-  ? { label: "11:40 AM - 2:45 PM", value: "11:40" }
-  : { label: "1:45 PM - 5:00 PM", value: "13:45" };
+  ? { label: "11:40 AM - 2:45 PM", value: "11:40", end: "14:45" }
+  : { label: "1:45 PM - 5:00 PM", value: "13:45", end: "17:00" };
 
 // Contributors (shown in footer, hidden if empty)
 export const CONTRIBUTORS: { name: string; url: string }[] = [

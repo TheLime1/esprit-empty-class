@@ -33,7 +33,8 @@ export function DashboardBanner() {
             <a
               href="https://portal.espritads.site/"
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener"
+              referrerPolicy="no-referrer-when-downgrade"
               className="inline-block mt-2 px-3 py-1 bg-black hover:bg-gray-900 text-white text-xs font-semibold rounded transition-colors"
             >
               Visit Dashboard →

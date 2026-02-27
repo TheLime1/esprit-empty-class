@@ -89,9 +89,9 @@ export function WhereIsMyClass() {
       {/* Show Nearest Empty Room after search when result is available */}
       {!loading && !error && result && (
         <>
-          {(result.room?.name || result.nextSession?.room) && (
+          {result.classCode && (
             <NearestEmptyRoom
-              classRoom={result.room?.name || result.nextSession?.room || ""}
+              classCode={result.classCode}
               day={
                 result.nextSession?.day ||
                 new Date().toLocaleDateString("fr-FR", { weekday: "long" })
