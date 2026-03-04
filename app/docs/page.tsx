@@ -643,6 +643,204 @@ export default function DocsPage() {
             )}
           </div>
         </Section>
+
+        {/* ── Current Week Endpoint ──────────────────────────────────── */}
+        <div className="border-t border-border pt-8 mt-8 mb-12">
+          <h2 className="text-3xl font-bold tracking-tight mb-2">
+            Current Week
+          </h2>
+          <p className="text-muted-foreground mb-8">
+            Returns the current academic week based on today&apos;s date. No
+            authentication required.
+          </p>
+        </div>
+
+        <Section title="Current Week Endpoint">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="inline-block rounded bg-emerald-100 dark:bg-emerald-900/40 px-2.5 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">
+              GET
+            </span>
+            <code className="text-sm font-mono">/api/current-week</code>
+          </div>
+          <p className="text-muted-foreground">
+            Returns the current academic week name (e.g. <Code>S7</Code>),
+            semester number, and date range. If today falls outside any academic
+            week (holiday / exam period), <Code>current_week</Code> will be{" "}
+            <Code>null</Code> with an explanatory message.
+          </p>
+        </Section>
+
+        <Section title="Current Week Response">
+          <p className="mb-3 text-muted-foreground">
+            <Code>200 OK</Code> &mdash; when a matching week is found:
+          </p>
+          <CodeBlock>
+            {JSON.stringify(
+              {
+                academic_year: "2025-2026",
+                current_week: {
+                  name: "S7",
+                  semester: 2,
+                  start_date: "2026-03-01",
+                  end_date: "2026-03-07",
+                },
+                date: "2026-03-04",
+              },
+              null,
+              2,
+            )}
+          </CodeBlock>
+
+          <p className="mt-6 mb-3 text-muted-foreground">
+            <Code>200 OK</Code> &mdash; when no week matches (holiday / exam
+            period):
+          </p>
+          <CodeBlock>
+            {JSON.stringify(
+              {
+                academic_year: "2025-2026",
+                current_week: null,
+                message:
+                  "No academic week matches today's date. You may be in a holiday or exam period.",
+                date: "2025-12-25",
+              },
+              null,
+              2,
+            )}
+          </CodeBlock>
+
+          <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+            <p>
+              <Code>academic_year</Code> &mdash; the academic year of the
+              calendar data.
+            </p>
+            <p>
+              <Code>current_week.name</Code> &mdash; the week label (e.g.{" "}
+              <Code>S1</Code> &ndash; <Code>S14</Code>).
+            </p>
+            <p>
+              <Code>current_week.semester</Code> &mdash; <Code>1</Code> or{" "}
+              <Code>2</Code>.
+            </p>
+            <p>
+              <Code>current_week.start_date</Code> /{" "}
+              <Code>current_week.end_date</Code> &mdash; ISO date range
+              (Sunday&ndash;Saturday).
+            </p>
+            <p>
+              <Code>date</Code> &mdash; today&apos;s date used for the lookup.
+            </p>
+          </div>
+        </Section>
+
+        <Section title="Current Week cURL Example">
+          <CodeBlock>
+            {`curl -s ${baseUrl || "https://your-domain.com"}/api/current-week`}
+          </CodeBlock>
+        </Section>
+
+        {/* ── Year Calendar Endpoint ─────────────────────────────────── */}
+        <div className="border-t border-border pt-8 mt-8 mb-12">
+          <h2 className="text-3xl font-bold tracking-tight mb-2">
+            Year Calendar
+          </h2>
+          <p className="text-muted-foreground mb-8">
+            Returns the full academic year calendar including weeks, periods,
+            events, and notes. No authentication required.
+          </p>
+        </div>
+
+        <Section title="Year Calendar Endpoint">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="inline-block rounded bg-emerald-100 dark:bg-emerald-900/40 px-2.5 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">
+              GET
+            </span>
+            <code className="text-sm font-mono">/api/calendar</code>
+          </div>
+          <p className="text-muted-foreground">
+            Returns the complete academic year calendar JSON, including shared
+            weeks (S1&ndash;S14 per semester), level-specific periods and events
+            for <Code>5A</Code> and <Code>1-4A</Code>, and general notes.
+          </p>
+        </Section>
+
+        <Section title="Year Calendar Response">
+          <p className="mb-3 text-muted-foreground">
+            <Code>200 OK</Code> &mdash; JSON object (truncated for brevity):
+          </p>
+          <CodeBlock>
+            {JSON.stringify(
+              {
+                academic_year: "2025-2026",
+                weeks: [
+                  {
+                    name: "S1",
+                    start_date: "2025-09-07",
+                    end_date: "2025-09-13",
+                  },
+                  {
+                    name: "S2",
+                    start_date: "2025-09-14",
+                    end_date: "2025-09-20",
+                  },
+                  "...",
+                ],
+                "5A": {
+                  periods: [
+                    {
+                      name: "APP0",
+                      start_date: "2025-09-02",
+                      end_date: "2025-09-06",
+                    },
+                    "...",
+                  ],
+                  events: [
+                    { name: "Début Semestre 1", date: "2025-09-08" },
+                    "...",
+                  ],
+                },
+                "1-4A": {
+                  periods: ["..."],
+                  events: ["..."],
+                },
+                notes: {
+                  weeks_note: "...",
+                  merge_policy: "...",
+                  sources: "...",
+                },
+              },
+              null,
+              2,
+            )}
+          </CodeBlock>
+
+          <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+            <p>
+              <Code>academic_year</Code> &mdash; the calendar&apos;s academic
+              year.
+            </p>
+            <p>
+              <Code>weeks</Code> &mdash; array of 28 week objects (14 per
+              semester) each with <Code>name</Code>, <Code>start_date</Code>,
+              and <Code>end_date</Code>.
+            </p>
+            <p>
+              <Code>5A</Code> / <Code>1-4A</Code> &mdash; level-specific data
+              containing <Code>periods</Code> (exam sessions, holidays, etc.)
+              and <Code>events</Code> (single-day milestones).
+            </p>
+            <p>
+              <Code>notes</Code> &mdash; explanatory metadata about the
+              calendar.
+            </p>
+          </div>
+        </Section>
+
+        <Section title="Year Calendar cURL Example">
+          <CodeBlock>
+            {`curl -s ${baseUrl || "https://your-domain.com"}/api/calendar`}
+          </CodeBlock>
+        </Section>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import path from "path";
-import { promises as fs } from "fs";
+import path from "node:path";
+import { promises as fs } from "node:fs";
 
 export async function GET() {
   try {
@@ -13,7 +13,7 @@ export async function GET() {
     const data = JSON.parse(fileContents);
 
     return NextResponse.json(data);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to load calendar data" },
       { status: 500 }
