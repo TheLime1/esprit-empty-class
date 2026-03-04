@@ -275,20 +275,25 @@ export function findNearestRoom(
   originRoom: string,
   emptyRooms: string[],
   warningRooms: string[],
+  excludeRooms: string[] = [],
 ): NearestRoomResult {
   const origin = parseRoom(originRoom);
   if (!origin) {
     return { nearest: null, isWarning: false, allCandidates: [] };
   }
 
+  const excludeSet = new Set(excludeRooms.map((r) => r.trim().toUpperCase()));
+
   const candidates: { room: string; isWarning: boolean; score: number }[] = [];
 
   for (const r of emptyRooms) {
+    if (excludeSet.has(r.trim().toUpperCase())) continue;
     const parsed = parseRoom(r);
     if (!parsed) continue;
     candidates.push({ room: r, isWarning: false, score: proximityScore(origin, parsed) });
   }
   for (const r of warningRooms) {
+    if (excludeSet.has(r.trim().toUpperCase())) continue;
     const parsed = parseRoom(r);
     if (!parsed) continue;
     // Warning rooms get a small penalty so confirmed-empty rooms win at same distance
@@ -403,7 +408,16 @@ export async function findNearestEmptyRoomForClass(
   }
 
   const result = await findFreeRooms({ day, time });
-  const nearest = findNearestRoom(resolved.room, result.empty, result.warning);
+
+  // Exclude the class's current room and primary room from candidates
+  // so the nearest suggestion is always a *different* room.
+  const excludeRooms = [
+    resolved.room,
+    ...(resolved.primaryRoom && resolved.primaryRoom !== resolved.room
+      ? [resolved.primaryRoom]
+      : []),
+  ];
+  const nearest = findNearestRoom(resolved.room, result.empty, result.warning, excludeRooms);
 
   return {
     ...nearest,
