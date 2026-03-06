@@ -1,0 +1,20 @@
+name: Notify Schedule Update
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - data/schedules.json
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send notification to Supabase Edge Function
+        run: |
+          curl -X POST \
+            "https://${{ secrets.SUPABASE_PROJECT_REF }}.supabase.co/functions/v1/notify-schedule" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_WEBHOOK_SECRET }}" \
+            -d '{"event": "schedule_updated"}'
