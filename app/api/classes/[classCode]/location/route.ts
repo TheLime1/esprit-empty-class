@@ -226,6 +226,7 @@ export async function GET(
     
     // Find session for the target day and time
     let currentSession: TimeSlot | null = null;
+    let currentDayKey: string | null = null;
     
     for (const [dayKey, sessions] of Object.entries(classSchedule.days)) {
       const dayMatches = targetDayName ? dayKey.startsWith(targetDayName) : dayKey.startsWith(["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"][now.getDay()]);
@@ -242,6 +243,7 @@ export async function GET(
           // Use < end instead of <= end to avoid overlapping time slots
           if (start !== null && end !== null && currentMinutes >= start && currentMinutes < end) {
             currentSession = session;
+            currentDayKey = dayKey;
             break;
           }
         }
@@ -255,6 +257,7 @@ export async function GET(
       return NextResponse.json({
         classCode: resolvedClassCode,
         status: "in_session",
+        day: currentDayKey,
         room: {
           roomId: currentSession.room,
           name: currentSession.room,
@@ -265,6 +268,7 @@ export async function GET(
           start: new Date(now.getFullYear(), now.getMonth(), now.getDate(), Math.floor((start || 0) / 60), (start || 0) % 60).toISOString(),
           end: new Date(now.getFullYear(), now.getMonth(), now.getDate(), Math.floor((end || 0) / 60), (end || 0) % 60).toISOString(),
           course: currentSession.course,
+          timeSlot: currentSession.time,
         },
         fullSchedule,
         nextSession: undefined, // Clear next session when in session

@@ -189,7 +189,7 @@ export async function findFreeRooms(params: RoomQueryParams): Promise<RoomResult
   const occupiedArr = Array.from(occupied).sort((a, b) => a.localeCompare(b));
 
   let empty = rooms.filter((r) => !occupied.has(r) && !freeWarning.has(r));
-  let warning = rooms.filter((r) => freeWarning.has(r));
+  let warning = rooms.filter((r) => freeWarning.has(r) && !occupied.has(r));
 
   // Apply building filter
   if (params.building && params.building !== "all") {
@@ -319,9 +319,32 @@ export async function findNearestEmptyRoomNow(
   day?: string | null,
   time?: string | null,
 ): Promise<NearestRoomResult & { day: string | null; time: string | null }> {
+  // Auto-detect current day/time when not provided so that occupancy
+  // is always computed (otherwise all rooms appear empty).
+  if (!day || !time) {
+    const now = getCurrentDayAndTime();
+    if (!day) day = now.day;
+    if (!time) time = now.time;
+  }
+
   const result = await findFreeRooms({ day, time });
   const nearest = findNearestRoom(room, result.empty, result.warning);
   return { ...nearest, day: day ?? null, time: time ?? null };
+}
+
+// ─── Current time helpers ────────────────────────────────────────────────
+
+const DAY_NAMES = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+
+/** Get the current day name and HH:MM time in Tunisia timezone. */
+function getCurrentDayAndTime(): { day: string; time: string } {
+  const now = new Date();
+  const tunisiaStr = now.toLocaleString("en-US", { timeZone: "Africa/Tunis" });
+  const tunisia = new Date(tunisiaStr);
+  const dayName = DAY_NAMES[tunisia.getDay()];
+  const hh = String(tunisia.getHours()).padStart(2, "0");
+  const mm = String(tunisia.getMinutes()).padStart(2, "0");
+  return { day: dayName, time: `${hh}:${mm}` };
 }
 
 // ─── Class → Room resolution ─────────────────────────────────────────────
@@ -393,6 +416,14 @@ export async function findNearestEmptyRoomForClass(
   classCode: string;
   currentRoom: string | null;
 }> {
+  // Auto-detect current day/time when not provided so that occupancy
+  // is always computed (otherwise all rooms appear empty).
+  if (!day || !time) {
+    const now = getCurrentDayAndTime();
+    if (!day) day = now.day;
+    if (!time) time = now.time;
+  }
+
   const resolved = await resolveClassToRoom(classCode, day, time);
 
   if (!resolved.room) {

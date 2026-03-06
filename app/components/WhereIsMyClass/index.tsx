@@ -17,6 +17,7 @@ interface TimeSlot {
 interface ClassLocation {
   classCode: string;
   status: "in_session" | "not_in_session" | "no_schedule";
+  day?: string;
   room?: {
     roomId: string;
     name: string;
@@ -27,6 +28,7 @@ interface ClassLocation {
     start: string;
     end: string;
     course?: string;
+    timeSlot?: string;
   };
   nextSession?: {
     day: string;
@@ -93,12 +95,13 @@ export function WhereIsMyClass() {
             <NearestEmptyRoom
               classCode={result.classCode}
               day={
+                result.day ||
                 result.nextSession?.day ||
                 new Date().toLocaleDateString("fr-FR", { weekday: "long" })
               }
               time={
-                result.session?.start?.split("-")[0] ||
-                result.nextSession?.start?.split("-")[0] ||
+                result.session?.timeSlot?.split("-")[0]?.trim() ||
+                result.nextSession?.start?.split("-")[0]?.trim() ||
                 TIME_SLOTS.morningValue
               }
             />
