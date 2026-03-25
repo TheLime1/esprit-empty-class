@@ -360,6 +360,9 @@ export function YearCalendar() {
     new Date(2026, 2, 1), // March 2026
     new Date(2026, 3, 1), // April 2026
     new Date(2026, 4, 1), // May 2026
+    new Date(2026, 5, 1), // June 2026
+    new Date(2026, 6, 1), // July 2026
+    new Date(2026, 7, 1), // August 2026
   ];
 
   return (
