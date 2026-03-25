@@ -30,7 +30,6 @@
     { "name": "S13", "start_date": "2026-05-03", "end_date": "2026-05-09" },
     { "name": "S14", "start_date": "2026-05-10", "end_date": "2026-05-16" }
   ],
-
   "5A": {
     "periods": [
       {
@@ -67,94 +66,122 @@
         "note": "As confirmed."
       }
     ],
-
     "events": [
       { "name": "Reprise des enseignants", "date": "2025-09-01" },
       { "name": "Fête du Mouled", "date": "2025-09-04" },
       { "name": "Début Semestre 1", "date": "2025-09-08" },
       { "name": "Fin des cours - Semestre 1", "date": "2025-12-20" },
-      {
-        "name": "Proclamation des résultats de la session principale",
-        "date": "2025-12-05"
-      },
-      {
-        "name": "Proclamation des résultats de la session de rattrapage",
-        "date": "2025-12-26"
-      },
+      { "name": "Proclamation des résultats de la session principale", "date": "2025-12-05" },
+      { "name": "Proclamation des résultats de la session de rattrapage", "date": "2025-12-26" },
       { "name": "Jour de l'An", "date": "2026-01-01" }
     ]
   },
-
   "1-4A": {
     "periods": [
       {
         "name": "APP0",
         "start_date": "2025-09-02",
         "end_date": "2025-09-06",
-        "note": "Merged APP0 early-September block (per your instruction)"
+        "note": "Merged APP0 early-September block"
       },
       {
-        "name": "Examens/DS_P1 (S1 block)",
-        "start_date": "2025-10-28",
+        "name": "Examens/DS_P1",
+        "start_date": "2025-10-27",
         "end_date": "2025-11-01",
-        "note": "Corrected label / dates per your message"
-      },
-      {
-        "name": "Examens/DS_S1",
-        "start_date": "2025-11-01",
-        "end_date": "2025-11-07"
+        "note": "Corrected based on image (Starts Monday Oct 27)"
       },
       {
         "name": "Vacances d'hiver",
-        "start_date": "2025-12-21",
-        "end_date": "2026-01-04",
-        "note": "As you confirmed for 1–4A"
+        "start_date": "2025-12-22",
+        "end_date": "2026-01-04"
       },
       {
-        "name": "Soutenances PI et Examens pratiques",
+        "name": "Soutenances PI et Examens pratiques S1",
         "start_date": "2026-01-05",
-        "end_date": "2026-01-09"
+        "end_date": "2026-01-08"
       },
       {
-        "name": "Examens S1 (January)",
+        "name": "Examens S1",
         "start_date": "2026-01-09",
         "end_date": "2026-01-17"
       },
       {
-        "name": "Semaine des DS",
-        "start_date": "2026-03-08",
-        "end_date": "2026-03-14",
-        "note": "Spring break period"
+        "name": "Ramadan",
+        "start_date": "2026-02-18",
+        "end_date": "2026-03-20",
+        "note": "Période de Ramadan (dates approximatives basées sur le calendrier)"
       },
       {
-        "name": "Ramadan",
-        "start_date": "2026-02-19",
-        "end_date": "2026-03-20",
-        "note": "Période de Ramadan (dates approximatives)"
+        "name": "Semaine des DS (Examens/DS_P2)",
+        "start_date": "2026-03-09",
+        "end_date": "2026-03-14"
       },
       {
         "name": "Vacances de printemps",
-        "start_date": "2026-03-15",
-        "end_date": "2026-03-29",
-        "note": "Spring break period"
+        "start_date": "2026-03-16",
+        "end_date": "2026-03-28"
+      },
+      {
+        "name": "Soutenances PI et Examens pratiques S2",
+        "start_date": "2026-05-18",
+        "end_date": "2026-05-21"
+      },
+      {
+        "name": "Examens de la session principale",
+        "start_date": "2026-05-22",
+        "end_date": "2026-06-08",
+        "note": "Merged session"
+      },
+      {
+        "name": "Conseils Session principale",
+        "start_date": "2026-06-11",
+        "end_date": "2026-06-13"
+      },
+      {
+        "name": "Examens de la session de rattrapage",
+        "start_date": "2026-06-17",
+        "end_date": "2026-07-07",
+        "note": "Merged block across June and July"
+      },
+      {
+        "name": "Conseils Session de rattrapage",
+        "start_date": "2026-07-09",
+        "end_date": "2026-07-13"
+      },
+      {
+        "name": "Conseils de l'Ecole",
+        "start_date": "2026-07-14",
+        "end_date": "2026-07-18"
       }
-      
     ],
-
     "events": [
       { "name": "Reprise des enseignants", "date": "2025-09-01" },
-      { "name": "Fête du Mouled", "date": "2025-09-04" },
+      { "name": "Fête du Mouled (*)", "date": "2025-09-04" },
       { "name": "Début Semestre 1", "date": "2025-09-08" },
+      { "name": "Fête de l'Evacuation", "date": "2025-10-15" },
+      { "name": "Fête de la Révolution", "date": "2025-12-17" },
       { "name": "Fin des cours - Semestre 1", "date": "2025-12-20" },
       { "name": "Jour de l'An", "date": "2026-01-01" },
-      { "name": "Journée des Martyrs", "date": "2026-04-09" },
-      { "name": "Labour Day", "date": "2026-05-01" }
+      { "name": "Début Semestre 2", "date": "2026-01-19" },
+      { "name": "1er Ramadan (*)", "date": "2026-02-18" },
+      { "name": "Fête de l'Indépendance", "date": "2026-03-20" },
+      { "name": "Aïd AL FITR (*)", "date": "2026-03-21" },
+      { "name": "Fête des Martyrs", "date": "2026-04-09" },
+      { "name": "Fête du Travail", "date": "2026-05-01" },
+      { "name": "Fin des cours - Semestre 2", "date": "2026-05-16" },
+      { "name": "Game 3D", "date": "2026-05-20" },
+      { "name": "Aïd Al Adha (*)", "date": "2026-05-27" },
+      { "name": "Bal de projets", "date": "2026-06-09" },
+      { "name": "Proclamation des résultats de la session principale", "date": "2026-06-15" },
+      { "name": "Année Hégire (*)", "date": "2026-06-16" },
+      { "name": "Proclamation des résultats de la session rattrapage", "date": "2026-07-21" },
+      { "name": "Fête de la République", "date": "2026-07-25" },
+      { "name": "Fête de la femme", "date": "2026-08-13" }
     ]
   },
-
   "notes": {
     "weeks_note": "Weeks S1..S14 are shared (Sunday→Saturday) for both semesters. Semester 1 weeks run from September to December, Semester 2 weeks start from January 18, 2026. A 3-week gap exists between S7 (ending March 7) and S8 (starting March 29) for spring break. Added 'semester' field to differentiate.",
     "merge_policy": "Periods were merged into single start/end ranges even where a holiday lies inside the block (per your instruction).",
-    "sources": "Dates and blocks derived from the PNG close-ups you provided."
+    "sources": "Dates and blocks derived from the PNG full-year calendar."
   }
 }
