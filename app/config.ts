@@ -10,7 +10,7 @@ export const MAINTENANCE_MODE = false;
 // Set to true during Ramadan to use adjusted schedule times
 // Morning: 08:30 - 11:10 | Afternoon: 11:50 - 14:30
 // Normal:  09:00 - 12:15 | Afternoon: 13:30 - 16:45
-export const RAMADAN_MODE = true;
+export const RAMADAN_MODE = false;
 
 // Time slot constants derived from RAMADAN_MODE
 export const TIME_SLOTS = RAMADAN_MODE
