@@ -12,6 +12,7 @@ import {
   resolveClassToRoom,
   loadSchedules,
   parseRoom,
+  snapToSessionTime,
 } from "./rooms";
 
 let passed = 0;
@@ -121,6 +122,101 @@ console.log("\nTest 7: parseRoom sanity checks");
   assert(r!.block === "G", `block = G (got ${r!.block})`);
   assert(r!.floor === 3, `floor = 3 (got ${r!.floor})`);
   assert(r!.roomNum === 8, `roomNum = 8 (got ${r!.roomNum})`);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  SNAP-TO-SESSION TESTS
+// ═══════════════════════════════════════════════════════════════════════════
+
+console.log("\n━━━ SNAP-TO-SESSION TESTS ━━━");
+
+// ─── Test 8s: Before morning → snap to morning start ────────────────────
+
+console.log("\nTest 8s: Before morning session → snap to morning start");
+{
+  const r = snapToSessionTime("Lundi", "07:30");
+  assert(r.day === "Lundi", `Day stays Lundi (got ${r.day})`);
+  assert(r.time === "09:00", `Time snapped to 09:00 (got ${r.time})`);
+
+  const r2 = snapToSessionTime("Mercredi", "06:00");
+  assert(r2.time === "09:00", `06:00 → 09:00 (got ${r2.time})`);
+}
+
+// ─── Test 9s: During morning session → keep as-is ───────────────────────
+
+console.log("\nTest 9s: During morning session → keep as-is");
+{
+  const r = snapToSessionTime("Lundi", "10:30");
+  assert(r.day === "Lundi", `Day stays Lundi (got ${r.day})`);
+  assert(r.time === "10:30", `Time kept 10:30 (got ${r.time})`);
+
+  const r2 = snapToSessionTime("Mardi", "09:00");
+  assert(r2.time === "09:00", `09:00 kept (got ${r2.time})`);
+}
+
+// ─── Test 10s: Lunch break → snap to afternoon start ────────────────────
+
+console.log("\nTest 10s: During lunch break → snap to afternoon start");
+{
+  const r = snapToSessionTime("Lundi", "12:30");
+  assert(r.day === "Lundi", `Day stays Lundi (got ${r.day})`);
+  assert(r.time === "13:30", `Time snapped to 13:30 (got ${r.time})`);
+
+  const r2 = snapToSessionTime("Jeudi", "13:00");
+  assert(r2.time === "13:30", `13:00 → 13:30 (got ${r2.time})`);
+}
+
+// ─── Test 11s: During afternoon session → keep as-is ────────────────────
+
+console.log("\nTest 11s: During afternoon session → keep as-is");
+{
+  const r = snapToSessionTime("Lundi", "14:00");
+  assert(r.day === "Lundi", `Day stays Lundi (got ${r.day})`);
+  assert(r.time === "14:00", `Time kept 14:00 (got ${r.time})`);
+}
+
+// ─── Test 12s: After afternoon end → next school day morning ────────────
+
+console.log("\nTest 12s: After afternoon end → next school day morning");
+{
+  const r = snapToSessionTime("Lundi", "17:00");
+  assert(r.day === "Mardi", `Day advances to Mardi (got ${r.day})`);
+  assert(r.time === "09:00", `Time snapped to 09:00 (got ${r.time})`);
+
+  const r2 = snapToSessionTime("Jeudi", "17:30");
+  assert(r2.day === "Vendredi", `Jeudi → Vendredi (got ${r2.day})`);
+  assert(r2.time === "09:00", `Time snapped to 09:00 (got ${r2.time})`);
+}
+
+// ─── Test 13s: Friday after afternoon → Monday morning ──────────────────
+
+console.log("\nTest 13s: Friday after afternoon → Monday morning");
+{
+  const r = snapToSessionTime("Vendredi", "18:00");
+  assert(r.day === "Lundi", `Friday evening → Lundi (got ${r.day})`);
+  assert(r.time === "09:00", `Time snapped to 09:00 (got ${r.time})`);
+}
+
+// ─── Test 14s: Friday lunch → Friday afternoon (FRIDAY_AFTERNOON) ───────
+
+console.log("\nTest 14s: Friday lunch break → Friday afternoon start");
+{
+  const r = snapToSessionTime("Vendredi", "12:30");
+  assert(r.day === "Vendredi", `Day stays Vendredi (got ${r.day})`);
+  assert(r.time === "13:45", `Time snapped to 13:45 for Friday (got ${r.time})`);
+}
+
+// ─── Test 15s: Weekend → Monday morning ─────────────────────────────────
+
+console.log("\nTest 15s: Weekend → Monday morning");
+{
+  const r = snapToSessionTime("Samedi", "10:00");
+  assert(r.day === "Lundi", `Samedi → Lundi (got ${r.day})`);
+  assert(r.time === "09:00", `Time snapped to 09:00 (got ${r.time})`);
+
+  const r2 = snapToSessionTime("Dimanche", "15:00");
+  assert(r2.day === "Lundi", `Dimanche → Lundi (got ${r2.day})`);
+  assert(r2.time === "09:00", `Time snapped to 09:00 (got ${r2.time})`);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

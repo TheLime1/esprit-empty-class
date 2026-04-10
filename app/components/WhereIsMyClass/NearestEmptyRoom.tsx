@@ -8,8 +8,8 @@ import * as React from "react";
 
 interface NearestRoomProps {
   classCode: string;
-  day: string;
-  time: string;
+  day?: string;
+  time?: string;
 }
 
 interface NearestResult {
@@ -27,15 +27,13 @@ export function NearestEmptyRoom({
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    if (!classCode || !day || !time) return;
+    if (!classCode) return;
 
     setLoading(true);
 
-    const params = new URLSearchParams({
-      class: classCode,
-      day,
-      time,
-    });
+    const params = new URLSearchParams({ class: classCode });
+    if (day) params.set("day", day);
+    if (time) params.set("time", time);
 
     fetch("/api/rooms/nearest?" + params.toString())
       .then((res) => res.json())

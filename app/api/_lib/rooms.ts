@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { TIME_SLOTS, FRIDAY_AFTERNOON } from "@/app/config";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -325,6 +326,9 @@ export async function findNearestEmptyRoomNow(
     const now = getCurrentDayAndTime();
     if (!day) day = now.day;
     if (!time) time = now.time;
+    // Snap to nearest school session so outside-hours queries reflect
+    // rooms that will actually be free when classes begin.
+    ({ day, time } = snapToSessionTime(day, time));
   }
 
   const result = await findFreeRooms({ day, time });
@@ -345,6 +349,72 @@ function getCurrentDayAndTime(): { day: string; time: string } {
   const hh = String(tunisia.getHours()).padStart(2, "0");
   const mm = String(tunisia.getMinutes()).padStart(2, "0");
   return { day: dayName, time: `${hh}:${mm}` };
+}
+
+// School-day order used by snapToSessionTime to advance to the next school day
+const SCHOOL_DAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
+
+/**
+ * Snap a day/time to the start of the nearest upcoming school session.
+ *
+ * Outside school hours (before morning, during lunch, after afternoon, weekends)
+ * occupancy data is meaningless because no events overlap — all rooms appear
+ * empty. This helper shifts the query to the *start* of the next session so
+ * the occupancy check reflects which rooms will actually be free when classes
+ * begin.
+ *
+ * Rules:
+ *  - Before morning start        → morning start, same day
+ *  - During morning session       → keep as-is
+ *  - During lunch break           → afternoon start (Friday uses FRIDAY_AFTERNOON)
+ *  - During afternoon session     → keep as-is
+ *  - After afternoon end          → morning start, next school day
+ *  - Weekend (Samedi / Dimanche)  → Lundi morning
+ */
+export function snapToSessionTime(day: string, time: string): { day: string; time: string } {
+  // Weekend → snap to Monday morning
+  if (day === "Samedi" || day === "Dimanche") {
+    return { day: "Lundi", time: TIME_SLOTS.morningValue };
+  }
+
+  const minutes = parseTimeStr(time);
+  if (minutes === null) return { day, time };
+
+  const morningStart = parseTimeStr(TIME_SLOTS.morningStart)!;
+  const lunchStart = TIME_SLOTS.lunchBreakStart;   // already in minutes
+  const lunchEnd = TIME_SLOTS.lunchBreakEnd;         // already in minutes
+
+  const isFriday = day === "Vendredi";
+  const afternoonValue = isFriday ? FRIDAY_AFTERNOON.value : TIME_SLOTS.afternoonValue;
+  const afternoonEndStr = isFriday ? FRIDAY_AFTERNOON.end : TIME_SLOTS.afternoonEnd;
+  const afternoonEnd = parseTimeStr(afternoonEndStr)!;
+
+  // Before morning session
+  if (minutes < morningStart) {
+    return { day, time: TIME_SLOTS.morningValue };
+  }
+
+  // During morning session
+  if (minutes < lunchStart) {
+    return { day, time };
+  }
+
+  // During lunch break
+  if (minutes < lunchEnd) {
+    return { day, time: afternoonValue };
+  }
+
+  // During afternoon session
+  if (minutes < afternoonEnd) {
+    return { day, time };
+  }
+
+  // After afternoon end → next school day morning
+  const idx = SCHOOL_DAYS.indexOf(day);
+  const nextDay = idx >= 0 && idx < SCHOOL_DAYS.length - 1
+    ? SCHOOL_DAYS[idx + 1]
+    : "Lundi"; // Friday after-hours or unknown → Monday
+  return { day: nextDay, time: TIME_SLOTS.morningValue };
 }
 
 // ─── Class → Room resolution ─────────────────────────────────────────────
@@ -422,6 +492,9 @@ export async function findNearestEmptyRoomForClass(
     const now = getCurrentDayAndTime();
     if (!day) day = now.day;
     if (!time) time = now.time;
+    // Snap to nearest school session so outside-hours queries reflect
+    // rooms that will actually be free when classes begin.
+    ({ day, time } = snapToSessionTime(day, time));
   }
 
   const resolved = await resolveClassToRoom(classCode, day, time);

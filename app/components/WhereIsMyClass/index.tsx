@@ -6,7 +6,6 @@ import { ClassResults } from "./ClassResults";
 import { NearestEmptyRoom } from "./NearestEmptyRoom";
 import { ClassResultSkeleton } from "../Shared/Skeletons";
 import { ErrorState } from "../Shared/ErrorState";
-import { TIME_SLOTS } from "@/app/config";
 
 interface TimeSlot {
   time: string;
@@ -96,13 +95,11 @@ export function WhereIsMyClass() {
               classCode={result.classCode}
               day={
                 result.day ||
-                result.nextSession?.day ||
-                new Date().toLocaleDateString("fr-FR", { weekday: "long" })
+                result.nextSession?.day
               }
               time={
                 result.session?.timeSlot?.split("-")[0]?.trim() ||
-                result.nextSession?.start?.split("-")[0]?.trim() ||
-                TIME_SLOTS.morningValue
+                result.nextSession?.start?.split("-")[0]?.trim()
               }
             />
           )}
