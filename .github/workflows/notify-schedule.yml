@@ -16,5 +16,6 @@ jobs:
           curl -X POST \
             "https://${{ secrets.SUPABASE_PROJECT_REF }}.supabase.co/functions/v1/notify-schedule" \
             -H "Content-Type: application/json" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_WEBHOOK_SECRET }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "x-webhook-secret: ${{ secrets.SUPABASE_WEBHOOK_SECRET }}" \
             -d '{"event": "schedule_updated"}'
