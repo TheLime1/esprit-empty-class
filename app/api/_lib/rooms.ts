@@ -76,17 +76,36 @@ interface ScheduleEvent {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Schedules = Record<string, any>;
 
-/** Load & parse the schedules JSON from disk */
+let schedulesCache: { data: Schedules; loadedAt: number } | null = null;
+const SCHEDULES_CACHE_TTL_MS = 6 * 60 * 60 * 1000; // Schedules update weekly; refresh periodically for resilience.
+
+/** Load & parse the schedules JSON from disk, cached across warm invocations. */
 export async function loadSchedules(): Promise<Schedules> {
+  const now = Date.now();
+  if (
+    schedulesCache &&
+    now - schedulesCache.loadedAt < SCHEDULES_CACHE_TTL_MS
+  ) {
+    return schedulesCache.data;
+  }
+
   const dataPath = path.join(process.cwd(), "data", "schedules.json");
   const raw = await fs.promises.readFile(dataPath, "utf-8");
-  return JSON.parse(raw);
+  const data = JSON.parse(raw) as Schedules;
+  schedulesCache = { data, loadedAt: now };
+  return data;
 }
 
 // ─── Internal helpers (broken out to reduce cognitive complexity) ─────────
 
 const WEEKDAY_ORDER = [
-  "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche",
+  "Lundi",
+  "Mardi",
+  "Mercredi",
+  "Jeudi",
+  "Vendredi",
+  "Samedi",
+  "Dimanche",
 ];
 
 /** Collect every unique physical room and schedule day from all groups. */
@@ -99,7 +118,7 @@ function collectRoomsAndDays(schedules: Schedules) {
     if (!group?.days) continue;
     for (const d of Object.keys(group.days)) {
       daySet.add(d);
-      for (const ev of (group.days[d] || [])) {
+      for (const ev of group.days[d] || []) {
         const r = (ev?.room || "").trim();
         if (r && r.toLowerCase() !== "en ligne") roomSet.add(r);
       }
@@ -131,8 +150,14 @@ function classifyEvent(
   const room = (ev?.room || "").trim();
 
   if (course === "FREE") return;
-  if (course === "FREEWARNING" && room) { freeWarning.add(room); return; }
-  if (course === "NOT-FREE" && room) { occupied.add(room); return; }
+  if (course === "FREEWARNING" && room) {
+    freeWarning.add(room);
+    return;
+  }
+  if (course === "NOT-FREE" && room) {
+    occupied.add(room);
+    return;
+  }
   if (room.toLowerCase() === "en ligne") return;
   if (room) occupied.add(room);
 }
@@ -160,7 +185,9 @@ function computeOccupancy(
 function filterByBuilding(list: string[], building: string): string[] {
   const norm = normalizeBloc(building);
   if (norm === "IJK") {
-    return list.filter((r) => r.startsWith("I") || r.startsWith("J") || r.startsWith("K"));
+    return list.filter(
+      (r) => r.startsWith("I") || r.startsWith("J") || r.startsWith("K"),
+    );
   }
   return list.filter((r) => r.startsWith(building));
 }
@@ -173,7 +200,9 @@ function filterByBuilding(list: string[], building: string): string[] {
  * This implements the full logic previously duplicated across
  * /api/empty and /api/rooms/free.
  */
-export async function findFreeRooms(params: RoomQueryParams): Promise<RoomResult> {
+export async function findFreeRooms(
+  params: RoomQueryParams,
+): Promise<RoomResult> {
   const schedules = await loadSchedules();
   const { days, rooms } = collectRoomsAndDays(schedules);
 
@@ -184,7 +213,11 @@ export async function findFreeRooms(params: RoomQueryParams): Promise<RoomResult
   let freeWarning = new Set<string>();
 
   if (selectedDay && qMinutes !== null) {
-    ({ occupied, freeWarning } = computeOccupancy(schedules, selectedDay, qMinutes));
+    ({ occupied, freeWarning } = computeOccupancy(
+      schedules,
+      selectedDay,
+      qMinutes,
+    ));
   }
 
   const occupiedArr = Array.from(occupied).sort((a, b) => a.localeCompare(b));
@@ -221,9 +254,7 @@ export function parseRoom(name: string): ParsedRoom | null {
   if (digits.length === 0) return null;
 
   const floor = Number.parseInt(digits[0], 10);
-  const roomNum = digits.length > 1
-    ? Number.parseInt(digits.slice(1), 10)
-    : 0;
+  const roomNum = digits.length > 1 ? Number.parseInt(digits.slice(1), 10) : 0;
 
   return { raw: name.trim(), block, floor, roomNum };
 }
@@ -262,10 +293,10 @@ function proximityScore(origin: ParsedRoom, candidate: ParsedRoom): number {
 
   const floorDiff = candidate.floor - origin.floor;
 
-  if (floorDiff === 0) return roomDist;                               // same floor
-  if (floorDiff === -1) return 1000 + roomDist;                       // 1 floor below
-  if (floorDiff === 1) return 2000 + roomDist;                        // 1 floor above
-  return 3000 + Math.abs(floorDiff) * 100 + roomDist;                 // further floors
+  if (floorDiff === 0) return roomDist; // same floor
+  if (floorDiff === -1) return 1000 + roomDist; // 1 floor below
+  if (floorDiff === 1) return 2000 + roomDist; // 1 floor above
+  return 3000 + Math.abs(floorDiff) * 100 + roomDist; // further floors
 }
 
 /**
@@ -291,14 +322,22 @@ export function findNearestRoom(
     if (excludeSet.has(r.trim().toUpperCase())) continue;
     const parsed = parseRoom(r);
     if (!parsed) continue;
-    candidates.push({ room: r, isWarning: false, score: proximityScore(origin, parsed) });
+    candidates.push({
+      room: r,
+      isWarning: false,
+      score: proximityScore(origin, parsed),
+    });
   }
   for (const r of warningRooms) {
     if (excludeSet.has(r.trim().toUpperCase())) continue;
     const parsed = parseRoom(r);
     if (!parsed) continue;
     // Warning rooms get a small penalty so confirmed-empty rooms win at same distance
-    candidates.push({ room: r, isWarning: true, score: proximityScore(origin, parsed) + 0.5 });
+    candidates.push({
+      room: r,
+      isWarning: true,
+      score: proximityScore(origin, parsed) + 0.5,
+    });
   }
 
   candidates.sort((a, b) => a.score - b.score);
@@ -338,7 +377,15 @@ export async function findNearestEmptyRoomNow(
 
 // ─── Current time helpers ────────────────────────────────────────────────
 
-const DAY_NAMES = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+const DAY_NAMES = [
+  "Dimanche",
+  "Lundi",
+  "Mardi",
+  "Mercredi",
+  "Jeudi",
+  "Vendredi",
+  "Samedi",
+];
 
 /** Get the current day name and HH:MM time in Tunisia timezone. */
 function getCurrentDayAndTime(): { day: string; time: string } {
@@ -371,7 +418,10 @@ const SCHOOL_DAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
  *  - After afternoon end          → morning start, next school day
  *  - Weekend (Samedi / Dimanche)  → Lundi morning
  */
-export function snapToSessionTime(day: string, time: string): { day: string; time: string } {
+export function snapToSessionTime(
+  day: string,
+  time: string,
+): { day: string; time: string } {
   // Weekend → snap to Monday morning
   if (day === "Samedi" || day === "Dimanche") {
     return { day: "Lundi", time: TIME_SLOTS.morningValue };
@@ -381,12 +431,16 @@ export function snapToSessionTime(day: string, time: string): { day: string; tim
   if (minutes === null) return { day, time };
 
   const morningStart = parseTimeStr(TIME_SLOTS.morningStart)!;
-  const lunchStart = TIME_SLOTS.lunchBreakStart;   // already in minutes
-  const lunchEnd = TIME_SLOTS.lunchBreakEnd;         // already in minutes
+  const lunchStart = TIME_SLOTS.lunchBreakStart; // already in minutes
+  const lunchEnd = TIME_SLOTS.lunchBreakEnd; // already in minutes
 
   const isFriday = day === "Vendredi";
-  const afternoonValue = isFriday ? FRIDAY_AFTERNOON.value : TIME_SLOTS.afternoonValue;
-  const afternoonEndStr = isFriday ? FRIDAY_AFTERNOON.end : TIME_SLOTS.afternoonEnd;
+  const afternoonValue = isFriday
+    ? FRIDAY_AFTERNOON.value
+    : TIME_SLOTS.afternoonValue;
+  const afternoonEndStr = isFriday
+    ? FRIDAY_AFTERNOON.end
+    : TIME_SLOTS.afternoonEnd;
   const afternoonEnd = parseTimeStr(afternoonEndStr)!;
 
   // Before morning session
@@ -411,9 +465,8 @@ export function snapToSessionTime(day: string, time: string): { day: string; tim
 
   // After afternoon end → next school day morning
   const idx = SCHOOL_DAYS.indexOf(day);
-  const nextDay = idx >= 0 && idx < SCHOOL_DAYS.length - 1
-    ? SCHOOL_DAYS[idx + 1]
-    : "Lundi"; // Friday after-hours or unknown → Monday
+  const nextDay =
+    idx >= 0 && idx < SCHOOL_DAYS.length - 1 ? SCHOOL_DAYS[idx + 1] : "Lundi"; // Friday after-hours or unknown → Monday
   return { day: nextDay, time: TIME_SLOTS.morningValue };
 }
 
@@ -432,7 +485,11 @@ export async function resolveClassToRoom(
   classCode: string,
   day?: string | null,
   time?: string | null,
-): Promise<{ room: string | null; classCode: string; primaryRoom: string | null }> {
+): Promise<{
+  room: string | null;
+  classCode: string;
+  primaryRoom: string | null;
+}> {
   const schedules = await loadSchedules();
 
   // Case-insensitive lookup
@@ -459,7 +516,12 @@ export async function resolveClassToRoom(
       if (qMinutes >= start && qMinutes < end) {
         const course = (ev?.course || "").trim().toUpperCase();
         // Skip synthetic entries
-        if (course === "FREE" || course === "FREEWARNING" || course === "NOT-FREE") continue;
+        if (
+          course === "FREE" ||
+          course === "FREEWARNING" ||
+          course === "NOT-FREE"
+        )
+          continue;
         const room = (ev?.room || "").trim();
         if (room && room.toLowerCase() !== "en ligne") {
           return { room, classCode: matchedKey, primaryRoom };
@@ -480,12 +542,14 @@ export async function findNearestEmptyRoomForClass(
   classCode: string,
   day?: string | null,
   time?: string | null,
-): Promise<NearestRoomResult & {
-  day: string | null;
-  time: string | null;
-  classCode: string;
-  currentRoom: string | null;
-}> {
+): Promise<
+  NearestRoomResult & {
+    day: string | null;
+    time: string | null;
+    classCode: string;
+    currentRoom: string | null;
+  }
+> {
   // Auto-detect current day/time when not provided so that occupancy
   // is always computed (otherwise all rooms appear empty).
   if (!day || !time) {
@@ -521,7 +585,12 @@ export async function findNearestEmptyRoomForClass(
       ? [resolved.primaryRoom]
       : []),
   ];
-  const nearest = findNearestRoom(resolved.room, result.empty, result.warning, excludeRooms);
+  const nearest = findNearestRoom(
+    resolved.room,
+    result.empty,
+    result.warning,
+    excludeRooms,
+  );
 
   return {
     ...nearest,

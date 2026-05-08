@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import path from "node:path";
 import { promises as fs } from "node:fs";
 
+const CACHE_HEADERS = {
+  "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+  "Access-Control-Allow-Origin": "*",
+};
+
 interface Week {
   name: string;
   start_date: string;
@@ -18,7 +23,7 @@ export async function GET() {
     const filePath = path.join(
       process.cwd(),
       "data",
-      "year_calendar2025-2026.json"
+      "year_calendar2025-2026.json",
     );
     const fileContents = await fs.readFile(filePath, "utf8");
     const data: CalendarData = JSON.parse(fileContents);
@@ -59,24 +64,27 @@ export async function GET() {
             "No academic week matches today's date. You may be in a holiday or exam period.",
           date: todayStr,
         },
-        { status: 200 }
+        { status: 200, headers: CACHE_HEADERS },
       );
     }
 
-    return NextResponse.json({
-      academic_year: data.academic_year,
-      current_week: {
-        name: currentWeek.name,
-        semester: currentWeek.semester,
-        start_date: currentWeek.start_date,
-        end_date: currentWeek.end_date,
+    return NextResponse.json(
+      {
+        academic_year: data.academic_year,
+        current_week: {
+          name: currentWeek.name,
+          semester: currentWeek.semester,
+          start_date: currentWeek.start_date,
+          end_date: currentWeek.end_date,
+        },
+        date: todayStr,
       },
-      date: todayStr,
-    });
+      { headers: CACHE_HEADERS },
+    );
   } catch {
     return NextResponse.json(
       { error: "Failed to load calendar data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

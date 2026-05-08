@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { validateApiKey } from "@/app/api/v1/_lib/auth";
 import { findFreeRooms } from "@/app/api/_lib/rooms";
 
+const CACHE_HEADERS = {
+  "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+};
+
 export async function GET(req: NextRequest) {
   // ── Auth ────────────────────────────────────────────────────────────────
   const authError = validateApiKey(req);
@@ -18,16 +22,16 @@ export async function GET(req: NextRequest) {
     if (time && !/^\d{1,2}:\d{2}$/.test(time)) {
       return NextResponse.json(
         { error: "Invalid time format. Expected HH:MM (24h), e.g. 09:00" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const result = await findFreeRooms({ day, time, building });
-    return NextResponse.json(result);
+    return NextResponse.json(result, { headers: CACHE_HEADERS });
   } catch (err: unknown) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : String(err) },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { findNearestEmptyRoomForClass } from "@/app/api/_lib/rooms";
 
+const CACHE_HEADERS = {
+  "Cache-Control": "public, s-maxage=1800, stale-while-revalidate=3600",
+  "Access-Control-Allow-Origin": "*",
+};
+
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
@@ -24,13 +29,16 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({
-      class: result.classCode,
-      currentRoom: result.currentRoom,
-      nearest: result.nearest,
-      isWarning: result.isWarning,
-      topCandidates: result.allCandidates,
-    });
+    return NextResponse.json(
+      {
+        class: result.classCode,
+        currentRoom: result.currentRoom,
+        nearest: result.nearest,
+        isWarning: result.isWarning,
+        topCandidates: result.allCandidates,
+      },
+      { headers: CACHE_HEADERS },
+    );
   } catch (err: unknown) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : String(err) },
