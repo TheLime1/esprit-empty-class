@@ -112,15 +112,15 @@ export function RoomSearchForm({
     <Card className="p-3 sm:p-4 md:p-6 mb-4 sm:mb-6">
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         {/* Main Form Fields */}
-        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid min-w-0 gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {/* Day */}
-          <div className="space-y-2">
+          <div className="min-w-0 space-y-2">
             <Label htmlFor="day-select" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               Day
             </Label>
             <Select value={day} onValueChange={handleDayChange}>
-              <SelectTrigger id="day-select">
+              <SelectTrigger id="day-select" className="w-full min-w-0 sm:w-fit">
                 <SelectValue placeholder="Select day" />
               </SelectTrigger>
               <SelectContent>
@@ -134,13 +134,13 @@ export function RoomSearchForm({
           </div>
 
           {/* Time Slot */}
-          <div className="space-y-2">
+          <div className="min-w-0 space-y-2">
             <Label htmlFor="time-select" className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
               Time Slot
             </Label>
             <Select value={time} onValueChange={setTime}>
-              <SelectTrigger id="time-select">
+              <SelectTrigger id="time-select" className="w-full min-w-0 sm:w-fit">
                 <SelectValue placeholder="Select time slot" />
               </SelectTrigger>
               <SelectContent>
@@ -154,13 +154,13 @@ export function RoomSearchForm({
           </div>
 
           {/* Bloc */}
-          <div className="space-y-2">
+          <div className="min-w-0 space-y-2">
             <Label htmlFor="bloc-select" className="flex items-center gap-2">
               <Building2 className="h-4 w-4" />
               Bloc
             </Label>
             <Select value={bloc} onValueChange={setBloc}>
-              <SelectTrigger id="bloc-select">
+              <SelectTrigger id="bloc-select" className="w-full min-w-0 sm:w-fit">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

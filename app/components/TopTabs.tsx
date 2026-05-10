@@ -1,7 +1,7 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, MapPin, Calendar } from "lucide-react";
+import { Search, Table2, Calendar, CalendarCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { ReactNode } from "react";
 
@@ -14,7 +14,8 @@ export function TopTabs({ tabs, defaultTab }: Readonly<TopTabsProps>) {
   // Helper to get short titles for mobile
   const getShortTitle = (tabId: string): string => {
     if (tabId === "find-empty") return "Empty Rooms";
-    if (tabId === "where-class") return "My Class";
+    if (tabId === "where-class") return "Timetable";
+    if (tabId === "exams-calendar") return "Exams";
     return "Calendar";
   };
 
@@ -62,6 +63,7 @@ export function TopTabs({ tabs, defaultTab }: Readonly<TopTabsProps>) {
 // Export icon components for easy reuse
 export const TabIcons = {
   Search,
-  MapPin,
+  Table2,
   Calendar,
+  CalendarCheck,
 };

@@ -4,6 +4,7 @@ import { TopTabs, TabIcons } from "./components/TopTabs";
 import { FindEmptyRooms } from "./components/FindEmptyRooms";
 import { WhereIsMyClass } from "./components/WhereIsMyClass";
 import { YearCalendar } from "./components/YearCalendar";
+import { ExamCalendar } from "./components/ExamCalendar";
 import { AcademicTicker } from "./components/Shared/AcademicTicker";
 import { Card } from "@/components/ui/card";
 import { MAINTENANCE_MODE, RAMADAN_MODE } from "./config";
@@ -27,9 +28,15 @@ export default function Home() {
     },
     {
       id: "where-class",
-      title: "Where's My Class?",
-      icon: <TabIcons.MapPin className="h-4 w-4" />,
+      title: "Weekly Timetable",
+      icon: <TabIcons.Table2 className="h-4 w-4" />,
       content: <WhereIsMyClass />,
+    },
+    {
+      id: "exams-calendar",
+      title: "Exams Calendar",
+      icon: <TabIcons.CalendarCheck className="h-4 w-4" />,
+      content: <ExamCalendar />,
     },
     {
       id: "year-calendar",

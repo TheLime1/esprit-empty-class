@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -10,22 +9,20 @@ import { Search, GraduationCap } from "lucide-react";
 interface ClassSearchFormProps {
   onSearch: (classCode: string) => void;
   loading?: boolean;
+  classCode: string;
+  onClassCodeChange: (classCode: string) => void;
+  buttonLabel?: string;
+  loadingLabel?: string;
 }
-
-const LAST_CLASS_KEY = "lastSearchedClass";
 
 export function ClassSearchForm({
   onSearch,
   loading = false,
+  classCode,
+  onClassCodeChange,
+  buttonLabel = "Find",
+  loadingLabel = "Finding...",
 }: Readonly<ClassSearchFormProps>) {
-  // Load last searched class on mount using lazy initialization
-  const [classCode, setClassCode] = useState<string>(() => {
-    if (globalThis.window !== undefined) {
-      return localStorage.getItem(LAST_CLASS_KEY) || "";
-    }
-    return "";
-  });
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (classCode.trim()) {
@@ -50,7 +47,7 @@ export function ClassSearchForm({
               type="text"
               placeholder="e.g., 1A1, 2B5, 4SAE11"
               value={classCode}
-              onChange={(e) => setClassCode(e.target.value.toUpperCase())}
+              onChange={(e) => onClassCodeChange(e.target.value)}
               className="flex-1 text-base sm:text-lg"
             />
             <Button
@@ -60,7 +57,7 @@ export function ClassSearchForm({
               size="lg"
             >
               <Search className="h-4 w-4 mr-2" />
-              {loading ? "Finding..." : "Find"}
+              {loading ? loadingLabel : buttonLabel}
             </Button>
           </div>
         </div>

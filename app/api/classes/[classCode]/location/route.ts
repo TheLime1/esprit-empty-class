@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { TIME_SLOTS } from "@/app/config";
 import { loadSchedules } from "@/app/api/_lib/rooms";
+import { findMatchingClassKey } from "@/app/api/_lib/class-codes";
 
 const CACHE_HEADERS = {
   "Cache-Control": "public, s-maxage=1800, stale-while-revalidate=3600",
@@ -50,117 +51,6 @@ function eventRangeToMinutes(range: string) {
   return { start: null, end: null };
 }
 
-/**
- * Remove accents from a string (e.g., "Méca" → "MECA")
- */
-function removeAccents(str: string): string {
-  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
-
-/**
- * Normalize class code for flexible searching.
- * Handles aliases like "4erp1" or "4bi1" matching "4ERP-BI1"
- * Also handles accented characters like "4meca" matching "4MécaT1"
- */
-function findMatchingClassName(
-  searchCode: string,
-  schedules: ScheduleData,
-): string | null {
-  const upperSearch = removeAccents(searchCode.toUpperCase());
-
-  // Direct match first (with accent removal)
-  const directMatch = Object.keys(schedules).find(
-    (key) => removeAccents(key.toUpperCase()) === upperSearch,
-  );
-  if (directMatch) {
-    return directMatch;
-  }
-
-  // Normalize search (remove special chars and accents)
-  const normalizedSearch = upperSearch.replaceAll(/[^A-Z0-9]/g, "");
-
-  // Validate: search must contain at least one digit
-  if (!/\d/.test(normalizedSearch)) {
-    return null;
-  }
-
-  // Try flexible matching for complex class names
-  // Priority order:
-  // 1. Exact normalized match (e.g., "4ERPBI3" → "4ERP-BI3", "4MECAT1" → "4MécaT1")
-  // 2. Flexible match for ERP-BI style (e.g., "4bi3" → "4ERP-BI3", "4erp3" → "4ERP-BI3")
-
-  for (const className of Object.keys(schedules)) {
-    const normalizedClass = removeAccents(className.toUpperCase()).replaceAll(
-      /[^A-Z0-9]/g,
-      "",
-    );
-
-    // 1. EXACT normalized match (highest priority)
-    if (normalizedClass === normalizedSearch) {
-      return className;
-    }
-  }
-
-  // 2. Flexible matching for classes with dashes/complex names
-  // Example: "4bi3" should match "4ERP-BI3", "4erp3" should match "4ERP-BI3"
-  // Strategy: Match if search contains a substring of letters that appears in class
-  // AND the final numbers match exactly
-
-  // Extract the trailing number from search (e.g., "4BI3" → "3", "4ERP1" → "1")
-  const searchTrailingNum = normalizedSearch.match(/\d+$/)?.[0];
-
-  if (!searchTrailingNum) {
-    return null;
-  }
-
-  for (const className of Object.keys(schedules)) {
-    const normalizedClass = removeAccents(className.toUpperCase()).replaceAll(
-      /[^A-Z0-9]/g,
-      "",
-    );
-
-    // Extract trailing number from class name
-    const classTrailingNum = normalizedClass.match(/\d+$/)?.[0];
-
-    if (!classTrailingNum) {
-      continue;
-    }
-
-    // Numbers must match EXACTLY (no substring matching)
-    if (classTrailingNum !== searchTrailingNum) {
-      continue;
-    }
-
-    // Extract the leading digit(s) and middle letters
-    // e.g., "4ERPBI3" → leading: "4", letters: "ERPBI"
-    const searchLeading = normalizedSearch.match(/^(\d+)/)?.[0];
-    const classLeading = normalizedClass.match(/^(\d+)/)?.[0];
-
-    // Leading numbers must match
-    if (searchLeading !== classLeading) {
-      continue;
-    }
-
-    // Get the middle letters (between leading and trailing numbers)
-    const searchMiddle = normalizedSearch.slice(
-      searchLeading?.length || 0,
-      -searchTrailingNum.length,
-    );
-    const classMiddle = normalizedClass.slice(
-      classLeading?.length || 0,
-      -classTrailingNum.length,
-    );
-
-    // For flexible matching: search letters should be a substring of class letters
-    // OR class letters should contain all search letters (for "4BI3" → "4ERP-BI3")
-    if (classMiddle.includes(searchMiddle)) {
-      return className;
-    }
-  }
-
-  return null;
-}
-
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ classCode: string }> },
@@ -176,7 +66,10 @@ export async function GET(
     const schedules = (await loadSchedules()) as ScheduleData;
 
     // Find the class in the schedules using flexible matching
-    const matchedClassName = findMatchingClassName(classCode, schedules);
+    const matchedClassName = findMatchingClassKey(
+      classCode,
+      Object.keys(schedules),
+    );
     const classSchedule = matchedClassName ? schedules[matchedClassName] : null;
 
     if (!classSchedule || !matchedClassName) {

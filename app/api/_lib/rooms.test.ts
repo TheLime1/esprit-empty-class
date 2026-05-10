@@ -9,7 +9,6 @@
 import {
   findNearestRoom,
   findNearestEmptyRoomForClass,
-  resolveClassToRoom,
   loadSchedules,
   parseRoom,
   snapToSessionTime,
@@ -122,6 +121,30 @@ console.log("\nTest 7: parseRoom sanity checks");
   assert(r!.block === "G", `block = G (got ${r!.block})`);
   assert(r!.floor === 3, `floor = 3 (got ${r!.floor})`);
   assert(r!.roomNum === 8, `roomNum = 8 (got ${r!.roomNum})`);
+}
+
+// ─── Test 8: Same-distance room numbers prefer lower rooms ──────────────
+
+console.log("\nTest 8: Same-distance room numbers prefer lower rooms");
+{
+  const result = findNearestRoom("G308", ["G309", "G307"], []);
+  assert(result.nearest === "G307", `G307 beats G309 (got ${result.nearest})`);
+}
+
+// ─── Test 9: One floor down beats one floor up ──────────────────────────
+
+console.log("\nTest 9: One floor down beats one floor up");
+{
+  const result = findNearestRoom("G308", ["G408", "G208"], []);
+  assert(result.nearest === "G208", `G208 beats G408 (got ${result.nearest})`);
+}
+
+// ─── Test 10: Same-distance block letters prefer previous blocks ────────
+
+console.log("\nTest 10: Same-distance block letters prefer previous blocks");
+{
+  const result = findNearestRoom("G308", ["H308", "F308"], []);
+  assert(result.nearest === "F308", `F308 beats H308 (got ${result.nearest})`);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

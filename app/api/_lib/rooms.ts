@@ -282,21 +282,49 @@ function isSameBlockGroup(a: string, b: string): boolean {
  *
  * Within each tier the room-number distance is the tie-breaker.
  */
+function directionPenalty(delta: number): number {
+  if (delta > 0) return 1;
+  return 0;
+}
+
+function blockSortValue(block: string): number {
+  return block.charCodeAt(0);
+}
+
 function proximityScore(origin: ParsedRoom, candidate: ParsedRoom): number {
-  const roomDist = Math.abs(origin.roomNum - candidate.roomNum);
+  const roomDelta = candidate.roomNum - origin.roomNum;
+  const roomDist = Math.abs(roomDelta);
   const sameBlock = isSameBlockGroup(origin.block, candidate.block);
 
   if (!sameBlock) {
+    const blockDelta =
+      blockSortValue(candidate.block) - blockSortValue(origin.block);
+    const blockDist = Math.abs(blockDelta);
+    const floorDiff = candidate.floor - origin.floor;
     const floorDist = Math.abs(origin.floor - candidate.floor);
-    return 10000 + floorDist * 100 + roomDist;
+    return (
+      10000 +
+      blockDist * 1000 +
+      directionPenalty(blockDelta) * 100 +
+      floorDist * 20 +
+      directionPenalty(floorDiff) * 10 +
+      roomDist * 2 +
+      directionPenalty(roomDelta)
+    );
   }
 
   const floorDiff = candidate.floor - origin.floor;
+  const roomScore = roomDist * 2 + directionPenalty(roomDelta);
 
-  if (floorDiff === 0) return roomDist; // same floor
-  if (floorDiff === -1) return 1000 + roomDist; // 1 floor below
-  if (floorDiff === 1) return 2000 + roomDist; // 1 floor above
-  return 3000 + Math.abs(floorDiff) * 100 + roomDist; // further floors
+  if (floorDiff === 0) return roomScore; // same floor
+  if (floorDiff === -1) return 1000 + roomScore; // 1 floor below
+  if (floorDiff === 1) return 2000 + roomScore; // 1 floor above
+  return (
+    3000 +
+    Math.abs(floorDiff) * 100 +
+    directionPenalty(floorDiff) * 10 +
+    roomScore
+  ); // further floors
 }
 
 /**
