@@ -1,11 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ClassSearchForm } from "./ClassSearchForm";
 import { ClassResults } from "./ClassResults";
 import { NearestEmptyRoom } from "./NearestEmptyRoom";
 import { ClassResultSkeleton } from "../Shared/Skeletons";
 import { ErrorState } from "../Shared/ErrorState";
+import {
+  getPersistedClassCode,
+  usePersistentClassCode,
+} from "../Shared/usePersistentClassCode";
 
 interface TimeSlot {
   time: string;
@@ -41,33 +45,23 @@ interface ClassLocation {
   };
 }
 
-const LAST_CLASS_KEY = "lastSearchedClass";
-
 export function WhereIsMyClass() {
+  const [classCode, setClassCode] = usePersistentClassCode();
   const [result, setResult] = useState<ClassLocation | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [initialSearchDone, setInitialSearchDone] = useState(false);
 
-  // Auto-search last class on mount
-  useEffect(() => {
-    const lastClass = localStorage.getItem(LAST_CLASS_KEY);
-    if (lastClass && !initialSearchDone) {
-      setInitialSearchDone(true);
-      handleSearch(lastClass);
-    }
-  }, [initialSearchDone]);
-
-  const handleSearch = async (classCode: string) => {
+  const handleSearch = useCallback(async (classCode: string) => {
+    const normalizedClassCode = classCode.trim().toUpperCase();
     setLoading(true);
     setError(null);
     setResult(null);
 
     try {
-      // Save to localStorage for next visit
-      localStorage.setItem(LAST_CLASS_KEY, classCode);
+      setClassCode(normalizedClassCode);
 
-      const url = `/api/classes/${encodeURIComponent(classCode)}/location`;
+      const url = `/api/classes/${encodeURIComponent(normalizedClassCode)}/location`;
       const res = await fetch(url);
       const data = await res.json();
 
@@ -81,11 +75,29 @@ export function WhereIsMyClass() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [setClassCode]);
+
+  // Auto-search last class on mount
+  useEffect(() => {
+    if (initialSearchDone) {
+      return;
+    }
+
+    setInitialSearchDone(true);
+    const lastClass = getPersistedClassCode();
+    if (lastClass) {
+      void handleSearch(lastClass);
+    }
+  }, [handleSearch, initialSearchDone]);
 
   return (
     <div className="space-y-4">
-      <ClassSearchForm onSearch={handleSearch} loading={loading} />
+      <ClassSearchForm
+        onSearch={handleSearch}
+        loading={loading}
+        classCode={classCode}
+        onClassCodeChange={setClassCode}
+      />
 
       {/* Show Nearest Empty Room after search when result is available */}
       {!loading && !error && result && (
